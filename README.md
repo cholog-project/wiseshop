@@ -1,2 +1,1 @@
 # wiseshop
-# wiseshop

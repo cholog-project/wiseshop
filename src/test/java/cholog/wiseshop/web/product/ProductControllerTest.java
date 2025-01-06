@@ -1,6 +1,7 @@
 package cholog.wiseshop.web.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -75,5 +76,30 @@ public class ProductControllerTest {
         assertThat(product.getName()).isEqualTo(name);
         assertThat(product.getDescription()).isEqualTo(description);
         assertThat(product.getPrice()).isEqualTo(price);
+    }
+
+    @Test
+    public void 상품_조회하기() throws Exception {
+        // given:
+        String name = "보약2";
+        String description = "먹으면 기분이 좋아지지 않아요.";
+        int price = 50000;
+
+        Product product = new Product(name, description, price);
+
+        // when
+        productRepository.save(product);
+
+        String url = "http://localhost:" + port + "/api/v1/products/1";
+
+        //then
+        mockMvc.perform(get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.description").value(description))
+                .andExpect(jsonPath("$.price").value(price))
+                .andDo(print());
     }
 }

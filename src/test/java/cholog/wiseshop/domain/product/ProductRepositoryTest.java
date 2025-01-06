@@ -22,7 +22,7 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    public void 상품_저장하기() {
+    public void 상품_저장_조회하기() {
         // given
         String name = "보약";
         String description = "먹으면 기분이 좋아져요.";
@@ -40,5 +40,4 @@ public class ProductRepositoryTest {
         assertThat(product.getDescription()).isEqualTo(description);
         assertThat(product.getPrice()).isEqualTo(price);
     }
-
 }

@@ -24,5 +24,4 @@ public class ProductController {
         productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
 }

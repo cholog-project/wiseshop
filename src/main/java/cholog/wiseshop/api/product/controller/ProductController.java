@@ -20,8 +20,8 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<Void> createProduct(@RequestBody CreateProductRequest request) {
-        productService.createProduct(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<Long> createProduct(@RequestBody CreateProductRequest request) {
+        Long productId = productService.createProduct(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productId);
     }
 }

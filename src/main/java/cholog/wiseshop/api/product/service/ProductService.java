@@ -14,8 +14,8 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public void createProduct(CreateProductRequest request) {
-        Product product = request.from();
-        productRepository.save(product);
+    public Long createProduct(CreateProductRequest request) {
+        Product createdProduct = productRepository.save(request.from());
+        return createdProduct.getId();
     }
 }

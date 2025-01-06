@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -88,9 +87,9 @@ public class ProductControllerTest {
         Product product = new Product(name, description, price);
 
         // when
-        productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
 
-        String url = "http://localhost:" + port + "/api/v1/products/1";
+        String url = "http://localhost:" + port + "/api/v1/products/" + savedProduct.getId();
 
         //then
         mockMvc.perform(get(url)

@@ -28,6 +28,15 @@ public class Product {
 
     }
 
+    public void modifyProduct(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public void modifyPrice(int price) {
+        this.price = price;
+    }
+
     public Long getId() {
         return id;
     }

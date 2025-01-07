@@ -42,6 +42,52 @@ public class ProductRepositoryTest {
     }
 
     @Test
+    public void 상품_이름_설명글_수정하기() {
+        // given
+        String modifiedName = "보약2";
+        String modifiedDescription = "먹으면 기분이 안좋아져요.";
+
+        String name = "보약";
+        String description = "먹으면 기분이 좋아져요.";
+        int price = 10000;
+
+        CreateProductRequest request = new CreateProductRequest(name, description, price);
+
+        // when
+        Product createdProduct = productRepository.save(request.from());
+        createdProduct.modifyProduct(modifiedName, modifiedDescription);
+        productRepository.save(createdProduct);
+
+        Product modifiedProduct = productRepository.findById(createdProduct.getId()).orElseThrow();
+
+        // then
+        assertThat(modifiedProduct.getName()).isEqualTo(modifiedName);
+        assertThat(modifiedProduct.getDescription()).isEqualTo(modifiedDescription);
+    }
+
+    @Test
+    public void 상품_가격_수정하기() {
+        // given
+        int modifiedPrice = 20000;
+
+        String name = "보약";
+        String description = "먹으면 기분이 좋아져요.";
+        int price = 10000;
+
+        CreateProductRequest request = new CreateProductRequest(name, description, price);
+
+        // when
+        Product createdProduct = productRepository.save(request.from());
+        createdProduct.modifyPrice(modifiedPrice);
+        productRepository.save(createdProduct);
+
+        Product modifiedProduct = productRepository.findById(createdProduct.getId()).orElseThrow();
+
+        // then
+        assertThat(modifiedProduct.getPrice()).isEqualTo(modifiedPrice);
+    }
+
+    @Test
     public void 상품_삭제하기() {
         // given
         String name = "보약";
@@ -49,6 +95,7 @@ public class ProductRepositoryTest {
         int price = 10000;
 
         CreateProductRequest request = new CreateProductRequest(name, description, price);
+
         // when
         Product createdProduct = productRepository.save(request.from());
 

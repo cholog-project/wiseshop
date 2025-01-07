@@ -43,7 +43,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PutMapping("/products")
+    @PutMapping("/products/price")
     public ResponseEntity<Void> modifyProductPrice(@RequestBody ModifyProductPriceRequest request) {
         productService.modifyProductPrice(request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

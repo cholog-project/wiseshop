@@ -4,12 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
+import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -101,6 +104,60 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.description").value(description))
                 .andExpect(jsonPath("$.price").value(price))
                 .andDo(print());
+    }
+
+    @Test
+    public void 상품_이름_설명글_수정하기() throws Exception {
+        // given
+        String modifiedName = "보약3";
+        String modifiedDescription = "먹으면 기분이 그냥그래요.";
+
+        String name = "보약2";
+        String description = "먹으면 기분이 좋아지지 않아요.";
+        int price = 50000;
+
+        Product product = new Product(name, description, price);
+
+        // when
+        Product savedProduct = productRepository.save(product);
+
+        ModifyProductRequest request =
+                new ModifyProductRequest(savedProduct.getId(), modifiedName, modifiedDescription);
+
+        String url = "http://localhost:" + port + "/api/v1/products";
+
+        // then
+        mockMvc.perform(put(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request))
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void 상품_가격_수정하기() throws Exception {
+        // given
+        int modifiedPrice = 30000;
+
+        String name = "보약2";
+        String description = "먹으면 기분이 좋아지지 않아요.";
+        int price = 50000;
+
+        Product product = new Product(name, description, price);
+
+        // when
+        Product savedProduct = productRepository.save(product);
+
+        ModifyProductPriceRequest request = new ModifyProductPriceRequest(savedProduct.getId(), modifiedPrice);
+
+        String url = "http://localhost:" + port + "/api/v1/products/price";
+
+        // then
+        mockMvc.perform(put(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request))
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isNoContent());
     }
 
     @Test

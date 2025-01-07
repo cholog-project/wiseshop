@@ -1,6 +1,7 @@
 package cholog.wiseshop.web.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -99,6 +100,28 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.description").value(description))
                 .andExpect(jsonPath("$.price").value(price))
+                .andDo(print());
+    }
+
+    @Test
+    public void 상품_삭제하기() throws Exception {
+        // given
+        String name = "보약2";
+        String description = "먹으면 기분이 좋아지지 않아요.";
+        int price = 50000;
+
+        Product product = new Product(name, description, price);
+
+        // when
+        Product savedProduct = productRepository.save(product);
+
+        String url = "http://localhost:" + port + "/api/v1/products/" + savedProduct.getId();
+
+        // then
+        mockMvc.perform(delete(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isNoContent())
                 .andDo(print());
     }
 }

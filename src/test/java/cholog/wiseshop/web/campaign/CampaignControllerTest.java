@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import cholog.wiseshop.api.campaign.dto.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;

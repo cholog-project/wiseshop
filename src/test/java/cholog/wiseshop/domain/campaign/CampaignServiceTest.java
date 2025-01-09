@@ -3,7 +3,8 @@ package cholog.wiseshop.domain.campaign;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import cholog.wiseshop.api.campaign.dto.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.service.ProductService;
@@ -34,6 +35,7 @@ public class CampaignServiceTest {
 
     @BeforeEach
     public void cleanUp() {
+        campaignRepository.deleteAll();
         productRepository.deleteAll();
     }
 
@@ -75,5 +77,28 @@ public class CampaignServiceTest {
         assertThatThrownBy(() -> campaignService.createCampaign(
                 new CreateCampaignRequest(startDate, endDate, goalQuantity, productId)))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 캠페인_조회하기() {
+        //given
+        String name = "보약";
+        String description = "먹으면 기분이 좋아져요.";
+        int price = 10000;
+        CreateProductRequest productRequest = new CreateProductRequest(name, description, price);
+        Long productId = productService.createProduct(productRequest);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
+        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
+        ReadCampaignResponse response = campaignService.readCampaign(campaignId);
+
+        //then
+        assertThat(response.campaignId()).isEqualTo(campaignId);
+        assertThat(response.productId()).isEqualTo(productId);
     }
 }

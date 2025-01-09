@@ -7,6 +7,10 @@ public record CreateProductRequest(String name,
                                    int price) {
 
     public Product from() {
-        return new Product(name, description, price);
+        return new Product(
+                name,
+                description,
+                price
+        );
     }
 }

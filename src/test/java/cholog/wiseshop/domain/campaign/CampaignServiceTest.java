@@ -9,6 +9,7 @@ import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.service.ProductService;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
+import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.product.ProductRepository;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +60,7 @@ public class CampaignServiceTest {
         assertThat(findCampaign.getStartDate().isEqual(startDate)).isTrue();
         assertThat(findCampaign.getEndDate().isEqual(endDate)).isTrue();
         assertThat(findCampaign.getGoalQuantity()).isEqualTo(goalQuantity);
+        assertThat(findCampaign.getState()).isEqualTo(CampaignState.WAITING);
     }
 
     @Test

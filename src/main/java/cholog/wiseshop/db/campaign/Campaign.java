@@ -43,6 +43,7 @@ public class Campaign {
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalQuantity = goalQuantity;
+        this.state = CampaignState.WAITING;
     }
 
     public Campaign() {
@@ -66,5 +67,9 @@ public class Campaign {
 
     public int getGoalQuantity() {
         return goalQuantity;
+    }
+
+    public CampaignState getState() {
+        return state;
     }
 }

@@ -1,11 +1,14 @@
 package cholog.wiseshop.web.campaign;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -34,6 +37,9 @@ public class CampaignControllerTest {
 
     @Autowired
     private CampaignRepository campaignRepository;
+
+    @Autowired
+    private CampaignService campaignService;
 
     @LocalServerPort
     private int port;
@@ -77,6 +83,33 @@ public class CampaignControllerTest {
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(content().string("1"))
+                .andDo(print());
+    }
+
+    @Test
+    void 캠페인_조회하기() throws Exception {
+        // given
+        String name = "보약";
+        String description = "먹으면 기분이 좋아져요.";
+        int price = 10000;
+        Product product = new Product(name, description, price);
+        Product savedProduct = productRepository.save(product);
+
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
+        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
+        int goalQuantity = 5;
+        CreateCampaignRequest request = new CreateCampaignRequest(
+                startDate, endDate, goalQuantity, savedProduct.getId());
+        Long campaignId = campaignService.createCampaign(request);
+
+        String url = "http://localhost:" + port + "/api/v1/campaigns/" + campaignId;
+
+        // when & then
+        mockMvc.perform(get(url)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.campaignId").value(campaignId))
+                .andExpect(jsonPath("$.productId").value(savedProduct.getId()))
                 .andDo(print());
     }
 }

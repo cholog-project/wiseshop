@@ -1,4 +1,4 @@
-package cholog.wiseshop.api.campaign.dto;
+package cholog.wiseshop.api.campaign.dto.request;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;

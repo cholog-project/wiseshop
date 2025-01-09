@@ -101,4 +101,27 @@ public class CampaignServiceTest {
         assertThat(response.campaignId()).isEqualTo(campaignId);
         assertThat(response.productId()).isEqualTo(productId);
     }
+
+    @Test
+    void 캠페인_조회하기_예외_잘못된_캠페인ID() {
+        //given
+        String name = "보약";
+        String description = "먹으면 기분이 좋아져요.";
+        int price = 10000;
+        CreateProductRequest productRequest = new CreateProductRequest(name, description, price);
+        Long productId = productService.createProduct(productRequest);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
+        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
+        Long wrongId = campaignId + 1;
+
+        //then
+        assertThatThrownBy(() -> campaignService.readCampaign(wrongId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

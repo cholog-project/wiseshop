@@ -13,6 +13,7 @@ import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,9 +25,11 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
 public class CampaignControllerTest {
 
     @Autowired
@@ -41,6 +44,9 @@ public class CampaignControllerTest {
     @Autowired
     private CampaignService campaignService;
 
+    @Autowired
+    private EntityManager entityManager;
+
     @LocalServerPort
     private int port;
 
@@ -51,12 +57,20 @@ public class CampaignControllerTest {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .build();
+
+        campaignRepository.deleteAll();
+        productRepository.deleteAll();
     }
 
     @AfterEach
     public void cleanUp() {
-        campaignRepository.deleteAll();
-        productRepository.deleteAll();
+        this.entityManager
+                .createNativeQuery("ALTER TABLE product ALTER COLUMN `id` RESTART WITH 1")
+                .executeUpdate();
+
+        this.entityManager
+                .createNativeQuery("ALTER TABLE campaign ALTER COLUMN `id` RESTART WITH 1")
+                .executeUpdate();
     }
 
     @Test

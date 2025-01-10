@@ -16,6 +16,7 @@ import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +27,11 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
 public class ProductControllerTest {
 
     @Autowired
@@ -36,6 +39,9 @@ public class ProductControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private MockMvc mockMvc;
 
@@ -47,11 +53,16 @@ public class ProductControllerTest {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .build();
+
+        productRepository.deleteAll();
     }
 
     @AfterEach
     public void cleanUp() {
-        productRepository.deleteAll();
+        this.entityManager
+                .createNativeQuery("ALTER TABLE product ALTER COLUMN `id` RESTART WITH 1")
+                .executeUpdate();
+
     }
 
     @Test

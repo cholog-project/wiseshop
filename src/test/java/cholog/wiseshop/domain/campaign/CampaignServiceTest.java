@@ -136,7 +136,7 @@ public class CampaignServiceTest {
         Long productId = productService.createProduct(productRequest);
 
         //when
-        LocalDateTime startDate = LocalDateTime.now().plusSeconds(2);
+        LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
         LocalDateTime endDate = LocalDateTime.now().plusSeconds(10);
         int goalQuantity = 5;
 
@@ -145,11 +145,38 @@ public class CampaignServiceTest {
         Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
         // then
-        Thread.sleep(5000);
+        Thread.sleep(2000);
 
         Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
                 .orElseThrow();
 
         assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.IN_PROGRESS);
+    }
+
+    @Test
+    void 캠페인_실패_상태_변경_성공() throws InterruptedException {
+        //given
+        String name = "보약";
+        String description = "먹으면 기분이 좋아져요.";
+        int price = 10000;
+        CreateProductRequest productRequest = new CreateProductRequest(name, description, price);
+        Long productId = productService.createProduct(productRequest);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime endDate = LocalDateTime.now().plusSeconds(1);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
+        Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
+
+        // then
+        Thread.sleep(2000);
+
+        Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
+                .orElseThrow();
+
+        assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
     }
 }

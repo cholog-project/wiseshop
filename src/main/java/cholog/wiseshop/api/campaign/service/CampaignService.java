@@ -7,11 +7,8 @@ import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.logging.Logger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,16 +21,13 @@ public class CampaignService {
     private final CampaignRepository campaignRepository;
     private final ProductRepository productRepository;
     private final ThreadPoolTaskScheduler scheduler;
-    private final TransactionTemplate transactionTemplate;
 
     public CampaignService(CampaignRepository campaignRepository,
                            ProductRepository productRepository,
-                           ThreadPoolTaskScheduler scheduler,
-                           TransactionTemplate transactionTemplate) {
+                           ThreadPoolTaskScheduler scheduler) {
         this.campaignRepository = campaignRepository;
         this.productRepository = productRepository;
         this.scheduler = scheduler;
-        this.transactionTemplate = transactionTemplate;
     }
 
     public Long createCampaign(CreateCampaignRequest request) {

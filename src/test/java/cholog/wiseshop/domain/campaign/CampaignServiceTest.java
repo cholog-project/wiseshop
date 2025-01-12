@@ -3,9 +3,8 @@ package cholog.wiseshop.domain.campaign;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
-
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.service.ProductService;
@@ -14,6 +13,8 @@ import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.product.ProductRepository;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +126,7 @@ public class CampaignServiceTest {
         assertThatThrownBy(() -> campaignService.readCampaign(wrongId))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-    
+
     @Test
     void 캠페인_시작_상태_변경_성공() throws InterruptedException {
         //given
@@ -145,12 +146,13 @@ public class CampaignServiceTest {
         Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
         // then
-        Thread.sleep(2000);
-
-        Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
-                .orElseThrow();
-
-        assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.IN_PROGRESS);
+        Awaitility.await()
+                .atLeast(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
+                            .orElseThrow();
+                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.IN_PROGRESS);
+                });
     }
 
     @Test
@@ -172,11 +174,12 @@ public class CampaignServiceTest {
         Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
         // then
-        Thread.sleep(2000);
-
-        Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
-                .orElseThrow();
-
-        assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
+        Awaitility.await()
+                .atLeast(1,TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
+                            .orElseThrow();
+                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
+                });
     }
 }

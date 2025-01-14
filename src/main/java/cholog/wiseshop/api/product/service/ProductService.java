@@ -6,6 +6,7 @@ import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.stock.Stock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,9 @@ public class ProductService {
     }
 
     public Long createProduct(CreateProductRequest request) {
-        Product createdProduct = productRepository.save(request.from());
+        Stock stock = new Stock(request.totalQuantity());
+        Product product = new Product(request.name(), request.description(), request.price(), stock);
+        Product createdProduct = productRepository.save(product);
         return createdProduct.getId();
     }
 

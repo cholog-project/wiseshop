@@ -1,5 +1,6 @@
-package cholog.wiseshop.web.product.service;
+package cholog.wiseshop.domain.product;
 
+import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -7,8 +8,11 @@ import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.service.ProductService;
+import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.db.stock.StockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,30 +27,32 @@ public class ProductServiceTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private StockRepository stockRepository;
+
+    @Autowired
+    private CampaignRepository campaignRepository;
+
     @BeforeEach
     public void cleanUp() {
+        campaignRepository.deleteAll();
         productRepository.deleteAll();;
     }
 
     @Test
-    public void 상품_저장_조회_성공() {
+    public void 상품과_재고_저장_성공() {
         // given
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
+        CreateProductRequest request = getCreateProductRequest();
 
         // when
-        Long savedProductId = productService.createProduct(request);
-
-        Product savedProduct = productRepository.findById(savedProductId)
-                .orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        Long productId = productService.createProduct(request);
+        Product findProduct = productRepository.findById(productId).orElseThrow();
 
         // then
-        assertThat(savedProduct.getName()).isEqualTo(name);
-        assertThat(savedProduct.getDescription()).isEqualTo(description);
-        assertThat(savedProduct.getPrice()).isEqualTo(price);
+        assertThat(findProduct.getName()).isEqualTo(request.name());
+        assertThat(findProduct.getPrice()).isEqualTo(request.price());
+        assertThat(findProduct.getDescription()).isEqualTo(request.description());
+        assertThat(findProduct.getStock().getTotalQuantity()).isEqualTo(request.totalQuantity());
     }
 
     @Test
@@ -68,11 +74,8 @@ public class ProductServiceTest {
         String modifiedName = "보약2";
         String modifiedDescription = "먹으면 기분이 안좋아져요.";
 
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
+        CreateProductRequest request = getCreateProductRequest();
 
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
 
         // when
         Product createdProduct = productRepository.save(request.from());
@@ -115,11 +118,7 @@ public class ProductServiceTest {
         // given
         int modifiedPrice = 20000;
 
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
+        CreateProductRequest request = getCreateProductRequest();
 
         // when
         Product createdProduct = productRepository.save(request.from());
@@ -155,21 +154,19 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 상품_삭제하기() {
+    public void 상품과_재고_삭제하기() {
         // given
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
+        CreateProductRequest request = getCreateProductRequest();
+        Long productId = productService.createProduct(request);
+        Product createdProduct = productRepository.findById(productId).orElseThrow();
+        Stock createdStock = createdProduct.getStock();
 
         // when
-        Product createdProduct = productRepository.save(request.from());
-
-        productService.deleteProduct(createdProduct.getId());
+        productService.deleteProduct(productId);
 
         // then
-        assertThat(productRepository.findById(createdProduct.getId())).isEmpty();
+        assertThat(productRepository.findById(productId)).isEmpty();
+        assertThat(stockRepository.findById(createdStock.getId())).isEmpty();
     }
 
     @Test

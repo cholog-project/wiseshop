@@ -1,5 +1,6 @@
-package cholog.wiseshop.web.product.controller;
+package cholog.wiseshop.web.product;
 
+import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -68,12 +69,7 @@ public class ProductControllerTest {
     @Test
     public void 상품_생성하기() throws Exception {
         // given
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
-
+        CreateProductRequest request = getCreateProductRequest();
         String url = "http://localhost:" + port + "/api/v1/products";
 
         // when
@@ -87,9 +83,9 @@ public class ProductControllerTest {
 
         // then
         Product product = productRepository.findById(1L).orElseThrow();
-        assertThat(product.getName()).isEqualTo(name);
-        assertThat(product.getDescription()).isEqualTo(description);
-        assertThat(product.getPrice()).isEqualTo(price);
+        assertThat(product.getName()).isEqualTo(request.name());
+        assertThat(product.getDescription()).isEqualTo(request.description());
+        assertThat(product.getPrice()).isEqualTo(request.price());
     }
 
     @Test

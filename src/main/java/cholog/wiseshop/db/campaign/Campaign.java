@@ -50,6 +50,10 @@ public class Campaign {
     public Campaign() {
     }
 
+    public void updateState(CampaignState state) {
+        this.state = state;
+    }
+
     public Long getId() {
         return id;
     }

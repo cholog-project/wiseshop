@@ -22,7 +22,7 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    public void 상품과_재고_저장_조회하기() {
+    public void 상품_저장_조회하기() {
         // given
         CreateProductRequest request = getCreateProductRequest();
 

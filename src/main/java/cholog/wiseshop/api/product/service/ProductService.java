@@ -53,7 +53,7 @@ public class ProductService {
     }
 
     public void modifyStockQuantity(ModifyQuantityRequest request) {
-        if (campaignService.isStarted(request.campaignId(), LocalDateTime.now())) {
+        if (campaignService.isStarted(request.campaignId())) {
             throw new IllegalArgumentException("캠페인이 시작되어 상품을 수정할 수 없습니다.");
         }
         Product existedProduct = productRepository.findById(request.productId())

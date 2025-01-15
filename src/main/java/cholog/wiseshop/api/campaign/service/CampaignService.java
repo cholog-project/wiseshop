@@ -61,9 +61,12 @@ public class CampaignService {
         campaignRepository.saveAndFlush(campaign);
     }
 
-    public boolean isStarted(Long campaignId, LocalDateTime now) {
+    public boolean isStarted(Long campaignId) {
         Campaign campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(() -> new IllegalArgumentException("캠페인이 존재하지 않습니다."));
-        return campaign.getStartDate().isBefore(now);
+        if (campaign.getState().equals(CampaignState.IN_PROGRESS)) {
+            return true;
+        }
+        return false;
     }
 }

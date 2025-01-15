@@ -1,6 +1,6 @@
 package cholog.wiseshop.domain.campaign;
 
-import static cholog.wiseshop.domain.product.ProductRepositoryTest.*;
+import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -13,12 +13,10 @@ import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.product.ProductRepository;
-import cholog.wiseshop.domain.product.ProductRepositoryTest;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -123,7 +121,7 @@ public class CampaignServiceTest {
     }
 
     @Test
-    void 캠페인_시작_상태_변경_성공() throws InterruptedException {
+    void 캠페인_시작_상태_변경_성공() {
         //given
         CreateProductRequest request = getCreateProductRequest();
         Long productId = productService.createProduct(request);
@@ -148,7 +146,7 @@ public class CampaignServiceTest {
     }
 
     @Test
-    void 캠페인_실패_상태_변경_성공() throws InterruptedException {
+    void 캠페인_실패_상태_변경_성공() {
         //given
         CreateProductRequest request = getCreateProductRequest();
         Long productId = productService.createProduct(request);
@@ -164,7 +162,7 @@ public class CampaignServiceTest {
 
         // then
         Awaitility.await()
-                .atLeast(1,TimeUnit.SECONDS)
+                .atLeast(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
                     Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
                             .orElseThrow();
@@ -173,23 +171,21 @@ public class CampaignServiceTest {
     }
 
     @Test
-    @DisplayName("전달받은 날짜와 캠페인의 시작날짜를 비교해 현재 캠페인이 시작됐는지를 확인합니다.")
-    void 캠페인_시작날짜_비교() {
+    void 캠페인이_시작됐는지_확인() {
         //given
         CreateProductRequest request = getCreateProductRequest();
         Long productId = productService.createProduct(request);
 
         //when
-        LocalDateTime startDate = LocalDateTime.now();
-        LocalDateTime requestDate = startDate.plusSeconds(3);
-        LocalDateTime endDate = startDate.plusSeconds(5);
+        LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
+        LocalDateTime endDate = LocalDateTime.now().plusSeconds(10);
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
                 new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
-        boolean isStarted = campaignService.isStarted(campaignId, requestDate);
-
         // then
-        assertThat(isStarted).isTrue();
+        Awaitility.await()
+                .atLeast(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> assertThat(campaignService.isStarted(campaignId)).isTrue());
     }
 }

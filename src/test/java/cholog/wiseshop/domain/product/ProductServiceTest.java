@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
@@ -16,6 +18,7 @@ import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,9 @@ public class ProductServiceTest {
 
     @Autowired
     private StockRepository stockRepository;
+
+    @Autowired
+    private CampaignService campaignService;
 
     @Autowired
     private CampaignRepository campaignRepository;
@@ -176,11 +182,18 @@ public class ProductServiceTest {
         // given
         CreateProductRequest request = getCreateProductRequest();
         Long productId = productService.createProduct(request);
+
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30, 10);
+        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30, 10);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
         Integer modifyQuantity = 1;
 
         // when
         ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
-                1L,
+                campaignId,
                 productId,
                 modifyQuantity
         );
@@ -199,11 +212,18 @@ public class ProductServiceTest {
         // given
         CreateProductRequest request = getCreateProductRequest();
         Long productId = productService.createProduct(request);
+
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30, 10);
+        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30, 10);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
         Integer modifyQuantity = 0;
 
         // when
         ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
-                1L,
+                campaignId,
                 productId,
                 modifyQuantity
         );

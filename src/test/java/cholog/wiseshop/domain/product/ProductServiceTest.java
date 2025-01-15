@@ -180,6 +180,7 @@ public class ProductServiceTest {
 
         // when
         ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
+                1L,
                 productId,
                 modifyQuantity
         );
@@ -202,6 +203,7 @@ public class ProductServiceTest {
 
         // when
         ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
+                1L,
                 productId,
                 modifyQuantity
         );

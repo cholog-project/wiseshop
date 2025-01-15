@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -169,5 +170,26 @@ public class CampaignServiceTest {
                             .orElseThrow();
                     assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
                 });
+    }
+
+    @Test
+    @DisplayName("전달받은 날짜와 캠페인의 시작날짜를 비교해 현재 캠페인이 시작됐는지를 확인합니다.")
+    void 캠페인_시작날짜_비교() {
+        //given
+        CreateProductRequest request = getCreateProductRequest();
+        Long productId = productService.createProduct(request);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime requestDate = startDate.plusSeconds(3);
+        LocalDateTime endDate = startDate.plusSeconds(5);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
+        boolean isStarted = campaignService.isStarted(campaignId, requestDate);
+
+        // then
+        assertThat(isStarted).isTrue();
     }
 }

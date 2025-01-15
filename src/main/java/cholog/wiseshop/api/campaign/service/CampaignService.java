@@ -12,7 +12,6 @@ import java.time.ZoneId;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 @Transactional
@@ -60,5 +59,11 @@ public class CampaignService {
                 .orElseThrow(() -> new IllegalArgumentException("상태 변경할 캠페인 정보가 존재하지 않습니다."));
         campaign.updateState(state);
         campaignRepository.saveAndFlush(campaign);
+    }
+
+    public boolean isStarted(Long campaignId, LocalDateTime now) {
+        Campaign campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new IllegalArgumentException("캠페인이 존재하지 않습니다."));
+        return campaign.getStartDate().isBefore(now);
     }
 }

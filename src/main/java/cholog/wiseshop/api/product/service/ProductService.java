@@ -1,5 +1,6 @@
 package cholog.wiseshop.api.product.service;
 
+import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
@@ -8,6 +9,7 @@ import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
+import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CampaignService campaignService;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, CampaignService campaignService) {
         this.productRepository = productRepository;
+        this.campaignService = campaignService;
     }
 
     public Long createProduct(CreateProductRequest request) {
@@ -49,6 +53,9 @@ public class ProductService {
     }
 
     public void modifyStockQuantity(ModifyQuantityRequest request) {
+        if (campaignService.isStarted(request.campaignId(), LocalDateTime.now())) {
+            throw new IllegalArgumentException("캠페인이 시작되어 상품을 수정할 수 없습니다.");
+        }
         Product existedProduct = productRepository.findById(request.productId())
                 .orElseThrow(() -> new IllegalArgumentException("상품 조회에 실패했습니다."));
         Stock existedStock = existedProduct.getStock();

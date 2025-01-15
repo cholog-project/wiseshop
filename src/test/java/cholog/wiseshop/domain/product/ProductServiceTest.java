@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
+import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.api.product.service.ProductService;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
@@ -34,13 +35,13 @@ public class ProductServiceTest {
     private CampaignRepository campaignRepository;
 
     @BeforeEach
-    public void cleanUp() {
+    void cleanUp() {
         campaignRepository.deleteAll();
-        productRepository.deleteAll();;
+        productRepository.deleteAll();
     }
 
     @Test
-    public void 상품과_재고_저장_성공() {
+    void 상품과_재고_저장_성공() {
         // given
         CreateProductRequest request = getCreateProductRequest();
 
@@ -56,7 +57,23 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 상품_조회_실패() {
+    void 상품과_재고_조회_성공() {
+        // given
+        CreateProductRequest request = getCreateProductRequest();
+
+        // when
+        Long productId = productService.createProduct(request);
+        ProductResponse response = productService.getProduct(productId);
+
+        // then
+        assertThat(response.name()).isEqualTo(request.name());
+        assertThat(response.price()).isEqualTo(request.price());
+        assertThat(response.description()).isEqualTo(request.description());
+        assertThat(response.totalQuantity()).isEqualTo(request.totalQuantity());
+    }
+
+    @Test
+    void 상품_조회_실패() {
         // given
         Long wrongProductId = 10L;
 
@@ -69,13 +86,12 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 상품_이름_설명글_수정_성공() {
+    void 상품_이름_설명글_수정_성공() {
         // given
         String modifiedName = "보약2";
         String modifiedDescription = "먹으면 기분이 안좋아져요.";
 
         CreateProductRequest request = getCreateProductRequest();
-
 
         // when
         Product createdProduct = productRepository.save(request.from());
@@ -97,7 +113,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 상품_이름_설명글_수정_실패() {
+    void 상품_이름_설명글_수정_실패() {
         // given
         Long productId = 11L;
         String modifiedName = "보약2";
@@ -114,7 +130,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 상품_가격_수정_성공() {
+    void 상품_가격_수정_성공() {
         // given
         int modifiedPrice = 20000;
 
@@ -138,7 +154,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 상품_가격_수정_실패() {
+    void 상품_가격_수정_실패() {
         // given
         Long productId = 1L;
         int modifiedPrice = 30000;
@@ -154,7 +170,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 상품과_재고_삭제하기() {
+    void 상품과_재고_삭제하기() {
         // given
         CreateProductRequest request = getCreateProductRequest();
         Long productId = productService.createProduct(request);
@@ -170,7 +186,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 상품_삭제_실패() {
+    void 상품_삭제_실패() {
         // given
         Long wrongProductId = 13L;
 

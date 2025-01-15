@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -90,26 +91,30 @@ public class ProductControllerTest {
 
     @Test
     public void 상품_조회하기() throws Exception {
-        // given:
-        String name = "보약2";
-        String description = "먹으면 기분이 좋아지지 않아요.";
-        int price = 50000;
-
-        Product product = new Product(name, description, price);
+        // given
+        CreateProductRequest request = getCreateProductRequest();
+        String postUrl = "http://localhost:" + port + "/api/v1/products";
+        MvcResult mvcResult = mockMvc.perform(post(postUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andReturn();
+        mvcResult.getResponse().getContentAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        Long savedProductId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Long.TYPE);
 
         // when
-        Product savedProduct = productRepository.save(product);
-
-        String url = "http://localhost:" + port + "/api/v1/products/" + savedProduct.getId();
+        String getUrl = "http://localhost:" + port + "/api/v1/products/" + savedProductId;
 
         //then
-        mockMvc.perform(get(url)
+        mockMvc.perform(get(getUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.description").value(description))
-                .andExpect(jsonPath("$.price").value(price))
+                .andExpect(jsonPath("$.name").value(request.name()))
+                .andExpect(jsonPath("$.description").value(request.description()))
+                .andExpect(jsonPath("$.price").value(request.price()))
+                .andExpect(jsonPath("$.totalQuantity").value(request.totalQuantity()))
                 .andDo(print());
     }
 

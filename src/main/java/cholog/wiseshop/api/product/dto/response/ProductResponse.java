@@ -4,13 +4,15 @@ import cholog.wiseshop.db.product.Product;
 
 public record ProductResponse(String name,
                               String description,
-                              int price) {
+                              Integer price,
+                              Integer totalQuantity) {
 
     public ProductResponse(Product product) {
         this(
                 product.getName(),
                 product.getDescription(),
-                product.getPrice()
+                product.getPrice(),
+                product.getStock().getTotalQuantity()
         );
     }
 }

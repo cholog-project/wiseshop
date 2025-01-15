@@ -2,11 +2,13 @@ package cholog.wiseshop.domain.product;
 
 import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
+import cholog.wiseshop.api.product.dto.request.ModifyQuantityRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.api.product.service.ProductService;
 import cholog.wiseshop.db.campaign.CampaignRepository;
@@ -169,6 +171,46 @@ public class ProductServiceTest {
         assertThat(exception.getMessage()).isEqualTo("가격 수정할 상품이 존재하지 않습니다.");
     }
 
+    @Test
+    void 상품_재고_수량_수정_성공() {
+        // given
+        CreateProductRequest request = getCreateProductRequest();
+        Long productId = productService.createProduct(request);
+        Integer modifyQuantity = 1;
+
+        // when
+        ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
+                productId,
+                modifyQuantity
+        );
+        productService.modifyStockQuantity(modifyQuantityRequest);
+
+        Product modifiedProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+        Stock modifiedStock = modifiedProduct.getStock();
+
+        // then
+        assertThat(modifiedStock.getTotalQuantity()).isEqualTo(modifyQuantity);
+    }
+
+    @Test
+    void 상품_재고_수량_수정_실패() {
+        // given
+        CreateProductRequest request = getCreateProductRequest();
+        Long productId = productService.createProduct(request);
+        Integer modifyQuantity = 0;
+
+        // when
+        ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
+                productId,
+                modifyQuantity
+        );
+
+        // then
+        assertThatThrownBy(() -> productService.modifyStockQuantity(modifyQuantityRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
     @Test
     void 상품과_재고_삭제하기() {
         // given

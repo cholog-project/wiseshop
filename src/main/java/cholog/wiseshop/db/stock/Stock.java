@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 @Entity
 public class Stock {
 
+    private static final Integer MINIMUM_QUANTITY = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,5 +29,12 @@ public class Stock {
 
     public Integer getTotalQuantity() {
         return totalQuantity;
+    }
+
+    public void modifyTotalQuantity(Integer modifyQuantity) {
+        if (modifyQuantity < MINIMUM_QUANTITY) {
+            throw new IllegalArgumentException("재고 수량은 최소 1개 이상이어야 합니다.");
+        }
+        this.totalQuantity = modifyQuantity;
     }
 }

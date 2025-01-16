@@ -16,16 +16,16 @@ public class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
+    private static CreateProductRequest request;
+
     @BeforeEach
     public void cleanUp() {
         productRepository.deleteAll();
+        request = getCreateProductRequest();
     }
 
     @Test
     public void 상품_저장_조회하기() {
-        // given
-        CreateProductRequest request = getCreateProductRequest();
-
         // when
         Product savedProduct = productRepository.save(request.from());
 
@@ -42,8 +42,6 @@ public class ProductRepositoryTest {
         // given
         String modifiedName = "보약2";
         String modifiedDescription = "먹으면 기분이 안좋아져요.";
-
-        CreateProductRequest request = getCreateProductRequest();
 
         // when
         Product createdProduct = productRepository.save(request.from());
@@ -62,8 +60,6 @@ public class ProductRepositoryTest {
         // given
         int modifiedPrice = 20000;
 
-        CreateProductRequest request = getCreateProductRequest();
-
         // when
         Product createdProduct = productRepository.save(request.from());
         createdProduct.modifyPrice(modifiedPrice);
@@ -77,9 +73,6 @@ public class ProductRepositoryTest {
 
     @Test
     public void 상품_삭제하기() {
-        // given
-        final CreateProductRequest request = getCreateProductRequest();
-
         // when
         Product createdProduct = productRepository.save(request.from());
 

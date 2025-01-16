@@ -1,5 +1,13 @@
 package cholog.wiseshop.api.order.dto;
 
-public record CreateOrderRequest(Long productId,
-                                 int count) {
+import cholog.wiseshop.db.order.Order;
+import cholog.wiseshop.db.product.Product;
+
+public record CreateOrderRequest(Long productId, int count) {
+    public Order from(Product product) {
+        return new Order(
+                product,
+                this.count
+        );
+    }
 }

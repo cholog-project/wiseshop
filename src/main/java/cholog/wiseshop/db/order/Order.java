@@ -1,5 +1,6 @@
 package cholog.wiseshop.db.order;
 
+import cholog.wiseshop.db.BaseTimeEntity;
 import cholog.wiseshop.db.product.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,10 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import java.time.LocalDateTime;
 
 @Entity
-public class Order {
+public class Order extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,19 +23,13 @@ public class Order {
 
     private int count;
 
-    private LocalDateTime createdDate;
-
-    private LocalDateTime modifiedDate;
-
-    public Order(Product product, int count, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.product = product;
-        this.count = count;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
-
     public Order() {
 
+    }
+
+    public Order(Product product, int count) {
+        this.product = product;
+        this.count = count;
     }
 
     public Long getId() {
@@ -48,13 +42,5 @@ public class Order {
 
     public int getCount() {
         return count;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
     }
 }

@@ -1,6 +1,7 @@
 package cholog.wiseshop.api.order.service;
 
 import cholog.wiseshop.api.order.dto.CreateOrderRequest;
+import cholog.wiseshop.api.order.dto.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.OrderResponse;
 import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.order.OrderRepository;
@@ -28,9 +29,22 @@ public class OrderService {
         return order.getId();
     }
 
+    @Transactional(readOnly = true)
     public OrderResponse readOrder(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("주문 정보가 존재하지 않습니다."));
         return new OrderResponse(order);
+    }
+
+    public void modifyOrderCount(ModifyOrderCountRequest request) {
+        Order order = orderRepository.findById(request.id())
+                .orElseThrow(() -> new IllegalArgumentException("수정할 상품이 존재하지 않습니다."));
+        order.updateCount(request.count());
+    }
+
+    public void deleteOrder(Long id) {
+        orderRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("삭제할 주문이 존재하지 않습니다."));
+        orderRepository.deleteById(id);
     }
 }

@@ -8,6 +8,7 @@ public record OrderResponse(Long id,
                             int count,
                             LocalDateTime createdDate,
                             LocalDateTime modifiedDate) {
+
     public OrderResponse(Order order) {
         this(
                 order.getId(),

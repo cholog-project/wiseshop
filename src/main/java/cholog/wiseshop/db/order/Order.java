@@ -32,6 +32,10 @@ public class Order extends BaseTimeEntity {
         this.count = count;
     }
 
+    public void updateCount(int count) {
+        this.count = count;
+    }
+
     public Long getId() {
         return id;
     }

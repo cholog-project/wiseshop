@@ -1,16 +1,16 @@
 package cholog.wiseshop.api.order.controller;
 
-import cholog.wiseshop.api.order.dto.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.ModifyOrderCountRequest;
-import cholog.wiseshop.api.order.dto.OrderResponse;
+import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
+import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
+import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,9 +37,9 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping
-    public ResponseEntity<Void> modifyOrderCount(@RequestBody ModifyOrderCountRequest request) {
-        orderService.modifyOrderCount(request);
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> modifyOrderCount(@PathVariable Long id, @RequestBody ModifyOrderCountRequest request) {
+        orderService.modifyOrderCount(id, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

@@ -1,4 +1,4 @@
-package cholog.wiseshop.api.order.dto;
+package cholog.wiseshop.api.order.dto.response;
 
 import cholog.wiseshop.db.order.Order;
 import java.time.LocalDateTime;

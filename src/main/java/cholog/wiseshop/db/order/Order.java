@@ -23,9 +23,7 @@ public class Order extends BaseTimeEntity {
 
     private int count;
 
-    public Order() {
-
-    }
+    public Order() {}
 
     public Order(Product product, int count) {
         this.product = product;

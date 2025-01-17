@@ -1,8 +1,8 @@
 package cholog.wiseshop.api.order.service;
 
-import cholog.wiseshop.api.order.dto.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.ModifyOrderCountRequest;
-import cholog.wiseshop.api.order.dto.OrderResponse;
+import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
+import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
+import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.order.OrderRepository;
 import cholog.wiseshop.db.product.Product;
@@ -36,8 +36,8 @@ public class OrderService {
         return new OrderResponse(order);
     }
 
-    public void modifyOrderCount(ModifyOrderCountRequest request) {
-        Order order = orderRepository.findById(request.id())
+    public void modifyOrderCount(Long orderId, ModifyOrderCountRequest request) {
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("수정할 상품이 존재하지 않습니다."));
         order.updateCount(request.count());
     }

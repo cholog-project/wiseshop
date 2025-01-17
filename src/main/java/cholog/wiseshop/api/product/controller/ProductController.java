@@ -26,12 +26,6 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping("/products")
-    public ResponseEntity<Long> createProduct(@RequestBody CreateProductRequest request) {
-        Long productId = productService.createProduct(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productId);
-    }
-
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(id));

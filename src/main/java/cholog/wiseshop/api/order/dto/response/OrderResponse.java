@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 public record OrderResponse(Long id,
                             Long productId,
+                            String productName,
                             int count,
                             LocalDateTime createdDate,
                             LocalDateTime modifiedDate) {
@@ -13,6 +14,7 @@ public record OrderResponse(Long id,
         this(
                 order.getId(),
                 order.getProduct().getId(),
+                order.getProduct().getName(),
                 order.getCount(),
                 order.getCreatedDate(),
                 order.getModifiedDate()

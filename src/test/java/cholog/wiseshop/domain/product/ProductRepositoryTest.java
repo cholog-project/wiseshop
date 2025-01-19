@@ -16,29 +16,25 @@ public class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
+    private static CreateProductRequest request;
+
     @BeforeEach
     public void cleanUp() {
         productRepository.deleteAll();
+        request = getCreateProductRequest();
     }
 
     @Test
     public void 상품_저장_조회하기() {
-        // given
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
-
         // when
         Product savedProduct = productRepository.save(request.from());
 
         Product product = productRepository.findById(savedProduct.getId()).orElseThrow();
 
         // then
-        assertThat(product.getName()).isEqualTo(name);
-        assertThat(product.getDescription()).isEqualTo(description);
-        assertThat(product.getPrice()).isEqualTo(price);
+        assertThat(product.getName()).isEqualTo(request.name());
+        assertThat(product.getDescription()).isEqualTo(request.description());
+        assertThat(product.getPrice()).isEqualTo(request.price());
     }
 
     @Test
@@ -46,12 +42,6 @@ public class ProductRepositoryTest {
         // given
         String modifiedName = "보약2";
         String modifiedDescription = "먹으면 기분이 안좋아져요.";
-
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
 
         // when
         Product createdProduct = productRepository.save(request.from());
@@ -70,12 +60,6 @@ public class ProductRepositoryTest {
         // given
         int modifiedPrice = 20000;
 
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
-
         // when
         Product createdProduct = productRepository.save(request.from());
         createdProduct.modifyPrice(modifiedPrice);
@@ -89,13 +73,6 @@ public class ProductRepositoryTest {
 
     @Test
     public void 상품_삭제하기() {
-        // given
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-
-        CreateProductRequest request = new CreateProductRequest(name, description, price);
-
         // when
         Product createdProduct = productRepository.save(request.from());
 
@@ -103,5 +80,14 @@ public class ProductRepositoryTest {
 
         // then
         assertThat(productRepository.findById(createdProduct.getId())).isEmpty();
+    }
+
+    public static CreateProductRequest getCreateProductRequest() {
+        String name = "보약";
+        String description = "먹으면 기분이 좋아져요.";
+        Integer price = 10000;
+        Integer totalQuantity = 5;
+
+        return new CreateProductRequest(name, description, price, totalQuantity);
     }
 }

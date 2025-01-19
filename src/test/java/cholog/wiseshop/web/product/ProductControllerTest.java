@@ -4,8 +4,8 @@ import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProd
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -134,16 +134,16 @@ public class ProductControllerTest {
         Product savedProduct = productRepository.save(product);
 
         ModifyProductRequest request =
-                new ModifyProductRequest(savedProduct.getId(), modifiedName, modifiedDescription);
+                new ModifyProductRequest(modifiedName, modifiedDescription);
 
-        String url = "http://localhost:" + port + "/api/v1/products";
+        String url = "http://localhost:" + port + "/api/v1/products/";
 
         // then
-        mockMvc.perform(put(url)
+        mockMvc.perform(patch(url + savedProduct.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request))
                         .characterEncoding("utf-8"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -160,16 +160,16 @@ public class ProductControllerTest {
         // when
         Product savedProduct = productRepository.save(product);
 
-        ModifyProductPriceRequest request = new ModifyProductPriceRequest(savedProduct.getId(), modifiedPrice);
+        ModifyProductPriceRequest request = new ModifyProductPriceRequest(modifiedPrice);
 
-        String url = "http://localhost:" + port + "/api/v1/products/price";
+        String url = "http://localhost:" + port + "/api/v1/products/";
 
         // then
-        mockMvc.perform(put(url)
+        mockMvc.perform(patch(url + savedProduct.getId() + "/price")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request))
                         .characterEncoding("utf-8"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test

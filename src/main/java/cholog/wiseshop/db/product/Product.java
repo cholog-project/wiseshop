@@ -79,6 +79,10 @@ public class Product {
         return price;
     }
 
+    public Campaign getCampaign() {
+        return campaign;
+    }
+
     public Stock getStock() {
         return stock;
     }

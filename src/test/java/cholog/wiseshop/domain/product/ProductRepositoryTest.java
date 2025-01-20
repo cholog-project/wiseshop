@@ -1,10 +1,17 @@
 package cholog.wiseshop.domain.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.db.campaign.Campaign;
+import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.db.stock.StockRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +23,12 @@ public class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private CampaignRepository campaignRepository;
+
+    @Autowired
+    private StockRepository stockRepository;
+
     private static CreateProductRequest request;
 
     @BeforeEach
@@ -25,7 +38,32 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    public void 상품_저장_조회하기() {
+    void 상품_재고_캠페인_저장하기() {
+        // given
+        LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime endDate = LocalDateTime.now().plusMinutes(2);
+        Integer goalQuantity = 5;
+        Campaign campaign = campaignRepository.save(new Campaign(startDate, endDate, goalQuantity));
+
+        Product product = productRepository.save(request.from());
+        product.addCampaign(campaign);
+
+        // when
+        List<Product> products = productRepository.findProductsByCampaignId(campaign.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(products).hasSize(1),
+                () -> assertThat(products.get(0).getName()).isEqualTo(request.name()),
+                () -> assertThat(products.get(0).getDescription()).isEqualTo(request.description()),
+                () -> assertThat(products.get(0).getPrice()).isEqualTo(request.price()),
+                () -> assertThat(products.get(0).getStock().getTotalQuantity()).isEqualTo(request.totalQuantity()),
+                () -> assertThat(products.get(0).getCampaign().getId()).isEqualTo(campaign.getId())
+        );
+    }
+
+    @Test
+    void 상품_저장_조회하기() {
         // when
         Product savedProduct = productRepository.save(request.from());
 
@@ -38,7 +76,7 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    public void 상품_이름_설명글_수정하기() {
+    void 상품_이름_설명글_수정하기() {
         // given
         String modifiedName = "보약2";
         String modifiedDescription = "먹으면 기분이 안좋아져요.";
@@ -56,7 +94,7 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    public void 상품_가격_수정하기() {
+    void 상품_가격_수정하기() {
         // given
         int modifiedPrice = 20000;
 
@@ -72,7 +110,7 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    public void 상품_삭제하기() {
+    void 상품_삭제하기() {
         // when
         Product createdProduct = productRepository.save(request.from());
 
@@ -81,6 +119,7 @@ public class ProductRepositoryTest {
         // then
         assertThat(productRepository.findById(createdProduct.getId())).isEmpty();
     }
+
 
     public static CreateProductRequest getCreateProductRequest() {
         String name = "보약";

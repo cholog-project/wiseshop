@@ -44,8 +44,8 @@ public class ProductServiceTest {
 
     @BeforeEach
     void cleanUp() {
-        campaignRepository.deleteAll();
         productRepository.deleteAll();
+        campaignRepository.deleteAll();
     }
 
     @Test

@@ -3,6 +3,7 @@ package cholog.wiseshop.api.campaign.service;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
@@ -12,6 +13,7 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,10 +50,15 @@ public class CampaignService {
     }
 
     @Transactional(readOnly = true)
-    public ReadCampaignResponse readCampaign(Long id) {
-        Campaign findCampaign = campaignRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("캠페인이 존재하지 않습니다."));
-        return new ReadCampaignResponse(findCampaign.getId(), findCampaign.getId());
+    public ReadCampaignResponse readCampaign(Long campaignId) {
+        List<Product> findProducts = productRepository.findProductsByCampaignId(campaignId);
+        Product findProduct = findProducts.get(0);
+        Campaign findCampaign = findProduct.getCampaign();
+        return new ReadCampaignResponse(
+                campaignId,
+                findCampaign.getStartDate().toString(),
+                findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
+                new ProductResponse(findProduct));
     }
 
     public void scheduleCampaignDate(Long campaignId, LocalDateTime startDate, LocalDateTime endDate) {

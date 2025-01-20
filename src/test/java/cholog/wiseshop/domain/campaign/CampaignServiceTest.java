@@ -47,7 +47,7 @@ public class CampaignServiceTest {
         //when
         LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
         LocalDateTime endDate = LocalDateTime.now().plusMinutes(2);
-        int goalQuantity = 5;
+        Integer goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
                 new CreateCampaignRequest(startDate, endDate, goalQuantity, request));

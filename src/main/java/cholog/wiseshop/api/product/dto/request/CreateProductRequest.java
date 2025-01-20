@@ -1,6 +1,7 @@
 package cholog.wiseshop.api.product.dto.request;
 
 import cholog.wiseshop.db.product.Product;
+import cholog.wiseshop.db.stock.Stock;
 
 public record CreateProductRequest(String name,
                                    String description,
@@ -11,7 +12,8 @@ public record CreateProductRequest(String name,
         return new Product(
                 name,
                 description,
-                price
+                price,
+                new Stock(totalQuantity)
         );
     }
 }

@@ -1,5 +1,7 @@
 package cholog.wiseshop.api.member.controller;
 
+import cholog.wiseshop.api.member.dto.request.SignUpRequest;
+import cholog.wiseshop.api.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;

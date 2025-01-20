@@ -23,4 +23,11 @@ public class Member {
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
+
+    public Member(String email, String password) {
+
+    }
+
+    public Member() {
+    }
 }

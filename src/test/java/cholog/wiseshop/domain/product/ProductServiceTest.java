@@ -105,12 +105,11 @@ public class ProductServiceTest {
         Product createdProduct = productRepository.save(request.from());
 
         ModifyProductRequest modifyProductRequest = new ModifyProductRequest(
-                createdProduct.getId(),
                 modifiedName,
                 modifiedDescription
         );
 
-        productService.modifyProduct(modifyProductRequest);
+        productService.modifyProduct(createdProduct.getId(), modifyProductRequest);
 
         Product modifiedProduct = productRepository.findById(createdProduct.getId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
@@ -127,11 +126,11 @@ public class ProductServiceTest {
         String modifiedName = "보약2";
         String modifiedDescription = "먹으면 기분이 안좋아져요.";
 
-        ModifyProductRequest request = new ModifyProductRequest(productId, modifiedName, modifiedDescription);
+        ModifyProductRequest request = new ModifyProductRequest(modifiedName, modifiedDescription);
 
         // when
         Throwable exception = assertThrows(IllegalArgumentException.class,
-                () -> productService.modifyProduct(request));
+                () -> productService.modifyProduct(productId, request));
 
         // then
         assertThat(exception.getMessage()).isEqualTo("이름 및 설명글 수정할 상품이 존재하지 않습니다.");
@@ -147,12 +146,9 @@ public class ProductServiceTest {
         // when
         Product createdProduct = productRepository.save(request.from());
 
-        ModifyProductPriceRequest modifyProductPriceRequest = new ModifyProductPriceRequest(
-                createdProduct.getId(),
-                modifiedPrice
-        );
+        ModifyProductPriceRequest modifyProductPriceRequest = new ModifyProductPriceRequest(modifiedPrice);
 
-        productService.modifyProductPrice(modifyProductPriceRequest);
+        productService.modifyProductPrice(createdProduct.getId(), modifyProductPriceRequest);
 
         Product modifiedProduct = productRepository.findById(createdProduct.getId())
                 .orElseThrow(() -> new IllegalArgumentException("가격 수정할 상품이 존재하지 않습니다."));
@@ -167,11 +163,11 @@ public class ProductServiceTest {
         Long productId = 1L;
         int modifiedPrice = 30000;
 
-        ModifyProductPriceRequest request = new ModifyProductPriceRequest(productId, modifiedPrice);
+        ModifyProductPriceRequest request = new ModifyProductPriceRequest(modifiedPrice);
 
         // when
         Throwable exception = assertThrows(IllegalArgumentException.class,
-                () -> productService.modifyProductPrice(request));
+                () -> productService.modifyProductPrice(productId, request));
 
         // then
         assertThat(exception.getMessage()).isEqualTo("가격 수정할 상품이 존재하지 않습니다.");

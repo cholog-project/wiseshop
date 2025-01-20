@@ -1,6 +1,5 @@
 package cholog.wiseshop.api.product.dto.request;
 
-public record ModifyProductRequest(Long productId,
-                                   String name,
+public record ModifyProductRequest(String name,
                                    String description) {
 }

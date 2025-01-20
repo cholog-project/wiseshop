@@ -1,12 +1,14 @@
 package cholog.wiseshop.web.product;
 
+import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.db.product.Product;
@@ -45,26 +47,13 @@ public class ProductControllerTest {
     @LocalServerPort
     private int port;
 
-    private static Product product;
-
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .build();
 
-        product = makeTestProduct();
-        productRepository.save(product);
-    }
-
-    private static Product makeTestProduct() {
-        String name = "보약2";
-        String description = "먹으면 기분이 좋아지지 않아요.";
-        int price = 50000;
-        Integer totalQuantity = 5;
-
-        Stock stock = new Stock(totalQuantity);
-        return new Product(name, description, price, stock);
+        productRepository.deleteAll();
     }
 
     @AfterEach
@@ -72,10 +61,20 @@ public class ProductControllerTest {
         this.entityManager
                 .createNativeQuery("ALTER TABLE product ALTER COLUMN `id` RESTART WITH 1")
                 .executeUpdate();
+
     }
 
     @Test
     public void 상품_조회하기() throws Exception {
+        // given
+        CreateProductRequest request = getCreateProductRequest();
+        Product product = productRepository.save(new Product(
+                request.name(),
+                request.description(),
+                request.price(),
+                new Stock(request.totalQuantity())
+        ));
+
         // when
         String getUrl = "http://localhost:" + port + "/api/v1/products/" + product.getId();
 
@@ -84,9 +83,10 @@ public class ProductControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(product.getName()))
-                .andExpect(jsonPath("$.description").value(product.getDescription()))
-                .andExpect(jsonPath("$.price").value(product.getPrice()))
+                .andExpect(jsonPath("$.name").value(request.name()))
+                .andExpect(jsonPath("$.description").value(request.description()))
+                .andExpect(jsonPath("$.price").value(request.price()))
+                .andExpect(jsonPath("$.totalQuantity").value(request.totalQuantity()))
                 .andDo(print());
     }
 
@@ -96,19 +96,26 @@ public class ProductControllerTest {
         String modifiedName = "보약3";
         String modifiedDescription = "먹으면 기분이 그냥그래요.";
 
-        // when
-        ModifyProductRequest request =
-                new ModifyProductRequest(product.getId(), modifiedName, modifiedDescription);
+        String name = "보약2";
+        String description = "먹으면 기분이 좋아지지 않아요.";
+        int price = 50000;
 
-        String url = "http://localhost:" + port + "/api/v1/products";
+        Product product = new Product(name, description, price);
+
+        // when
+        Product savedProduct = productRepository.save(product);
+
+        ModifyProductRequest request =
+                new ModifyProductRequest(modifiedName, modifiedDescription);
+
+        String url = "http://localhost:" + port + "/api/v1/products/";
 
         // then
-        mockMvc.perform(put(url)
+        mockMvc.perform(patch(url + savedProduct.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request))
                         .characterEncoding("utf-8"))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -116,24 +123,40 @@ public class ProductControllerTest {
         // given
         int modifiedPrice = 30000;
 
-        // when
-        ModifyProductPriceRequest request = new ModifyProductPriceRequest(product.getId(), modifiedPrice);
+        String name = "보약2";
+        String description = "먹으면 기분이 좋아지지 않아요.";
+        int price = 50000;
 
-        String url = "http://localhost:" + port + "/api/v1/products/price";
+        Product product = new Product(name, description, price);
+
+        // when
+        Product savedProduct = productRepository.save(product);
+
+        ModifyProductPriceRequest request = new ModifyProductPriceRequest(modifiedPrice);
+
+        String url = "http://localhost:" + port + "/api/v1/products/";
 
         // then
-        mockMvc.perform(put(url)
+        mockMvc.perform(patch(url + savedProduct.getId() + "/price")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request))
                         .characterEncoding("utf-8"))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @Test
     public void 상품_삭제하기() throws Exception {
+        // given
+        String name = "보약2";
+        String description = "먹으면 기분이 좋아지지 않아요.";
+        int price = 50000;
+
+        Product product = new Product(name, description, price);
+
         // when
-        String url = "http://localhost:" + port + "/api/v1/products/" + product.getId();
+        Product savedProduct = productRepository.save(product);
+
+        String url = "http://localhost:" + port + "/api/v1/products/" + savedProduct.getId();
 
         // then
         mockMvc.perform(delete(url)

@@ -21,10 +21,14 @@ public class Member {
     private String email;
 
     @NotNull
+    @Column(name = "member_name", nullable = false)
+    private String name;
+
+    @NotNull
     @Column(name = "password", nullable = false)
     private String password;
 
-    public Member(String email, String password) {
+    public Member(String email, String name, String password) {
 
     }
 

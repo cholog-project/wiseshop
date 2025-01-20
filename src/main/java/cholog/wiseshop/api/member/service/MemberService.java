@@ -24,7 +24,7 @@ public class MemberService {
 
     public void signUpMember(SignUpRequest signUpRequest) {
         String encodePassword = passwordEncoder.encode(signUpRequest.password());
-        Member member = new Member(signUpRequest.email(), encodePassword);
+        Member member = new Member(signUpRequest.email(), signUpRequest.name(), encodePassword);
         if (memberRepository.findByEmail(signUpRequest.email()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }

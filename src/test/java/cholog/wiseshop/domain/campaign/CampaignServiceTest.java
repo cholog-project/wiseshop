@@ -2,6 +2,7 @@ package cholog.wiseshop.domain.campaign;
 
 import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.service.CampaignService;
@@ -62,19 +63,6 @@ public class CampaignServiceTest {
         assertThat(findCampaign.getState()).isEqualTo(CampaignState.WAITING);
     }
 
-//    @Test
-//    void 캠페인_추가하기_예외_잘못된_상품ID() {
-//        //given
-//        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
-//        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
-//        int goalQuantity = 5;
-//        Long productId = 1L;
-//
-//        //when & then
-//        assertThatThrownBy(() -> campaignService.createCampaign(
-//                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId)))
-//                .isInstanceOf(IllegalArgumentException.class);
-//    }
 //
 //    @Test
 //    void 캠페인_조회하기() {

@@ -1,5 +1,6 @@
 package cholog.wiseshop.db.product;
 
+import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.stock.Stock;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -8,8 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import org.hibernate.annotations.Cascade;
 
 @Entity
 public class Product {
@@ -23,6 +24,10 @@ public class Product {
     private String description;
 
     private int price;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CAMPAIGN_ID")
+    private Campaign campaign;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "STOCK_ID")
@@ -48,6 +53,10 @@ public class Product {
     public void modifyProduct(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public void addCampaign(Campaign campaign) {
+        this.campaign = campaign;
     }
 
     public void modifyPrice(int price) {

@@ -3,6 +3,7 @@ package cholog.wiseshop.api.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import cholog.wiseshop.api.member.dto.request.SignInRequest;
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -58,6 +60,45 @@ class MemberServiceTest {
         //then
         assertThatThrownBy(
             () -> memberService.signUpMember(signUpRequest))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+    @Test
+    @DisplayName("로그인의 정상 동작을 검증한다.")
+    void signInMember() {
+        //given
+        MockHttpSession session = new MockHttpSession();
+        SignInRequest signInRequest = new SignInRequest(EXIST_EMAIL, PASSWORD);
+
+        //when
+        memberService.signInMember(signInRequest, session);
+
+        //then
+        assertThat(session.getAttribute("member")).isNotNull();
+    }
+
+    @Test
+    @DisplayName("가입되지 않은 사용자가 로그인 할 때 예외를 검증한다.")
+    void notExistMemberSignIn() {
+        //given
+        MockHttpSession session = new MockHttpSession();
+        SignInRequest signInRequest = new SignInRequest(NEW_EMAIL, PASSWORD);
+
+        //then
+        assertThatThrownBy(() -> memberService.signInMember(signInRequest, session))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("잘못된 비밀번호로 로그인 할 때 예외를 검증한다")
+    void wrongPasswordSignIn() {
+        //given
+        MockHttpSession session = new MockHttpSession();
+        SignInRequest signInRequest = new SignInRequest(NEW_EMAIL, "boyeZZANG");
+
+        //then
+        assertThatThrownBy(() -> memberService.signInMember(signInRequest, session))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

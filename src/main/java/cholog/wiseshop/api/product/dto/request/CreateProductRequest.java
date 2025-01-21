@@ -5,8 +5,8 @@ import cholog.wiseshop.db.stock.Stock;
 
 public record CreateProductRequest(String name,
                                    String description,
-                                   Integer price,
-                                   Integer totalQuantity) {
+                                   int price,
+                                   int totalQuantity) {
 
     public Product from() {
         return new Product(

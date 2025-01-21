@@ -25,9 +25,9 @@ public class Campaign {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime endDate;
 
-    private Integer goalQuantity;
+    private int goalQuantity;
 
-    private Integer soldQuantity;
+    private int soldQuantity;
 
     private CampaignState state;
 
@@ -57,7 +57,7 @@ public class Campaign {
         return endDate;
     }
 
-    public Integer getGoalQuantity() {
+    public int getGoalQuantity() {
         return goalQuantity;
     }
 

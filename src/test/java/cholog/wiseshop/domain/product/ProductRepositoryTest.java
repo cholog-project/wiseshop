@@ -123,8 +123,8 @@ public class ProductRepositoryTest {
     public static CreateProductRequest getCreateProductRequest() {
         String name = "보약";
         String description = "먹으면 기분이 좋아져요.";
-        Integer price = 10000;
-        Integer totalQuantity = 5;
+        int price = 10000;
+        int totalQuantity = 5;
 
         return new CreateProductRequest(name, description, price, totalQuantity);
     }

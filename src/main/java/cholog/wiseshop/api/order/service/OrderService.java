@@ -3,10 +3,13 @@ package cholog.wiseshop.api.order.service;
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
+import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.order.OrderRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.stock.Stock;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +26,25 @@ public class OrderService {
     }
 
     public Long createOrder(CreateOrderRequest request) {
-        Product orderProduct = productRepository.findById(request.productId())
-                .orElseThrow(() -> new IllegalArgumentException("주문할 상품이 존재하지 않습니다."));
-        Order order = orderRepository.save(request.from(orderProduct));
+        List<Product> findProducts = productRepository.findProductsByCampaignId(request.campaignId());
+        if (findProducts.isEmpty()) {
+            throw new IllegalArgumentException("상품이 존재하지 않습니다.");
+        }
+        Product product = findProducts.get(0);
+        Stock stock = product.getStock();
+        if (stock.hasQuantity(request.orderQuantity())) {
+            throw new IllegalArgumentException(
+                    String.format("주문 가능한 수량을 초과하였습니다. 주문 가능한 수량 : %d개", stock.getTotalQuantity()));
+        }
+        
+        Campaign campaign = product.getCampaign();
+        if (!campaign.isInProgress()) {
+            throw new IllegalArgumentException("현재 캠페인이 진행 중이지 않습니다.");
+        }
+        
+        Order order = orderRepository.save(request.from(product));
+        stock.reduceQuantity(request.orderQuantity());
+        campaign.increaseSoldQuantity(request.orderQuantity());
         return order.getId();
     }
 

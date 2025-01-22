@@ -45,6 +45,13 @@ public class Campaign {
         this.state = state;
     }
 
+    public void increaseSoldQuantity(int orderQuantity) {
+        soldQuantity -= orderQuantity;
+        if (soldQuantity - orderQuantity == 0) {
+            this.state = CampaignState.SUCCESS;
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -63,5 +70,9 @@ public class Campaign {
 
     public CampaignState getState() {
         return state;
+    }
+
+    public boolean isInProgress() {
+        return state.equals(CampaignState.SUCCESS);
     }
 }

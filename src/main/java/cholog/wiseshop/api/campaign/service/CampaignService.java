@@ -16,7 +16,9 @@ import java.time.ZoneId;
 import java.util.List;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 @Transactional
@@ -26,15 +28,17 @@ public class CampaignService {
     private final ProductRepository productRepository;
     private final StockRepository stockRepository;
     private final ThreadPoolTaskScheduler scheduler;
+    private final TransactionTemplate transactionTemplate;
 
     public CampaignService(CampaignRepository campaignRepository,
                            ProductRepository productRepository,
                            StockRepository stockRepository,
-                           ThreadPoolTaskScheduler scheduler) {
+                           ThreadPoolTaskScheduler scheduler, PlatformTransactionManager transactionManager) {
         this.campaignRepository = campaignRepository;
         this.productRepository = productRepository;
         this.stockRepository = stockRepository;
         this.scheduler = scheduler;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     public Long createCampaign(CreateCampaignRequest request) {
@@ -65,11 +69,16 @@ public class CampaignService {
     }
 
     public void scheduleCampaignDate(Long campaignId, LocalDateTime startDate, LocalDateTime endDate) {
-        Runnable startCampaign = () -> changeCampaingState(campaignId, CampaignState.IN_PROGRESS);
+        Runnable startCampaign = () -> transactionTemplate.execute(status -> {
+            changeCampaingState(campaignId, CampaignState.IN_PROGRESS);
+            return null;
+        });
         scheduler.schedule(startCampaign, startDate.atZone(ZoneId.systemDefault()).toInstant());
-        scheduler.getScheduledExecutor();
 
-        Runnable endCampaign = () -> changeCampaingState(campaignId, CampaignState.FAILED);
+        Runnable endCampaign = () -> transactionTemplate.execute(status -> {
+            changeCampaingState(campaignId, CampaignState.FAILED);
+            return null;
+        });
         scheduler.schedule(endCampaign, endDate.atZone(ZoneId.systemDefault()).toInstant());
     }
 
@@ -77,7 +86,6 @@ public class CampaignService {
         Campaign campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(() -> new IllegalArgumentException("상태 변경할 캠페인 정보가 존재하지 않습니다."));
         campaign.updateState(state);
-        campaignRepository.saveAndFlush(campaign);
     }
 
     public boolean isStarted(Long campaignId) {

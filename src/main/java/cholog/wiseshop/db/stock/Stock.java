@@ -43,10 +43,6 @@ public class Stock {
     }
 
     public boolean hasQuantity(int orderQuantity) {
-        if (totalQuantity < orderQuantity) {
-            throw new IllegalArgumentException(
-                    "주문 가능 수량을 초과하였습니다. 주문 가능한 수량은 " + totalQuantity + "개 입니다.");
-        }
-        return true;
+        return totalQuantity >= orderQuantity;
     }
 }

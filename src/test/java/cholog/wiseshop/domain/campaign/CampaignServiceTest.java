@@ -16,6 +16,8 @@ import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.product.ProductRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,8 @@ public class CampaignServiceTest {
 
     @BeforeEach
     public void cleanUp() {
-        campaignRepository.deleteAll();
         productRepository.deleteAll();
+        campaignRepository.deleteAll();
     }
 
     @Test
@@ -110,73 +112,73 @@ public class CampaignServiceTest {
         assertThatThrownBy(() -> campaignService.readCampaign(wrongId))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-//
-//    @Test
-//    void 캠페인_시작_상태_변경_성공() {
-//        //given
-//        CreateProductRequest request = getCreateProductRequest();
-//        Long productId = productService.createProduct(request);
-//
-//        //when
-//        LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
-//        LocalDateTime endDate = LocalDateTime.now().plusSeconds(10);
-//        int goalQuantity = 5;
-//
-//        Long campaignId = campaignService.createCampaign(
-//                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
-//        Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
-//
-//        // then
-//        Awaitility.await()
-//                .atLeast(1, TimeUnit.SECONDS)
-//                .untilAsserted(() -> {
-//                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
-//                            .orElseThrow();
-//                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.IN_PROGRESS);
-//                });
-//    }
-//
-//    @Test
-//    void 캠페인_실패_상태_변경_성공() {
-//        //given
-//        CreateProductRequest request = getCreateProductRequest();
-//        Long productId = productService.createProduct(request);
-//
-//        //when
-//        LocalDateTime startDate = LocalDateTime.now();
-//        LocalDateTime endDate = LocalDateTime.now().plusSeconds(1);
-//        int goalQuantity = 5;
-//
-//        Long campaignId = campaignService.createCampaign(
-//                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
-//        Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
-//
-//        // then
-//        Awaitility.await()
-//                .atLeast(1, TimeUnit.SECONDS)
-//                .untilAsserted(() -> {
-//                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
-//                            .orElseThrow();
-//                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
-//                });
-//    }
-//
-//    @Test
-//    void 캠페인이_시작됐는지_확인() {
-//        //given
-//        CreateProductRequest request = getCreateProductRequest();
-//        Long productId = productService.createProduct(request);
-//
-//        //when
-//        LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
-//        LocalDateTime endDate = LocalDateTime.now().plusSeconds(10);
-//        int goalQuantity = 5;
-//
-//        Long campaignId = campaignService.createCampaign(
-//                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
-//        // then
-//        Awaitility.await()
-//                .atLeast(1, TimeUnit.SECONDS)
-//                .untilAsserted(() -> assertThat(campaignService.isStarted(campaignId)).isTrue());
-//    }
+
+    @Test
+    void 캠페인_시작_상태_변경_성공() {
+        //given
+        CreateProductRequest request = getCreateProductRequest();
+        productService.createProduct(request);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
+        LocalDateTime endDate = LocalDateTime.now().plusSeconds(10);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+        Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
+
+        // then
+        Awaitility.await()
+                .atLeast(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
+                            .orElseThrow();
+                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.IN_PROGRESS);
+                });
+    }
+
+    @Test
+    void 캠페인_실패_상태_변경_성공() {
+        //given
+        CreateProductRequest request = getCreateProductRequest();
+        productService.createProduct(request);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime endDate = LocalDateTime.now().plusSeconds(1);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+        Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
+
+        // then
+        Awaitility.await()
+                .atLeast(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
+                            .orElseThrow();
+                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
+                });
+    }
+
+    @Test
+    void 캠페인이_시작됐는지_확인() {
+        //given
+        CreateProductRequest request = getCreateProductRequest();
+        productService.createProduct(request);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
+        LocalDateTime endDate = LocalDateTime.now().plusSeconds(10);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+        // then
+        Awaitility.await()
+                .atLeast(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> assertThat(campaignService.isStarted(campaignId)).isTrue());
+    }
 }

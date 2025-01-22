@@ -73,6 +73,6 @@ public class Campaign {
     }
 
     public boolean isInProgress() {
-        return state.equals(CampaignState.SUCCESS);
+        return state.equals(CampaignState.IN_PROGRESS);
     }
 }

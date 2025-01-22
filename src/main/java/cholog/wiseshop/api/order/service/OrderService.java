@@ -32,7 +32,7 @@ public class OrderService {
         }
         Product product = findProducts.get(0);
         Stock stock = product.getStock();
-        if (stock.hasQuantity(request.orderQuantity())) {
+        if (!stock.hasQuantity(request.orderQuantity())) {
             throw new IllegalArgumentException(
                     String.format("주문 가능한 수량을 초과하였습니다. 주문 가능한 수량 : %d개", stock.getTotalQuantity()));
         }

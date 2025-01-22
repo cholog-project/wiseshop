@@ -3,8 +3,10 @@ package cholog.wiseshop.domain.campaign;
 import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.service.ProductService;
@@ -63,46 +65,51 @@ public class CampaignServiceTest {
         assertThat(findCampaign.getState()).isEqualTo(CampaignState.WAITING);
     }
 
-//
-//    @Test
-//    void 캠페인_조회하기() {
-//        //given
-//        CreateProductRequest request = getCreateProductRequest();
-//        Long productId = productService.createProduct(request);
-//
-//        //when
-//        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
-//        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
-//        int goalQuantity = 5;
-//
-//        Long campaignId = campaignService.createCampaign(
-//                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
-//        ReadCampaignResponse response = campaignService.readCampaign(campaignId);
-//
-//        //then
-//        assertThat(response.campaignId()).isEqualTo(campaignId);
-//        assertThat(response.productId()).isEqualTo(productId);
-//    }
-//
-//    @Test
-//    void 캠페인_조회하기_예외_잘못된_캠페인ID() {
-//        //given
-//        CreateProductRequest request = getCreateProductRequest();
-//        Long productId = productService.createProduct(request);
-//
-//        //when
-//        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
-//        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
-//        int goalQuantity = 5;
-//
-//        Long campaignId = campaignService.createCampaign(
-//                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
-//        Long wrongId = campaignId + 1;
-//
-//        //then
-//        assertThatThrownBy(() -> campaignService.readCampaign(wrongId))
-//                .isInstanceOf(IllegalArgumentException.class);
-//    }
+
+    @Test
+    void 캠페인_조회하기() {
+        //given
+        CreateProductRequest request = getCreateProductRequest();
+        productService.createProduct(request);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
+        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+        ReadCampaignResponse response = campaignService.readCampaign(campaignId);
+
+        //then
+        assertAll(
+                () -> assertThat(response.campaignId()).isEqualTo(campaignId),
+                () -> assertThat(response.product().name()).isEqualTo(request.name()),
+                () -> assertThat(response.product().description()).isEqualTo(request.description()),
+                () -> assertThat(response.product().price()).isEqualTo(request.price()),
+                () -> assertThat(response.product().totalQuantity()).isEqualTo(request.totalQuantity())
+        );
+    }
+
+    @Test
+    void 캠페인_조회하기_예외_잘못된_캠페인ID() {
+        //given
+        CreateProductRequest request = getCreateProductRequest();
+        productService.createProduct(request);
+
+        //when
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
+        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
+        int goalQuantity = 5;
+
+        Long campaignId = campaignService.createCampaign(
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+        Long wrongId = campaignId + 1;
+
+        //then
+        assertThatThrownBy(() -> campaignService.readCampaign(wrongId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 //
 //    @Test
 //    void 캠페인_시작_상태_변경_성공() {

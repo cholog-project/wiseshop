@@ -52,6 +52,9 @@ public class CampaignService {
     @Transactional(readOnly = true)
     public ReadCampaignResponse readCampaign(Long campaignId) {
         List<Product> findProducts = productRepository.findProductsByCampaignId(campaignId);
+        if (findProducts.isEmpty()) {
+            throw new IllegalArgumentException("캠페인이 존재하지 않습니다.");
+        }
         Product findProduct = findProducts.get(0);
         Campaign findCampaign = findProduct.getCampaign();
         return new ReadCampaignResponse(

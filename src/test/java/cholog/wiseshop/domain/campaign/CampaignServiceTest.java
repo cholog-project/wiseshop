@@ -72,7 +72,6 @@ public class CampaignServiceTest {
     void 캠페인_조회하기() {
         //given
         CreateProductRequest request = getCreateProductRequest();
-        productService.createProduct(request);
 
         //when
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
@@ -97,7 +96,6 @@ public class CampaignServiceTest {
     void 캠페인_조회하기_예외_잘못된_캠페인ID() {
         //given
         CreateProductRequest request = getCreateProductRequest();
-        productService.createProduct(request);
 
         //when
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
@@ -117,24 +115,22 @@ public class CampaignServiceTest {
     void 캠페인_시작_상태_변경_성공() {
         //given
         CreateProductRequest request = getCreateProductRequest();
-        productService.createProduct(request);
 
         //when
-        LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
-        LocalDateTime endDate = LocalDateTime.now().plusSeconds(10);
+        LocalDateTime startDate = LocalDateTime.now().plus(50, ChronoUnit.MILLIS);
+        LocalDateTime endDate = LocalDateTime.now().plusMinutes(10);
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
                 new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
-        Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
         // then
         Awaitility.await()
-                .atLeast(900, TimeUnit.MILLISECONDS)
-                .untilAsserted(() -> {
-                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
+                .dontCatchUncaughtExceptions()
+                .until(() -> {
+                    Campaign modifiedCampaign = campaignRepository.findById(campaignId)
                             .orElseThrow();
-                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.IN_PROGRESS);
+                    return modifiedCampaign.getState().equals(CampaignState.IN_PROGRESS);
                 });
     }
 
@@ -142,11 +138,10 @@ public class CampaignServiceTest {
     void 캠페인_실패_상태_변경_성공() {
         //given
         CreateProductRequest request = getCreateProductRequest();
-        productService.createProduct(request);
 
         //when
         LocalDateTime startDate = LocalDateTime.now();
-        LocalDateTime endDate = LocalDateTime.now().plusSeconds(1);
+        LocalDateTime endDate = LocalDateTime.now().plus(100, ChronoUnit.MILLIS);
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
@@ -155,7 +150,8 @@ public class CampaignServiceTest {
 
         // then
         Awaitility.await()
-                .atLeast(900, TimeUnit.MILLISECONDS)
+                .dontCatchUncaughtExceptions()
+                .atMost(200, TimeUnit.MILLISECONDS)
                 .untilAsserted(() -> {
                     Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
                             .orElseThrow();

@@ -1,13 +1,10 @@
 package cholog.wiseshop.web.product;
 
 import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -16,6 +13,7 @@ import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.stock.Stock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -27,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -68,43 +65,18 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void 상품_생성하기() throws Exception {
-        // given
-        CreateProductRequest request = getCreateProductRequest();
-        String url = "http://localhost:" + port + "/api/v1/products";
-
-        // when
-        mockMvc.perform(post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("1"))
-                .andDo(print());
-
-        // then
-        Product product = productRepository.findById(1L).orElseThrow();
-        assertThat(product.getName()).isEqualTo(request.name());
-        assertThat(product.getDescription()).isEqualTo(request.description());
-        assertThat(product.getPrice()).isEqualTo(request.price());
-    }
-
-    @Test
     public void 상품_조회하기() throws Exception {
         // given
         CreateProductRequest request = getCreateProductRequest();
-        String postUrl = "http://localhost:" + port + "/api/v1/products";
-        MvcResult mvcResult = mockMvc.perform(post(postUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(new ObjectMapper().writeValueAsString(request)))
-                .andReturn();
-        mvcResult.getResponse().getContentAsString();
-        ObjectMapper objectMapper = new ObjectMapper();
-        Long savedProductId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Long.TYPE);
+        Product product = productRepository.save(new Product(
+                request.name(),
+                request.description(),
+                request.price(),
+                new Stock(request.totalQuantity())
+        ));
 
         // when
-        String getUrl = "http://localhost:" + port + "/api/v1/products/" + savedProductId;
+        String getUrl = "http://localhost:" + port + "/api/v1/products/" + product.getId();
 
         //then
         mockMvc.perform(get(getUrl)

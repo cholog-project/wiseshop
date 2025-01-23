@@ -44,8 +44,8 @@ public class ProductServiceTest {
 
     @BeforeEach
     void cleanUp() {
-        campaignRepository.deleteAll();
         productRepository.deleteAll();
+        campaignRepository.deleteAll();
     }
 
     @Test
@@ -184,7 +184,7 @@ public class ProductServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
         Integer modifyQuantity = 1;
 
         // when
@@ -214,7 +214,7 @@ public class ProductServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-                new CreateCampaignRequest(startDate, endDate, goalQuantity, productId));
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
         Integer modifyQuantity = 0;
 
         // when

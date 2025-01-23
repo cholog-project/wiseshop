@@ -1,5 +1,6 @@
 package cholog.wiseshop.web.campaign;
 
+import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -9,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.service.CampaignService;
+import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -76,17 +78,12 @@ public class CampaignControllerTest {
     @Test
     void 캠페인_생성하기() throws Exception {
         // given
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-        Product product = new Product(name, description, price);
-        Product savedProduct = productRepository.save(product);
-
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
         LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
-        int goalQuantity = 5;
-        CreateCampaignRequest request = new CreateCampaignRequest(
-                startDate, endDate, goalQuantity, savedProduct.getId());
+        Integer goalQuantity = 5;
+
+        CreateProductRequest productRequest = getCreateProductRequest();
+        CreateCampaignRequest request = new CreateCampaignRequest(startDate, endDate, goalQuantity, productRequest);
 
         String url = "http://localhost:" + port + "/api/v1/campaigns";
 
@@ -103,27 +100,31 @@ public class CampaignControllerTest {
     @Test
     void 캠페인_조회하기() throws Exception {
         // given
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-        Product product = new Product(name, description, price);
-        Product savedProduct = productRepository.save(product);
-
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
         LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
-        int goalQuantity = 5;
-        CreateCampaignRequest request = new CreateCampaignRequest(
-                startDate, endDate, goalQuantity, savedProduct.getId());
-        Long campaignId = campaignService.createCampaign(request);
+        Integer goalQuantity = 5;
 
-        String url = "http://localhost:" + port + "/api/v1/campaigns/" + campaignId;
+        CreateProductRequest productRequest = getCreateProductRequest();
+        CreateCampaignRequest request = new CreateCampaignRequest(startDate, endDate, goalQuantity, productRequest);
+
+        String postUrl = "http://localhost:" + port + "/api/v1/campaigns";
+        mockMvc.perform(post(postUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(content().string("1"))
+                .andDo(print());
+        String getUrl = "http://localhost:" + port + "/api/v1/campaigns/" + 1;
 
         // when & then
-        mockMvc.perform(get(url)
+        mockMvc.perform(get(getUrl)
                         .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.campaignId").value(campaignId))
-                .andExpect(jsonPath("$.productId").value(savedProduct.getId()))
+                .andExpect(jsonPath("$.campaignId").value(1))
+                .andExpect(jsonPath("$.startDate").value(startDate.toString()))
+                .andExpect(jsonPath("$.endDate").value(endDate.toString()))
+                .andExpect(jsonPath("$.goalQuantity").value(goalQuantity))
                 .andDo(print());
     }
 }

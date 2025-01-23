@@ -1,6 +1,7 @@
 package cholog.wiseshop.api.campaign.service;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.response.AllCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
@@ -13,6 +14,7 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
@@ -31,10 +33,10 @@ public class CampaignService {
     private final TransactionTemplate transactionTemplate;
 
     public CampaignService(CampaignRepository campaignRepository,
-                           ProductRepository productRepository,
-                           StockRepository stockRepository,
-                           ThreadPoolTaskScheduler scheduler,
-                           PlatformTransactionManager transactionManager) {
+        ProductRepository productRepository,
+        StockRepository stockRepository,
+        ThreadPoolTaskScheduler scheduler,
+        PlatformTransactionManager transactionManager) {
         this.campaignRepository = campaignRepository;
         this.productRepository = productRepository;
         this.stockRepository = stockRepository;
@@ -46,9 +48,9 @@ public class CampaignService {
         CreateProductRequest productRequest = request.product();
         Stock stock = stockRepository.save(new Stock(productRequest.totalQuantity()));
         Product product = productRepository.save(new Product(
-                productRequest.name(), productRequest.description(), productRequest.price(), stock));
+            productRequest.name(), productRequest.description(), productRequest.price(), stock));
         Campaign campaign = campaignRepository.save(
-                new Campaign(request.startDate(), request.endDate(), request.goalQuantity()));
+            new Campaign(request.startDate(), request.endDate(), request.goalQuantity()));
         product.addCampaign(campaign);
         scheduleCampaignDate(campaign.getId(), request.startDate(), request.endDate());
         return campaign.getId();
@@ -63,10 +65,10 @@ public class CampaignService {
         Product findProduct = findProducts.get(0);
         Campaign findCampaign = findProduct.getCampaign();
         return new ReadCampaignResponse(
-                campaignId,
-                findCampaign.getStartDate().toString(),
-                findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
-                new ProductResponse(findProduct));
+            campaignId,
+            findCampaign.getStartDate().toString(),
+            findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
+            new ProductResponse(findProduct));
     }
 
     public void scheduleCampaignDate(Long campaignId, LocalDateTime startDate, LocalDateTime endDate) {
@@ -85,16 +87,26 @@ public class CampaignService {
 
     public void changeCampaingState(Long campaignId, CampaignState state) {
         Campaign campaign = campaignRepository.findById(campaignId)
-                .orElseThrow(() -> new IllegalArgumentException("상태 변경할 캠페인 정보가 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("상태 변경할 캠페인 정보가 존재하지 않습니다."));
         campaign.updateState(state);
     }
 
     public boolean isStarted(Long campaignId) {
         Campaign campaign = campaignRepository.findById(campaignId)
-                .orElseThrow(() -> new IllegalArgumentException("캠페인이 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("캠페인이 존재하지 않습니다."));
         if (campaign.getState().equals(CampaignState.IN_PROGRESS)) {
             return true;
         }
         return false;
+    }
+
+    public List<AllCampaignResponse> readAllCampaign() {
+        List<Product> products = productRepository.findAll();
+        List<AllCampaignResponse> result = new ArrayList<>();
+        for (Product product : products) {
+            AllCampaignResponse allCampaignResponse = AllCampaignResponse.from(product, product.getCampaign());
+            result.add(allCampaignResponse);
+        }
+        return result;
     }
 }

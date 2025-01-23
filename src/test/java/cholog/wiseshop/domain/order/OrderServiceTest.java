@@ -46,7 +46,7 @@ public class OrderServiceTest {
     void setUp() {
         request = getCreateProductRequest();
 
-        LocalDateTime startDate = LocalDateTime.now().plus(10, ChronoUnit.MILLIS);
+        LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = LocalDateTime.now().plusMinutes(5);
         int goalQuantity = 5;
 

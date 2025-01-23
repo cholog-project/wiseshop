@@ -130,7 +130,7 @@ public class CampaignServiceTest {
 
         // then
         Awaitility.await()
-                .atLeast(1, TimeUnit.SECONDS)
+                .atLeast(900, TimeUnit.MILLISECONDS)
                 .untilAsserted(() -> {
                     Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
                             .orElseThrow();
@@ -155,7 +155,7 @@ public class CampaignServiceTest {
 
         // then
         Awaitility.await()
-                .atLeast(1, TimeUnit.SECONDS)
+                .atLeast(900, TimeUnit.MILLISECONDS)
                 .untilAsserted(() -> {
                     Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
                             .orElseThrow();

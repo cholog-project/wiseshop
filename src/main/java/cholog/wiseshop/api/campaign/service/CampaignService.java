@@ -33,7 +33,8 @@ public class CampaignService {
     public CampaignService(CampaignRepository campaignRepository,
                            ProductRepository productRepository,
                            StockRepository stockRepository,
-                           ThreadPoolTaskScheduler scheduler, PlatformTransactionManager transactionManager) {
+                           ThreadPoolTaskScheduler scheduler,
+                           PlatformTransactionManager transactionManager) {
         this.campaignRepository = campaignRepository;
         this.productRepository = productRepository;
         this.stockRepository = stockRepository;

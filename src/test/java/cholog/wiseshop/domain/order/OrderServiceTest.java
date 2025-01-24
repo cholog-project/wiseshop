@@ -3,27 +3,26 @@ package cholog.wiseshop.domain.order;
 import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
-import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
-import cholog.wiseshop.db.order.OrderRepository;
+import cholog.wiseshop.db.campaign.CampaignState;
+import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.db.stock.StockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 public class OrderServiceTest {
-
-    @Autowired
-    private CampaignService campaignService;
 
     @Autowired
     private CampaignRepository campaignRepository;
@@ -32,45 +31,41 @@ public class OrderServiceTest {
     private ProductRepository productRepository;
 
     @Autowired
-    private OrderService orderService;
+    private StockRepository stockRepository;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderService orderService;
 
-    private Long campaignId;
+    private Campaign campaign;
 
-    private CreateProductRequest request;
+    private Product product;
+
+    private CreateProductRequest productRequest;
 
     @BeforeEach
     void setUp() {
-        orderRepository.deleteAll();
-        productRepository.deleteAll();
-        campaignRepository.deleteAll();
-
-        request = getCreateProductRequest();
-
-        LocalDateTime startDate = LocalDateTime.now().plus(50, ChronoUnit.MILLIS);
-        LocalDateTime endDate = LocalDateTime.now().plusMinutes(5);
-        int goalQuantity = 5;
-
-        campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+        productRequest = getCreateProductRequest();
+        Stock stock = stockRepository.save(new Stock(productRequest.totalQuantity()));
+        product = productRepository.save(new Product(
+            productRequest.name(), productRequest.description(), productRequest.price(), stock));
+        campaign = campaignRepository.save(new Campaign(null, null, 5));
+        product.addCampaign(campaign);
     }
 
     @Test
-    void 주문_생성_성공() throws InterruptedException {
+    void 주문_생성_성공() {
         //given
         int orderQuantity = 5;
-        CreateOrderRequest orderRequest = new CreateOrderRequest(campaignId, orderQuantity);
-
-        Thread.sleep(100);
+        Long productId = product.getId();
+        CreateOrderRequest orderRequest = new CreateOrderRequest(productId, orderQuantity);
+        campaign.updateState(CampaignState.IN_PROGRESS);
 
         //when
         Long orderId = orderService.createOrder(orderRequest);
         OrderResponse response = orderService.readOrder(orderId);
 
         //then
-        assertThat(response.productName()).isEqualTo(request.name());
+        assertThat(response.productName()).isEqualTo(productRequest.name());
         assertThat(response.count()).isEqualTo(orderQuantity);
     }
 }

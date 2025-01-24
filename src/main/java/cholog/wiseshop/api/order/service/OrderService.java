@@ -26,12 +26,8 @@ public class OrderService {
     }
 
     public Long createOrder(CreateOrderRequest request) {
-        List<Product> findProducts = productRepository.findProductsByCampaignId(
-            request.campaignId());
-        if (findProducts.isEmpty()) {
-            throw new IllegalArgumentException("상품이 존재하지 않습니다.");
-        }
-        Product product = findProducts.get(0);
+        Product product = productRepository.findById(request.productId())
+            .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
         Stock stock = product.getStock();
         if (!stock.hasQuantity(request.orderQuantity())) {
             throw new IllegalArgumentException(

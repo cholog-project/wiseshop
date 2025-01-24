@@ -26,7 +26,8 @@ public class ProductService {
 
     public Long createProduct(CreateProductRequest request) {
         Stock stock = new Stock(request.totalQuantity());
-        Product product = new Product(request.name(), request.description(), request.price(), stock);
+        Product product = new Product(request.name(), request.description(), request.price(),
+            stock);
         Product createdProduct = productRepository.save(product);
         return createdProduct.getId();
     }
@@ -34,19 +35,19 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductResponse getProduct(Long id) {
         return new ProductResponse(productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("상품 조회에 실패했습니다.")));
+            .orElseThrow(() -> new IllegalArgumentException("상품 조회에 실패했습니다.")));
     }
 
     public void modifyProduct(Long productId, ModifyProductRequest request) {
         Product existedProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("이름 및 설명글 수정할 상품이 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("이름 및 설명글 수정할 상품이 존재하지 않습니다."));
         existedProduct.modifyProduct(request.name(), request.description());
         productRepository.save(existedProduct);
     }
 
     public void modifyProductPrice(Long productId, ModifyProductPriceRequest request) {
         Product existedProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("가격 수정할 상품이 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("가격 수정할 상품이 존재하지 않습니다."));
         existedProduct.modifyPrice(request.price());
         productRepository.save(existedProduct);
     }
@@ -56,14 +57,14 @@ public class ProductService {
             throw new IllegalArgumentException("캠페인이 시작되어 상품을 수정할 수 없습니다.");
         }
         Product existedProduct = productRepository.findById(request.productId())
-                .orElseThrow(() -> new IllegalArgumentException("상품 조회에 실패했습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("상품 조회에 실패했습니다."));
         Stock existedStock = existedProduct.getStock();
         existedStock.modifyTotalQuantity(request.modifyQuantity());
     }
 
     public void deleteProduct(Long id) {
         productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("삭제할 상품이 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("삭제할 상품이 존재하지 않습니다."));
         productRepository.deleteById(id);
     }
 }

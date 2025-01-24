@@ -10,10 +10,10 @@ public record CreateProductRequest(String name,
 
     public Product from() {
         return new Product(
-                name,
-                description,
-                price,
-                new Stock(totalQuantity)
+            name,
+            description,
+            price,
+            new Stock(totalQuantity)
         );
     }
 }

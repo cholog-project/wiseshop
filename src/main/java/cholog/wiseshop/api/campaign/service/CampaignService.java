@@ -71,7 +71,8 @@ public class CampaignService {
             new ProductResponse(findProduct));
     }
 
-    public void scheduleCampaignDate(Long campaignId, LocalDateTime startDate, LocalDateTime endDate) {
+    public void scheduleCampaignDate(Long campaignId, LocalDateTime startDate,
+        LocalDateTime endDate) {
         Runnable startCampaign = () -> transactionTemplate.execute(status -> {
             changeCampaingState(campaignId, CampaignState.IN_PROGRESS);
             return null;
@@ -104,7 +105,8 @@ public class CampaignService {
         List<Product> products = productRepository.findAll();
         List<AllCampaignResponse> result = new ArrayList<>();
         for (Product product : products) {
-            AllCampaignResponse allCampaignResponse = AllCampaignResponse.from(product, product.getCampaign());
+            AllCampaignResponse allCampaignResponse = AllCampaignResponse.from(product,
+                product.getCampaign());
             result.add(allCampaignResponse);
         }
         return result;

@@ -8,8 +8,6 @@ import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
-import cholog.wiseshop.db.stock.Stock;
-import cholog.wiseshop.db.stock.StockRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,12 +50,13 @@ public class ProductRepositoryTest {
 
         // then
         assertAll(
-                () -> assertThat(products).hasSize(1),
-                () -> assertThat(products.get(0).getName()).isEqualTo(request.name()),
-                () -> assertThat(products.get(0).getDescription()).isEqualTo(request.description()),
-                () -> assertThat(products.get(0).getPrice()).isEqualTo(request.price()),
-                () -> assertThat(products.get(0).getStock().getTotalQuantity()).isEqualTo(request.totalQuantity()),
-                () -> assertThat(products.get(0).getCampaign().getId()).isEqualTo(campaign.getId())
+            () -> assertThat(products).hasSize(1),
+            () -> assertThat(products.get(0).getName()).isEqualTo(request.name()),
+            () -> assertThat(products.get(0).getDescription()).isEqualTo(request.description()),
+            () -> assertThat(products.get(0).getPrice()).isEqualTo(request.price()),
+            () -> assertThat(products.get(0).getStock().getTotalQuantity()).isEqualTo(
+                request.totalQuantity()),
+            () -> assertThat(products.get(0).getCampaign().getId()).isEqualTo(campaign.getId())
         );
     }
 

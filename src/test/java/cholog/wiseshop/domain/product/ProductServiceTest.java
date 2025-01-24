@@ -13,7 +13,6 @@ import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyQuantityRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.api.product.service.ProductService;
-import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
@@ -23,8 +22,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 public class ProductServiceTest {
 
     @Autowired
@@ -39,13 +40,9 @@ public class ProductServiceTest {
     @Autowired
     private CampaignService campaignService;
 
-    @Autowired
-    private CampaignRepository campaignRepository;
-
     @BeforeEach
     void cleanUp() {
         productRepository.deleteAll();
-        campaignRepository.deleteAll();
     }
 
     @Test
@@ -87,7 +84,7 @@ public class ProductServiceTest {
 
         // when
         Throwable exception = assertThrows(IllegalArgumentException.class,
-                () -> productService.getProduct(wrongProductId));
+            () -> productService.getProduct(wrongProductId));
 
         // then
         assertThat(exception.getMessage()).isEqualTo("상품 조회에 실패했습니다.");
@@ -105,14 +102,14 @@ public class ProductServiceTest {
         Product createdProduct = productRepository.save(request.from());
 
         ModifyProductRequest modifyProductRequest = new ModifyProductRequest(
-                modifiedName,
-                modifiedDescription
+            modifiedName,
+            modifiedDescription
         );
 
         productService.modifyProduct(createdProduct.getId(), modifyProductRequest);
 
         Product modifiedProduct = productRepository.findById(createdProduct.getId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
 
         // then
         assertThat(modifiedProduct.getName()).isEqualTo(modifiedName);
@@ -130,7 +127,7 @@ public class ProductServiceTest {
 
         // when
         Throwable exception = assertThrows(IllegalArgumentException.class,
-                () -> productService.modifyProduct(productId, request));
+            () -> productService.modifyProduct(productId, request));
 
         // then
         assertThat(exception.getMessage()).isEqualTo("이름 및 설명글 수정할 상품이 존재하지 않습니다.");
@@ -146,12 +143,13 @@ public class ProductServiceTest {
         // when
         Product createdProduct = productRepository.save(request.from());
 
-        ModifyProductPriceRequest modifyProductPriceRequest = new ModifyProductPriceRequest(modifiedPrice);
+        ModifyProductPriceRequest modifyProductPriceRequest = new ModifyProductPriceRequest(
+            modifiedPrice);
 
         productService.modifyProductPrice(createdProduct.getId(), modifyProductPriceRequest);
 
         Product modifiedProduct = productRepository.findById(createdProduct.getId())
-                .orElseThrow(() -> new IllegalArgumentException("가격 수정할 상품이 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("가격 수정할 상품이 존재하지 않습니다."));
 
         // then
         assertThat(modifiedProduct.getPrice()).isEqualTo(modifiedPrice);
@@ -167,7 +165,7 @@ public class ProductServiceTest {
 
         // when
         Throwable exception = assertThrows(IllegalArgumentException.class,
-                () -> productService.modifyProductPrice(productId, request));
+            () -> productService.modifyProductPrice(productId, request));
 
         // then
         assertThat(exception.getMessage()).isEqualTo("가격 수정할 상품이 존재하지 않습니다.");
@@ -184,19 +182,19 @@ public class ProductServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
         Integer modifyQuantity = 1;
 
         // when
         ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
-                campaignId,
-                productId,
-                modifyQuantity
+            campaignId,
+            productId,
+            modifyQuantity
         );
         productService.modifyStockQuantity(modifyQuantityRequest);
 
         Product modifiedProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
         Stock modifiedStock = modifiedProduct.getStock();
 
         // then
@@ -214,21 +212,21 @@ public class ProductServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
         Integer modifyQuantity = 0;
 
         // when
         ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
-                campaignId,
-                productId,
-                modifyQuantity
+            campaignId,
+            productId,
+            modifyQuantity
         );
 
         // then
         assertThatThrownBy(() -> productService.modifyStockQuantity(modifyQuantityRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IllegalArgumentException.class);
     }
-    
+
     @Test
     void 상품과_재고_삭제하기() {
         // given
@@ -252,7 +250,7 @@ public class ProductServiceTest {
 
         // when
         Throwable exception = assertThrows(IllegalArgumentException.class,
-                () -> productService.deleteProduct(wrongProductId));
+            () -> productService.deleteProduct(wrongProductId));
 
         // then
         assertThat(exception.getMessage()).isEqualTo("삭제할 상품이 존재하지 않습니다.");

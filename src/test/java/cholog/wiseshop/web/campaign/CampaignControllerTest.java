@@ -12,7 +12,6 @@ import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.db.campaign.CampaignRepository;
-import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
@@ -57,8 +56,8 @@ public class CampaignControllerTest {
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .build();
+            .webAppContextSetup(context)
+            .build();
 
         campaignRepository.deleteAll();
         productRepository.deleteAll();
@@ -67,12 +66,12 @@ public class CampaignControllerTest {
     @AfterEach
     public void cleanUp() {
         this.entityManager
-                .createNativeQuery("ALTER TABLE product ALTER COLUMN `id` RESTART WITH 1")
-                .executeUpdate();
+            .createNativeQuery("ALTER TABLE product ALTER COLUMN `id` RESTART WITH 1")
+            .executeUpdate();
 
         this.entityManager
-                .createNativeQuery("ALTER TABLE campaign ALTER COLUMN `id` RESTART WITH 1")
-                .executeUpdate();
+            .createNativeQuery("ALTER TABLE campaign ALTER COLUMN `id` RESTART WITH 1")
+            .executeUpdate();
     }
 
     @Test
@@ -83,18 +82,19 @@ public class CampaignControllerTest {
         Integer goalQuantity = 5;
 
         CreateProductRequest productRequest = getCreateProductRequest();
-        CreateCampaignRequest request = new CreateCampaignRequest(startDate, endDate, goalQuantity, productRequest);
+        CreateCampaignRequest request = new CreateCampaignRequest(startDate, endDate, goalQuantity,
+            productRequest);
 
         String url = "http://localhost:" + port + "/api/v1/campaigns";
 
         // when & then
         mockMvc.perform(post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("1"))
-                .andDo(print());
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(new ObjectMapper().writeValueAsString(request)))
+            .andExpect(status().isCreated())
+            .andExpect(content().string("1"))
+            .andDo(print());
     }
 
     @Test
@@ -105,26 +105,27 @@ public class CampaignControllerTest {
         Integer goalQuantity = 5;
 
         CreateProductRequest productRequest = getCreateProductRequest();
-        CreateCampaignRequest request = new CreateCampaignRequest(startDate, endDate, goalQuantity, productRequest);
+        CreateCampaignRequest request = new CreateCampaignRequest(startDate, endDate, goalQuantity,
+            productRequest);
 
         String postUrl = "http://localhost:" + port + "/api/v1/campaigns";
         mockMvc.perform(post(postUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")
                 .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("1"))
-                .andDo(print());
+            .andExpect(status().isCreated())
+            .andExpect(content().string("1"))
+            .andDo(print());
         String getUrl = "http://localhost:" + port + "/api/v1/campaigns/" + 1;
 
         // when & then
         mockMvc.perform(get(getUrl)
-                        .characterEncoding("utf-8"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.campaignId").value(1))
-                .andExpect(jsonPath("$.startDate").value(startDate.toString()))
-                .andExpect(jsonPath("$.endDate").value(endDate.toString()))
-                .andExpect(jsonPath("$.goalQuantity").value(goalQuantity))
-                .andDo(print());
+                .characterEncoding("utf-8"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.campaignId").value(1))
+            .andExpect(jsonPath("$.startDate").value(startDate.toString()))
+            .andExpect(jsonPath("$.endDate").value(endDate.toString()))
+            .andExpect(jsonPath("$.goalQuantity").value(goalQuantity))
+            .andDo(print());
     }
 }

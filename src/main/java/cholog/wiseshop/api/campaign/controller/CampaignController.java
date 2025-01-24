@@ -26,8 +26,8 @@ public class CampaignController {
 
     @PostMapping("/campaigns")
     public ResponseEntity<Long> createCampaigns(@RequestBody CreateCampaignRequest request) {
-        Long productId = campaignService.createCampaign(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productId);
+        Long campaignId = campaignService.createCampaign(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(campaignId);
     }
 
     @GetMapping("/campaigns/{id}")

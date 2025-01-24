@@ -26,7 +26,8 @@ public class OrderService {
     }
 
     public Long createOrder(CreateOrderRequest request) {
-        List<Product> findProducts = productRepository.findProductsByCampaignId(request.campaignId());
+        List<Product> findProducts = productRepository.findProductsByCampaignId(
+            request.campaignId());
         if (findProducts.isEmpty()) {
             throw new IllegalArgumentException("상품이 존재하지 않습니다.");
         }
@@ -34,14 +35,14 @@ public class OrderService {
         Stock stock = product.getStock();
         if (!stock.hasQuantity(request.orderQuantity())) {
             throw new IllegalArgumentException(
-                    String.format("주문 가능한 수량을 초과하였습니다. 주문 가능한 수량 : %d개", stock.getTotalQuantity()));
+                String.format("주문 가능한 수량을 초과하였습니다. 주문 가능한 수량 : %d개", stock.getTotalQuantity()));
         }
-        
+
         Campaign campaign = product.getCampaign();
         if (!campaign.isInProgress()) {
             throw new IllegalArgumentException("현재 캠페인이 진행 중이지 않습니다.");
         }
-        
+
         Order order = orderRepository.save(request.from(product));
         stock.reduceQuantity(request.orderQuantity());
         campaign.increaseSoldQuantity(request.orderQuantity());
@@ -51,19 +52,19 @@ public class OrderService {
     @Transactional(readOnly = true)
     public OrderResponse readOrder(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("주문 정보가 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("주문 정보가 존재하지 않습니다."));
         return new OrderResponse(order);
     }
 
     public void modifyOrderCount(Long orderId, ModifyOrderCountRequest request) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("수정할 상품이 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("수정할 상품이 존재하지 않습니다."));
         order.updateCount(request.count());
     }
 
     public void deleteOrder(Long id) {
         orderRepository.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException("삭제할 주문이 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("삭제할 주문이 존재하지 않습니다."));
         orderRepository.deleteById(id);
     }
 }

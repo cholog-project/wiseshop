@@ -9,10 +9,10 @@ public record ProductResponse(String name,
 
     public ProductResponse(Product product) {
         this(
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getStock().getTotalQuantity()
+            product.getName(),
+            product.getDescription(),
+            product.getPrice(),
+            product.getStock().getTotalQuantity()
         );
     }
 }

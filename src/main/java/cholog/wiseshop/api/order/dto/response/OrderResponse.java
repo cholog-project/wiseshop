@@ -12,12 +12,12 @@ public record OrderResponse(Long id,
 
     public OrderResponse(Order order) {
         this(
-                order.getId(),
-                order.getProduct().getId(),
-                order.getProduct().getName(),
-                order.getCount(),
-                order.getCreatedDate(),
-                order.getModifiedDate()
+            order.getId(),
+            order.getProduct().getId(),
+            order.getProduct().getName(),
+            order.getCount(),
+            order.getCreatedDate(),
+            order.getModifiedDate()
         );
     }
 }

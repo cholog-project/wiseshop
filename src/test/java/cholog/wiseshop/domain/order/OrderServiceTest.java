@@ -54,7 +54,7 @@ public class OrderServiceTest {
         int goalQuantity = 5;
 
         campaignId = campaignService.createCampaign(
-                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
     }
 
     @Test

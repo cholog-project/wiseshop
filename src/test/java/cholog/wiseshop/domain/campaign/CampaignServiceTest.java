@@ -124,16 +124,16 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-                new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
 
         // then
         Awaitility.await()
-                .dontCatchUncaughtExceptions()
-                .until(() -> {
-                    Campaign modifiedCampaign = campaignRepository.findById(campaignId)
-                            .orElseThrow();
-                    return modifiedCampaign.getState().equals(CampaignState.IN_PROGRESS);
-                });
+            .dontCatchUncaughtExceptions()
+            .until(() -> {
+                Campaign modifiedCampaign = campaignRepository.findById(campaignId)
+                    .orElseThrow();
+                return modifiedCampaign.getState().equals(CampaignState.IN_PROGRESS);
+            });
     }
 
     @Test
@@ -152,13 +152,13 @@ public class CampaignServiceTest {
 
         // then
         Awaitility.await()
-                .dontCatchUncaughtExceptions()
-                .atMost(200, TimeUnit.MILLISECONDS)
-                .untilAsserted(() -> {
-                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
-                            .orElseThrow();
-                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
-                });
+            .dontCatchUncaughtExceptions()
+            .atMost(200, TimeUnit.MILLISECONDS)
+            .untilAsserted(() -> {
+                Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
+                    .orElseThrow();
+                assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
+            });
     }
 
     @Test
@@ -187,7 +187,8 @@ public class CampaignServiceTest {
         LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
         LocalDateTime endDate = LocalDateTime.now().plusSeconds(2);
         int goalQuantity = 5;
-        campaignService.createCampaign(new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+        campaignService.createCampaign(
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
 
         //when
         List<AllCampaignResponse> result = campaignService.readAllCampaign();

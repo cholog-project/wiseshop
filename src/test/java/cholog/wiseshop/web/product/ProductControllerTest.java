@@ -50,8 +50,8 @@ public class ProductControllerTest {
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .build();
+            .webAppContextSetup(context)
+            .build();
 
         productRepository.deleteAll();
     }
@@ -59,8 +59,8 @@ public class ProductControllerTest {
     @AfterEach
     public void cleanUp() {
         this.entityManager
-                .createNativeQuery("ALTER TABLE product ALTER COLUMN `id` RESTART WITH 1")
-                .executeUpdate();
+            .createNativeQuery("ALTER TABLE product ALTER COLUMN `id` RESTART WITH 1")
+            .executeUpdate();
 
     }
 
@@ -69,10 +69,10 @@ public class ProductControllerTest {
         // given
         CreateProductRequest request = getCreateProductRequest();
         Product product = productRepository.save(new Product(
-                request.name(),
-                request.description(),
-                request.price(),
-                new Stock(request.totalQuantity())
+            request.name(),
+            request.description(),
+            request.price(),
+            new Stock(request.totalQuantity())
         ));
 
         // when
@@ -80,14 +80,14 @@ public class ProductControllerTest {
 
         //then
         mockMvc.perform(get(getUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(request.name()))
-                .andExpect(jsonPath("$.description").value(request.description()))
-                .andExpect(jsonPath("$.price").value(request.price()))
-                .andExpect(jsonPath("$.totalQuantity").value(request.totalQuantity()))
-                .andDo(print());
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value(request.name()))
+            .andExpect(jsonPath("$.description").value(request.description()))
+            .andExpect(jsonPath("$.price").value(request.price()))
+            .andExpect(jsonPath("$.totalQuantity").value(request.totalQuantity()))
+            .andDo(print());
     }
 
     @Test
@@ -106,16 +106,16 @@ public class ProductControllerTest {
         Product savedProduct = productRepository.save(product);
 
         ModifyProductRequest request =
-                new ModifyProductRequest(modifiedName, modifiedDescription);
+            new ModifyProductRequest(modifiedName, modifiedDescription);
 
         String url = "http://localhost:" + port + "/api/v1/products/";
 
         // then
         mockMvc.perform(patch(url + savedProduct.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request))
-                        .characterEncoding("utf-8"))
-                .andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request))
+                .characterEncoding("utf-8"))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -138,10 +138,10 @@ public class ProductControllerTest {
 
         // then
         mockMvc.perform(patch(url + savedProduct.getId() + "/price")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request))
-                        .characterEncoding("utf-8"))
-                .andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request))
+                .characterEncoding("utf-8"))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -160,9 +160,9 @@ public class ProductControllerTest {
 
         // then
         mockMvc.perform(delete(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8"))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8"))
+            .andExpect(status().isNoContent())
+            .andDo(print());
     }
 }

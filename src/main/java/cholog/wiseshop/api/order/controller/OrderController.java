@@ -38,7 +38,8 @@ public class OrderController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> modifyOrderCount(@PathVariable Long id, @RequestBody ModifyOrderCountRequest request) {
+    public ResponseEntity<Void> modifyOrderCount(@PathVariable Long id,
+        @RequestBody ModifyOrderCountRequest request) {
         orderService.modifyOrderCount(id, request);
         return ResponseEntity.ok().build();
     }

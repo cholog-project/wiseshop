@@ -1,8 +1,10 @@
 package cholog.wiseshop.api.campaign.controller;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.response.AllCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +33,12 @@ public class CampaignController {
     @GetMapping("/campaigns/{id}")
     public ResponseEntity<ReadCampaignResponse> readCampaign(@PathVariable Long id) {
         ReadCampaignResponse response = campaignService.readCampaign(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/campaigns")
+    public ResponseEntity<List<AllCampaignResponse>> readAllCampaign() {
+        List<AllCampaignResponse> response = campaignService.readAllCampaign();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

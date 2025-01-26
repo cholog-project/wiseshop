@@ -44,6 +44,12 @@ jobs:
       - name: Test
         run: pwd
 
+      - name: Create log file
+        run: sudo touch /home/ubuntu/wise-shop/wiseshop.log
+
+      - name: Grant write permission for log file
+        run: sudo chmod 666 /home/ubuntu/wise-shop/wiseshop.log
+
       - name: Copy jar
         run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
 

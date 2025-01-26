@@ -39,7 +39,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build and test
-        run: ./gradlew -x build
+        run: ./gradlew build
 
       - name: Create directory on EC2
         run: |
@@ -53,8 +53,7 @@ jobs:
       - name: Copy JAR to EC2
         run: |
           pwd
-          ls
-          scp -i private_key.pem -P ${{ secrets.EC2_PORT }} wiseshop/build/libs/wiseshop.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ubuntu/wise-shop/back-end/tmp
+#          scp -i private_key.pem -P ${{ secrets.EC2_PORT }} wiseshop/build/libs/wiseshop.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ubuntu/wise-shop/back-end/tmp
 
 
       - name: SSH로 EC2에 접속하기

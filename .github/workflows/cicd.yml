@@ -37,11 +37,11 @@ jobs:
 
       - name: copy jar to EC2
         run: |
-          scp -i ${{ secrets.EC2_PRIVATE_KEY }} -P ${{ secrets.EC2_PORT }} wiseshop.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/wise-shop/back-end/tmp
+          scp -i ${{ secrets.EC2_PRIVATE_KEY }} -P ${{ secrets.EC2_PORT }} wiseshop.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/wise-shop/back-end/tmp
 
       - name: SSH로 EC2에 접속하기
         run: |
-          ssh -i ${{ secrets.EC2_PRIVATE_KEY }} -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -i ${{ secrets.EC2_PRIVATE_KEY }} -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
             rm -rf /wise-shop/back-end/current
             mkdir /wise-shop/back-end/current 
             mv /wise-shop/back-end/tmp/wiseshop.jar /wise-shop/back-end/current/wiseshop.jar

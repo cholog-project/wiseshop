@@ -45,7 +45,7 @@ jobs:
         run: pwd
 
       - name: Copy jar
-        run: cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
+        run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
 
       - name: Run application
         run: java -jar /home/ubuntu/wise-shop

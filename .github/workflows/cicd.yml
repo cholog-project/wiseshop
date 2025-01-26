@@ -40,7 +40,7 @@ jobs:
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -i private_key.pem -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
-            mkdir -p /wise-shop/back-end/tmp
+            sudo mkdir -p /wise-shop/back-end/tmp
           EOF
 
 

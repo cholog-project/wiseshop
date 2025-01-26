@@ -46,7 +46,7 @@ jobs:
 
       - name: copy jar to EC2
         run: |
-          scp -i ${{ secrets.EC2_PRIVATE_KEY }} -P ${{ secrets.EC2_PORT }} build/libs/wiseshop.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/wise-shop/back-end/tmp
+          scp -i ${{ secrets.EC2_PRIVATE_KEY }} -P ${{ secrets.EC2_PORT }} wiseshop/build/libs/wiseshop.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/wise-shop/back-end/tmp
 
       - name: SSH로 EC2에 접속하기
         run: |

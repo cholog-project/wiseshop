@@ -40,13 +40,8 @@ jobs:
           scp -i ${{ secrets.EC2_PRIVATE_KEY }} -P ${{ secrets.EC2_PORT }} wiseshop.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/wise-shop/back-end/tmp
 
       - name: SSH로 EC2에 접속하기
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          script_stop: true
-          script: |
+        run: |
+          ssh -i ${{ secrets.EC2_PRIVATE_KEY }} -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             rm -rf /wise-shop/back-end/current
             mkdir /wise-shop/back-end/current 
             mv /wise-shop/back-end/tmp/wiseshop.jar /wise-shop/back-end/current/wiseshop.jar
@@ -54,3 +49,4 @@ jobs:
             sudo fuser -k -n tcp 8080 || true
             nohup java -jar wiseshop.jar > ./output.log 2>&1 &
             rm -rf /wise-shop/back-end/tmp
+          EOF

@@ -48,4 +48,5 @@ jobs:
         run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
 
       - name: Run application
-        run: java -jar /home/ubuntu/wise-shop/wiseshop.jar
+        run: nohup java -jar /home/ubuntu/wise-shop/wiseshop.jar > /home/ubuntu/wise-shop/wiseshop.log 2>&1 &
+

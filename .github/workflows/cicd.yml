@@ -17,6 +17,12 @@ jobs:
         shell: bash
 
     steps:
+      - name: Check current working directory
+        run: pwd
+
+      - name: List files
+        run: ls -la
+
       - name: CheckOut
         uses: actions/checkout@v4
 

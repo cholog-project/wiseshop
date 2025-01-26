@@ -52,6 +52,9 @@ jobs:
 
       - name: Copy JAR to EC2
         run: |
+          pwd
+          ls build
+          ls build/libs
           scp -i private_key.pem -P ${{ secrets.EC2_PORT }} build/libs/wiseshop.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ubuntu/wise-shop/back-end/tmp
 
 

@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ self-hosted ]
 
     defaults:
       run:
@@ -36,14 +36,8 @@ jobs:
         run: ./gradlew build
 
       - name: copy jar to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          source: wiseshop.jar
-          target: /wise-shop/back-end/tmp
+        run: |
+          scp -i ${{ secrets.EC2_PRIVATE_KEY }} -P ${{ secrets.EC2_PORT }} wiseshop.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/wise-shop/back-end/tmp
 
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3

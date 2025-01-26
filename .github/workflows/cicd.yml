@@ -48,7 +48,7 @@ jobs:
         run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
 
       - name: Run application
-        run: java -jar /home/ubuntu/wise-shop
+        run: java -jar /home/ubuntu/wise-shop/wiseshop.jar
 
 #      - name: Create directory on EC2
 #        run: |

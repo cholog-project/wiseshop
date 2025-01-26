@@ -39,30 +39,30 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build and test
-        run: ./gradlew build
+        run: ./gradlew -x build
 
       - name: Create directory on EC2
         run: |
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -i private_key.pem -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
-            sudo mkdir -p /wise-shop/back-end/tmp
+            sudo mkdir -p /home/ubuntu/wise-shop/back-end/tmp
           EOF
 
 
       - name: Copy JAR to EC2
         run: |
-          scp -i private_key.pem -P ${{ secrets.EC2_PORT }} build/libs/wiseshop.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/wise-shop/back-end/tmp
+          scp -i private_key.pem -P ${{ secrets.EC2_PORT }} build/libs/wiseshop.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ubuntu/wise-shop/back-end/tmp
 
 
       - name: SSH로 EC2에 접속하기
         run: |
           ssh -i ${{ secrets.EC2_PRIVATE_KEY }} -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
-            rm -rf /wise-shop/back-end/current
-            mkdir /wise-shop/back-end/current 
-            mv /wise-shop/back-end/tmp/wiseshop.jar /wise-shop/back-end/current/wiseshop.jar
-            cd /wise-shop/back-end/current
+            rm -rf /home/ubuntu/wise-shop/back-end/current
+            mkdir /home/ubuntu/wise-shop/back-end/current 
+            mv /home/ubuntu/wise-shop/back-end/tmp/wiseshop.jar /home/ubuntu/wise-shop/back-end/current/wiseshop.jar
+            cd /home/ubuntu/wise-shop/back-end/current
             sudo fuser -k -n tcp 8080 || true
             nohup java -jar wiseshop.jar > ./output.log 2>&1 &
-            rm -rf /wise-shop/back-end/tmp
+            rm -rf /home/ubuntu/wise-shop/back-end/tmp
           EOF

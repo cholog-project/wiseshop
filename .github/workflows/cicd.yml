@@ -1,12 +1,9 @@
 name: CI/CD workflow
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
     branches:
       - main
-      - feat/cicd-yml
 
 jobs:
   build:
@@ -52,6 +49,15 @@ jobs:
 
       - name: Copy jar
         run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
+
+      - name: Stop running application
+        run: |
+          if pgrep -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"; then
+            echo "Stopping existing application..."
+            pkill -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"
+          else
+            echo "No running application found."
+          fi
 
       - name: Run application
         run: sudo nohup java -jar /home/ubuntu/wise-shop/wiseshop.jar > /home/ubuntu/wise-shop/wiseshop.log 2>&1 &

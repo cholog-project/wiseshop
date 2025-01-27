@@ -1,7 +1,7 @@
 name: CI/CD workflow
 
 on:
-  pull-request:
+  pull_request:
     branches:
       - feat/cicd-yml
   push:

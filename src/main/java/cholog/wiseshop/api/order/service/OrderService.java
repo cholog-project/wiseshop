@@ -52,6 +52,11 @@ public class OrderService {
         return new OrderResponse(order);
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderResponse> readOrders() {
+        return orderRepository.findAll().stream().map(OrderResponse::new).toList();
+    }
+
     public void modifyOrderCount(Long orderId, ModifyOrderCountRequest request) {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new IllegalArgumentException("수정할 상품이 존재하지 않습니다."));

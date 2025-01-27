@@ -25,7 +25,7 @@ public class Product {
 
     private int price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CAMPAIGN_ID")
     private Campaign campaign;
 

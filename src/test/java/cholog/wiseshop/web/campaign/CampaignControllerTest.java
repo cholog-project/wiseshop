@@ -98,11 +98,11 @@ public class CampaignControllerTest {
     }
 
     @Test
-    void 캠페인_조회하기() throws Exception {
+    void 캠페인_단건_조회하기() throws Exception {
         // given
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
         LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
-        Integer goalQuantity = 5;
+        int goalQuantity = 5;
 
         CreateProductRequest productRequest = getCreateProductRequest();
         CreateCampaignRequest request = new CreateCampaignRequest(startDate, endDate, goalQuantity,
@@ -126,6 +126,37 @@ public class CampaignControllerTest {
             .andExpect(jsonPath("$.startDate").value(startDate.toString()))
             .andExpect(jsonPath("$.endDate").value(endDate.toString()))
             .andExpect(jsonPath("$.goalQuantity").value(goalQuantity))
+            .andDo(print());
+    }
+
+    @Test
+    void 캠페인_전체_조회하기() throws Exception {
+        // given
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
+        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
+        int goalQuantity = 5;
+
+        CreateProductRequest productRequest = getCreateProductRequest();
+        CreateCampaignRequest request = new CreateCampaignRequest(startDate, endDate, goalQuantity,
+            productRequest);
+
+        String postUrl = "http://localhost:" + port + "/api/v1/campaigns";
+        mockMvc.perform(post(postUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(new ObjectMapper().writeValueAsString(request)));
+        mockMvc.perform(post(postUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(new ObjectMapper().writeValueAsString(request)));
+
+        String getUrl = "http://localhost:" + port + "/api/v1/campaigns";
+
+        // when & then
+        mockMvc.perform(get(getUrl)
+                .characterEncoding("utf-8"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
             .andDo(print());
     }
 }

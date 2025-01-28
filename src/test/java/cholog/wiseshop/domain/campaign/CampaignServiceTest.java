@@ -191,7 +191,7 @@ public class CampaignServiceTest {
             new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
 
         //when
-        List<AllCampaignResponse> result = campaignService.readAllCampaign();
+        List<ReadCampaignResponse> result = campaignService.readAllCampaign();
 
         //then
         Awaitility.await()

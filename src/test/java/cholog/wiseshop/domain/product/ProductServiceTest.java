@@ -3,7 +3,6 @@ package cholog.wiseshop.domain.product;
 import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.service.CampaignService;
@@ -17,6 +16,8 @@ import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,12 +83,10 @@ public class ProductServiceTest {
         // given
         Long wrongProductId = 10L;
 
-        // when
-        Throwable exception = assertThrows(IllegalArgumentException.class,
-            () -> productService.getProduct(wrongProductId));
-
-        // then
-        assertThat(exception.getMessage()).isEqualTo("상품 조회에 실패했습니다.");
+        // when, then
+        assertThatThrownBy(() -> productService.getProduct(wrongProductId))
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.PRODUCT_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -125,12 +124,10 @@ public class ProductServiceTest {
 
         ModifyProductRequest request = new ModifyProductRequest(modifiedName, modifiedDescription);
 
-        // when
-        Throwable exception = assertThrows(IllegalArgumentException.class,
-            () -> productService.modifyProduct(productId, request));
-
-        // then
-        assertThat(exception.getMessage()).isEqualTo("이름 및 설명글 수정할 상품이 존재하지 않습니다.");
+        // when, then
+        assertThatThrownBy(() -> productService.modifyProduct(productId, request))
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.MODIFY_NAME_DESCRIPTION_PRODUCT_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -160,15 +157,12 @@ public class ProductServiceTest {
         // given
         Long productId = 1L;
         int modifiedPrice = 30000;
-
         ModifyProductPriceRequest request = new ModifyProductPriceRequest(modifiedPrice);
 
-        // when
-        Throwable exception = assertThrows(IllegalArgumentException.class,
-            () -> productService.modifyProductPrice(productId, request));
-
-        // then
-        assertThat(exception.getMessage()).isEqualTo("가격 수정할 상품이 존재하지 않습니다.");
+        // when, then
+        assertThatThrownBy(() -> productService.modifyProductPrice(productId, request))
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -224,7 +218,7 @@ public class ProductServiceTest {
 
         // then
         assertThatThrownBy(() -> productService.modifyStockQuantity(modifyQuantityRequest))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(WiseShopException.class).hasMessage(WiseShopErrorCode.STOCK_NOT_AVAILABLE.getMessage());
     }
 
     @Test
@@ -248,11 +242,9 @@ public class ProductServiceTest {
         // given
         Long wrongProductId = 13L;
 
-        // when
-        Throwable exception = assertThrows(IllegalArgumentException.class,
-            () -> productService.deleteProduct(wrongProductId));
-
-        // then
-        assertThat(exception.getMessage()).isEqualTo("삭제할 상품이 존재하지 않습니다.");
+        // when, then
+        assertThatThrownBy(() -> productService.deleteProduct(wrongProductId))
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.PRODUCT_NOT_FOUND.getMessage());
     }
 }

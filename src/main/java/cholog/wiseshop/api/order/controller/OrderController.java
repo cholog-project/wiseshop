@@ -4,6 +4,7 @@ import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,19 +26,25 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping
+    @PostMapping("/orders")
     public ResponseEntity<Long> createOrder(@RequestBody CreateOrderRequest request) {
         Long orderId = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/orders/{id}")
     public ResponseEntity<OrderResponse> readOrder(@PathVariable Long id) {
         OrderResponse response = orderService.readOrder(id);
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{id}")
+    @GetMapping("/orders")
+    public ResponseEntity<List<OrderResponse>> readMemberOrders() {
+        List<OrderResponse> response = orderService.readOrders();
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/orders/{id}")
     public ResponseEntity<Void> modifyOrderCount(@PathVariable Long id,
         @RequestBody ModifyOrderCountRequest request) {
         orderService.modifyOrderCount(id, request);

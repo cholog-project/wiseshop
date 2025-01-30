@@ -10,10 +10,12 @@ import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
+import cholog.wiseshop.db.order.OrderRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,9 @@ public class OrderServiceTest {
     private StockRepository stockRepository;
 
     @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
     private OrderService orderService;
 
     private Campaign campaign;
@@ -44,6 +49,7 @@ public class OrderServiceTest {
 
     @BeforeEach
     void setUp() {
+        orderRepository.deleteAll();
         productRequest = getCreateProductRequest();
         Stock stock = stockRepository.save(new Stock(productRequest.totalQuantity()));
         product = productRepository.save(new Product(
@@ -53,7 +59,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void 주문_생성_성공() {
+    void 주문_생성_및_조회_성공() {
         //given
         int orderQuantity = 5;
         Long productId = product.getId();
@@ -67,5 +73,23 @@ public class OrderServiceTest {
         //then
         assertThat(response.productName()).isEqualTo(productRequest.name());
         assertThat(response.count()).isEqualTo(orderQuantity);
+    }
+
+    @Test
+    void 주문_목록_조회_성공() {
+        //given
+        int orderQuantity = 1;
+        Long productId = product.getId();
+        CreateOrderRequest orderRequest = new CreateOrderRequest(productId, orderQuantity);
+        campaign.updateState(CampaignState.IN_PROGRESS);
+
+        //when
+        orderService.createOrder(orderRequest);
+        orderService.createOrder(orderRequest);
+        orderService.createOrder(orderRequest);
+        List<OrderResponse> response = orderService.readOrders();
+
+        //then
+        assertThat(response.size()).isEqualTo(3L);
     }
 }

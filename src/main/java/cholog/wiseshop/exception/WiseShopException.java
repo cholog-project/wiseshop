@@ -14,6 +14,11 @@ public class WiseShopException extends RuntimeException {
         this.errorCode = errorCode.name();
     }
 
+    public WiseShopException(WiseShopErrorCode errorCode, Object... args) {
+        super(String.format(errorCode.getMessage(), args));
+        this.errorCode = errorCode.name();
+    }
+
     public String getErrorCode() {
         return errorCode;
     }

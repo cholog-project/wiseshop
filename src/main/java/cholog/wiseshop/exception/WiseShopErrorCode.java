@@ -4,6 +4,7 @@ public enum WiseShopErrorCode {
 
     ALREADY_EXIST_MEMBER("이미 존재하는 회원입니다."),
     MEMBER_ID_NOT_FOUND("올바르지 않은 아이디 입니다."),
+    MEMBER_SESSION_NOT_EXIST("올바르지 않은 접근입니다."),
     PRODUCT_NOT_FOUND("상품이 존재하지 않습니다."),
     MODIFY_NAME_DESCRIPTION_PRODUCT_NOT_FOUND("이름 및 설명글 수정할 상품이 존재하지 않습니다."),
     MODIFY_PRICE_PRODUCT_NOT_FOUND("가격 수정할 상품이 존재하지 않습니다."),

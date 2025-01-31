@@ -41,8 +41,8 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<List<OrderResponse>> readMemberOrders() {
-        List<OrderResponse> response = orderService.readOrders();
+    public ResponseEntity<List<OrderResponse>> readMemberOrders(@Auth Member member) {
+        List<OrderResponse> response = orderService.readMemberOrders(member);
         return ResponseEntity.ok(response);
     }
 

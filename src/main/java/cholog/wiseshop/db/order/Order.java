@@ -1,6 +1,7 @@
 package cholog.wiseshop.db.order;
 
 import cholog.wiseshop.db.BaseTimeEntity;
+import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,14 +25,19 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "PRODUCT_ID", unique = false)
     private Product product;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
+
     private int count;
 
     public Order() {
     }
 
-    public Order(Product product, int count) {
+    public Order(Product product, int count, Member member) {
         this.product = product;
         this.count = count;
+        this.member = member;
     }
 
     public void updateCount(int count) {

@@ -4,6 +4,7 @@ import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.db.campaign.Campaign;
+import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.order.OrderRepository;
 import cholog.wiseshop.db.product.Product;
@@ -12,6 +13,8 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +30,7 @@ public class OrderService {
         this.productRepository = productRepository;
     }
 
-    public Long createOrder(CreateOrderRequest request) {
+    public Long createOrder(CreateOrderRequest request, Member member) {
         Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
         Stock stock = product.getStock();
@@ -40,7 +43,13 @@ public class OrderService {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS);
         }
 
-        Order order = orderRepository.save(request.from(product));
+        Member campaignMember = campaign.getMember();
+
+        if (Objects.equals(campaignMember.getId(), member.getId())) {
+            throw new WiseShopException(WiseShopErrorCode.ORDER_NOT_AVAILABLE);
+        }
+
+        Order order = orderRepository.save(request.from(product, member));
         stock.reduceQuantity(request.orderQuantity());
         campaign.increaseSoldQuantity(request.orderQuantity());
         return order.getId();
@@ -54,8 +63,8 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> readOrders() {
-        return orderRepository.findAll().stream().map(OrderResponse::new).toList();
+    public List<OrderResponse> readMemberOrders(Member member) {
+        return orderRepository.findByMemberId(member.getId()).stream().map(OrderResponse::new).toList();
     }
 
     public void modifyOrderCount(Long orderId, ModifyOrderCountRequest request) {

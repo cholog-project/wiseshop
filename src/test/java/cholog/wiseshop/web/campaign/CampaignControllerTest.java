@@ -12,6 +12,8 @@ import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.db.campaign.CampaignRepository;
+import cholog.wiseshop.db.member.Member;
+import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.db.product.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
@@ -24,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,8 @@ import org.springframework.web.context.WebApplicationContext;
 @Transactional
 public class CampaignControllerTest {
 
+    private static final String SESSION_KEY = "member";
+
     @Autowired
     private WebApplicationContext context;
 
@@ -41,6 +46,9 @@ public class CampaignControllerTest {
 
     @Autowired
     private CampaignRepository campaignRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private CampaignService campaignService;
@@ -53,11 +61,18 @@ public class CampaignControllerTest {
 
     private MockMvc mockMvc;
 
+    private MockHttpSession mockHttpSession;
+
+    private Member mockMember;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders
             .webAppContextSetup(context)
             .build();
+        mockMember = memberRepository.save(new Member("test@naver.com", "초록", "qwer"));
+        mockHttpSession = new MockHttpSession();
+        mockHttpSession.setAttribute(SESSION_KEY, mockMember);
 
         campaignRepository.deleteAll();
         productRepository.deleteAll();
@@ -91,7 +106,8 @@ public class CampaignControllerTest {
         mockMvc.perform(post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")
-                .content(new ObjectMapper().writeValueAsString(request)))
+                .content(new ObjectMapper().writeValueAsString(request))
+                .session(mockHttpSession))
             .andExpect(status().isCreated())
             .andExpect(content().string("1"))
             .andDo(print());
@@ -112,7 +128,8 @@ public class CampaignControllerTest {
         mockMvc.perform(post(postUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")
-                .content(new ObjectMapper().writeValueAsString(request)))
+                .content(new ObjectMapper().writeValueAsString(request))
+                .session(mockHttpSession))
             .andExpect(status().isCreated())
             .andExpect(content().string("1"))
             .andDo(print());

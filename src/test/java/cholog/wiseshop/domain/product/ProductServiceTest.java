@@ -176,7 +176,7 @@ public class ProductServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Integer modifyQuantity = 1;
 
         // when
@@ -206,7 +206,7 @@ public class ProductServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Integer modifyQuantity = 0;
 
         // when

@@ -57,7 +57,7 @@ public class CampaignServiceTest {
         Integer goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
         //then
@@ -81,7 +81,7 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         ReadCampaignResponse response = campaignService.readCampaign(campaignId);
 
         //then
@@ -105,7 +105,7 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Long wrongId = campaignId + 1;
 
         //then
@@ -124,7 +124,7 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
 
         // then
         Awaitility.await()
@@ -147,7 +147,7 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
         // then
@@ -173,7 +173,7 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         // then
         Awaitility.await()
             .atLeast(1, TimeUnit.SECONDS)
@@ -188,7 +188,7 @@ public class CampaignServiceTest {
         LocalDateTime endDate = LocalDateTime.now().plusSeconds(2);
         int goalQuantity = 5;
         campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request));
+            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
 
         //when
         List<ReadCampaignResponse> result = campaignService.readAllCampaign();

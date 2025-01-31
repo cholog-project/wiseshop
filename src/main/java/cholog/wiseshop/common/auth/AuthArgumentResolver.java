@@ -2,6 +2,8 @@ package cholog.wiseshop.common.auth;
 
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
@@ -31,9 +33,9 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         HttpSession session = webRequest.getNativeRequest(HttpServletRequest.class).getSession();
         Member member = (Member) session.getAttribute(SESSION_KEY);
         if (member == null) {
-            throw new IllegalArgumentException("올바르지 않은 세션 정보입니다.");
+            throw new WiseShopException(WiseShopErrorCode.MEMBER_SESSION_NOT_EXIST);
         }
         return memberRepository.findById(member.getId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.MEMBER_ID_NOT_FOUND));
     }
 }

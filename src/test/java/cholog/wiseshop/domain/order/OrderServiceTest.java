@@ -67,7 +67,7 @@ public class OrderServiceTest {
         campaign.updateState(CampaignState.IN_PROGRESS);
 
         //when
-        Long orderId = orderService.createOrder(orderRequest);
+        Long orderId = orderService.createOrder(orderRequest, member.getId());
         OrderResponse response = orderService.readOrder(orderId);
 
         //then
@@ -84,9 +84,9 @@ public class OrderServiceTest {
         campaign.updateState(CampaignState.IN_PROGRESS);
 
         //when
-        orderService.createOrder(orderRequest);
-        orderService.createOrder(orderRequest);
-        orderService.createOrder(orderRequest);
+        orderService.createOrder(orderRequest, member.getId());
+        orderService.createOrder(orderRequest, member.getId());
+        orderService.createOrder(orderRequest, member.getId());
         List<OrderResponse> response = orderService.readOrders();
 
         //then

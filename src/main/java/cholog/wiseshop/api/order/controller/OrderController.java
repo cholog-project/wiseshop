@@ -4,6 +4,8 @@ import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
+import cholog.wiseshop.common.auth.Auth;
+import cholog.wiseshop.db.member.Member;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,8 @@ public class OrderController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<Long> createOrder(@RequestBody CreateOrderRequest request) {
-        Long orderId = orderService.createOrder(request);
+    public ResponseEntity<Long> createOrder(@Auth Member member, @RequestBody CreateOrderRequest request) {
+        Long orderId = orderService.createOrder(request, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
     }
 

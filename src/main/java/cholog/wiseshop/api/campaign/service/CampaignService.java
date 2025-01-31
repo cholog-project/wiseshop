@@ -7,6 +7,7 @@ import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
+import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
@@ -43,13 +44,13 @@ public class CampaignService {
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
-    public Long createCampaign(CreateCampaignRequest request) {
+    public Long createCampaign(CreateCampaignRequest request, Member member) {
         CreateProductRequest productRequest = request.product();
         Stock stock = stockRepository.save(new Stock(productRequest.totalQuantity()));
         Product product = productRepository.save(new Product(
             productRequest.name(), productRequest.description(), productRequest.price(), stock));
         Campaign campaign = campaignRepository.save(
-            new Campaign(request.startDate(), request.endDate(), request.goalQuantity()));
+            new Campaign(request.startDate(), request.endDate(), request.goalQuantity(), member));
         product.addCampaign(campaign);
         scheduleCampaignDate(campaign.getId(), request.startDate(), request.endDate());
         return campaign.getId();

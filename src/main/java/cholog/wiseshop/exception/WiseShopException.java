@@ -9,7 +9,9 @@ public class WiseShopException extends RuntimeException {
         this.errorCode = errorCode.name();
     }
 
-    public WiseShopException(String message, Throwable cause, WiseShopErrorCode errorCode) {
+    public WiseShopException(String message,
+                             Throwable cause,
+                             WiseShopErrorCode errorCode) {
         super(message, cause);
         this.errorCode = errorCode.name();
     }

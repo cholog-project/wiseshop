@@ -29,8 +29,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Transactional
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ProductControllerTest {
 
     @Autowired
@@ -61,7 +61,6 @@ public class ProductControllerTest {
         this.entityManager
             .createNativeQuery("ALTER TABLE product ALTER COLUMN `id` RESTART WITH 1")
             .executeUpdate();
-
     }
 
     @Test
@@ -78,7 +77,7 @@ public class ProductControllerTest {
         // when
         String getUrl = "http://localhost:" + port + "/api/v1/products/" + product.getId();
 
-        //then
+        // then
         mockMvc.perform(get(getUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))

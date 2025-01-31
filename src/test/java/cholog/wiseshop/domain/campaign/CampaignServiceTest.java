@@ -47,10 +47,10 @@ public class CampaignServiceTest {
 
     @Test
     void 캠페인_추가하기() {
-        //given
+        // given
         CreateProductRequest request = getCreateProductRequest();
 
-        //when
+        // when
         LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
         LocalDateTime endDate = LocalDateTime.now().plusMinutes(2);
         Integer goalQuantity = 5;
@@ -59,7 +59,7 @@ public class CampaignServiceTest {
             new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
-        //then
+        // then
         assertThat(findCampaign.getStartDate().truncatedTo(ChronoUnit.SECONDS))
             .isEqualTo(startDate.truncatedTo(ChronoUnit.SECONDS));
         assertThat(findCampaign.getEndDate().truncatedTo(ChronoUnit.SECONDS))
@@ -71,10 +71,10 @@ public class CampaignServiceTest {
 
     @Test
     void 캠페인_조회하기() {
-        //given
+        // given
         CreateProductRequest request = getCreateProductRequest();
 
-        //when
+        // when
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
         LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
         int goalQuantity = 5;
@@ -83,7 +83,7 @@ public class CampaignServiceTest {
             new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         ReadCampaignResponse response = campaignService.readCampaign(campaignId);
 
-        //then
+        // then
         assertAll(
             () -> assertThat(response.campaignId()).isEqualTo(campaignId),
             () -> assertThat(response.product().name()).isEqualTo(request.name()),
@@ -95,10 +95,10 @@ public class CampaignServiceTest {
 
     @Test
     void 캠페인_조회하기_예외_잘못된_캠페인ID() {
-        //given
+        // given
         CreateProductRequest request = getCreateProductRequest();
 
-        //when
+        // when
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
         LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
         int goalQuantity = 5;
@@ -107,17 +107,17 @@ public class CampaignServiceTest {
             new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Long wrongId = campaignId + 1;
 
-        //then
+        // then
         assertThatThrownBy(() -> campaignService.readCampaign(wrongId))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 캠페인_시작_상태_변경_성공() {
-        //given
+        // given
         CreateProductRequest request = getCreateProductRequest();
 
-        //when
+        // when
         LocalDateTime startDate = LocalDateTime.now().plus(50, ChronoUnit.MILLIS);
         LocalDateTime endDate = LocalDateTime.now().plusMinutes(10);
         int goalQuantity = 5;
@@ -137,10 +137,10 @@ public class CampaignServiceTest {
 
     @Test
     void 캠페인_실패_상태_변경_성공() {
-        //given
+        // given
         CreateProductRequest request = getCreateProductRequest();
 
-        //when
+        // when
         LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = LocalDateTime.now().plus(100, ChronoUnit.MILLIS);
         int goalQuantity = 5;
@@ -162,11 +162,11 @@ public class CampaignServiceTest {
 
     @Test
     void 캠페인이_시작됐는지_확인() {
-        //given
+        // given
         CreateProductRequest request = getCreateProductRequest();
         productService.createProduct(request);
 
-        //when
+        // when
         LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
         LocalDateTime endDate = LocalDateTime.now().plusSeconds(10);
         int goalQuantity = 5;
@@ -181,7 +181,7 @@ public class CampaignServiceTest {
 
     @Test
     void 기간_내_캠페인_전체조회_확인() {
-        //given
+        // given
         CreateProductRequest request = getCreateProductRequest();
         LocalDateTime startDate = LocalDateTime.now().plusSeconds(1);
         LocalDateTime endDate = LocalDateTime.now().plusSeconds(2);
@@ -189,10 +189,10 @@ public class CampaignServiceTest {
         campaignService.createCampaign(
             new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
 
-        //when
+        // when
         List<ReadCampaignResponse> result = campaignService.readAllCampaign();
 
-        //then
+        // then
         Awaitility.await()
             .atMost(101, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> assertThat(result).hasSize(1));

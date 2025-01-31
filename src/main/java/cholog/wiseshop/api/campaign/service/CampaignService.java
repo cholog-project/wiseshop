@@ -33,10 +33,10 @@ public class CampaignService {
     private final TransactionTemplate transactionTemplate;
 
     public CampaignService(CampaignRepository campaignRepository,
-        ProductRepository productRepository,
-        StockRepository stockRepository,
-        ThreadPoolTaskScheduler scheduler,
-        PlatformTransactionManager transactionManager) {
+                           ProductRepository productRepository,
+                           StockRepository stockRepository,
+                           ThreadPoolTaskScheduler scheduler,
+                           PlatformTransactionManager transactionManager) {
         this.campaignRepository = campaignRepository;
         this.productRepository = productRepository;
         this.stockRepository = stockRepository;
@@ -47,8 +47,8 @@ public class CampaignService {
     public Long createCampaign(CreateCampaignRequest request, Member member) {
         CreateProductRequest productRequest = request.product();
         Stock stock = stockRepository.save(new Stock(productRequest.totalQuantity()));
-        Product product = productRepository.save(new Product(
-            productRequest.name(), productRequest.description(), productRequest.price(), stock));
+        Product product = productRepository.save(
+                new Product(productRequest.name(), productRequest.description(), productRequest.price(), stock));
         Campaign campaign = campaignRepository.save(
             new Campaign(request.startDate(), request.endDate(), request.goalQuantity(), member));
         product.addCampaign(campaign);
@@ -68,11 +68,13 @@ public class CampaignService {
             campaignId,
             findCampaign.getStartDate().toString(),
             findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
-            new ProductResponse(findProduct));
+            new ProductResponse(findProduct)
+        );
     }
 
-    public void scheduleCampaignDate(Long campaignId, LocalDateTime startDate,
-        LocalDateTime endDate) {
+    public void scheduleCampaignDate(Long campaignId,
+                                     LocalDateTime startDate,
+                                     LocalDateTime endDate) {
         Runnable startCampaign = () -> transactionTemplate.execute(status -> {
             changeCampaingState(campaignId, CampaignState.IN_PROGRESS);
             return null;

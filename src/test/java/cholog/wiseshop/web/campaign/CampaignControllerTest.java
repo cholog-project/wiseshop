@@ -32,8 +32,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Transactional
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class CampaignControllerTest {
 
     private static final String SESSION_KEY = "member";
@@ -49,9 +49,6 @@ public class CampaignControllerTest {
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private CampaignService campaignService;
 
     @Autowired
     private EntityManager entityManager;
@@ -125,6 +122,7 @@ public class CampaignControllerTest {
             productRequest);
 
         String postUrl = "http://localhost:" + port + "/api/v1/campaigns";
+
         mockMvc.perform(post(postUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")
@@ -158,6 +156,7 @@ public class CampaignControllerTest {
             productRequest);
 
         String postUrl = "http://localhost:" + port + "/api/v1/campaigns";
+
         mockMvc.perform(post(postUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")

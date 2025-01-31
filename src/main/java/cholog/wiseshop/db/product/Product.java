@@ -11,7 +11,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
+@Table(name = "PRODUCT")
 @Entity
 public class Product {
 
@@ -33,14 +35,19 @@ public class Product {
     @JoinColumn(name = "STOCK_ID")
     private Stock stock;
 
-    public Product(String name, String description, Integer price, Stock stock) {
+    public Product(String name,
+                   String description,
+                   Integer price,
+                   Stock stock) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
     }
 
-    public Product(String name, String description, int price) {
+    public Product(String name,
+                   String description,
+                   int price) {
         this.name = name;
         this.description = description;
         this.price = price;

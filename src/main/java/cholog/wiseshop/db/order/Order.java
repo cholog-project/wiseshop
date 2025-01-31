@@ -13,8 +13,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+@Table(name = "`ORDER`")
 @Entity
-@Table(name = "`order`")
 public class Order extends BaseTimeEntity {
 
     @Id
@@ -34,7 +34,9 @@ public class Order extends BaseTimeEntity {
     public Order() {
     }
 
-    public Order(Product product, int count, Member member) {
+    public Order(Product product,
+                 int count,
+                 Member member) {
         this.product = product;
         this.count = count;
         this.member = member;

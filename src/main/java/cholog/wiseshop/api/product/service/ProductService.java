@@ -28,8 +28,7 @@ public class ProductService {
 
     public Long createProduct(CreateProductRequest request) {
         Stock stock = new Stock(request.totalQuantity());
-        Product product = new Product(request.name(), request.description(), request.price(),
-            stock);
+        Product product = new Product(request.name(), request.description(), request.price(), stock);
         Product createdProduct = productRepository.save(product);
         return createdProduct.getId();
     }

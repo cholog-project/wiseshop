@@ -21,7 +21,6 @@ import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

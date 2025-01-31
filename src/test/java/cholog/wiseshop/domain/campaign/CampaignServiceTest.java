@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
-import cholog.wiseshop.api.campaign.dto.response.AllCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;

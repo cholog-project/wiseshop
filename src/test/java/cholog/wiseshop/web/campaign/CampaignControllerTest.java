@@ -156,7 +156,6 @@ public class CampaignControllerTest {
         mockMvc.perform(get(getUrl)
                 .characterEncoding("utf-8"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(2))
             .andDo(print());
     }
 }

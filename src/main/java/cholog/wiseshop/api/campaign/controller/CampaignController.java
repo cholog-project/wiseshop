@@ -1,6 +1,7 @@
 package cholog.wiseshop.api.campaign.controller;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.response.AllCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import java.util.List;
@@ -36,8 +37,8 @@ public class CampaignController {
     }
 
     @GetMapping("/campaigns")
-    public ResponseEntity<List<ReadCampaignResponse>> readAllCampaign() {
+    public ResponseEntity<AllCampaignResponse> readAllCampaign() {
         List<ReadCampaignResponse> response = campaignService.readAllCampaign();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(new AllCampaignResponse(response));
     }
 }

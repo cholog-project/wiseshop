@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
         """;
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleAllcllException(HttpServletRequest request, WiseShopException e) {
+    public ResponseEntity<ErrorResponse> handleWiseshopException(HttpServletRequest request, WiseShopException e) {
         log.warn(LOG_FORMAT, request.getMethod(), request.getRequestURI(), getRequestBody(request), e.getMessage(), e);
         return ResponseEntity.badRequest()
             .body(new ErrorResponse(e.getErrorCode(),

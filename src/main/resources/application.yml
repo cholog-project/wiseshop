@@ -18,3 +18,18 @@ spring:
       hibernate:
         show_sql: true
         format_sql:
+
+springdoc:
+  packages-to-scan: cholog
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /swagger-ui
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /api/swagger-docs
+    groups:
+      enabled: true
+  cache:
+    disabled: true

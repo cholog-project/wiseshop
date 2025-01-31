@@ -2,6 +2,7 @@ package cholog.wiseshop.domain.order;
 
 import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
@@ -17,6 +18,8 @@ import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,6 +86,20 @@ public class OrderServiceTest {
         //then
         assertThat(response.productName()).isEqualTo(productRequest.name());
         assertThat(response.count()).isEqualTo(orderQuantity);
+    }
+
+    @Test
+    void 본인이_생성한_상품_주문_예외() {
+        //given
+        int orderQuantity = 5;
+        Long productId = product.getId();
+        CreateOrderRequest orderRequest = new CreateOrderRequest(productId, orderQuantity);
+        campaign.updateState(CampaignState.IN_PROGRESS);
+
+        //when
+        assertThatThrownBy(() -> orderService.createOrder(orderRequest, member))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.ORDER_NOT_AVAILABLE.getMessage());
     }
 
     @Test

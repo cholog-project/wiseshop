@@ -1,7 +1,6 @@
 package cholog.wiseshop.api.campaign.service;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
-import cholog.wiseshop.api.campaign.dto.response.AllCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
@@ -101,14 +100,15 @@ public class CampaignService {
         return false;
     }
 
-    public List<AllCampaignResponse> readAllCampaign() {
+    public List<ReadCampaignResponse> readAllCampaign() {
         List<Product> products = productRepository.findAll();
-        List<AllCampaignResponse> result = new ArrayList<>();
+        List<ReadCampaignResponse> allResponses = new ArrayList<>();
         for (Product product : products) {
-            AllCampaignResponse allCampaignResponse = AllCampaignResponse.from(product,
+            ReadCampaignResponse response = ReadCampaignResponse.of(
+                product,
                 product.getCampaign());
-            result.add(allCampaignResponse);
+            allResponses.add(response);
         }
-        return result;
+        return allResponses;
     }
 }

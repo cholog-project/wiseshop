@@ -37,8 +37,8 @@ public class CampaignController {
     }
 
     @GetMapping("/campaigns")
-    public ResponseEntity<List<AllCampaignResponse>> readAllCampaign() {
-        List<AllCampaignResponse> response = campaignService.readAllCampaign();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<AllCampaignResponse> readAllCampaign() {
+        List<ReadCampaignResponse> response = campaignService.readAllCampaign();
+        return ResponseEntity.status(HttpStatus.OK).body(new AllCampaignResponse(response));
     }
 }

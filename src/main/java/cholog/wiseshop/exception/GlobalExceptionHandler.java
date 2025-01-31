@@ -19,23 +19,22 @@ public class GlobalExceptionHandler {
     private static final String LOG_FORMAT = """
         \n\t{
             "RequestURI": "{} {}",
-            "RequestBody": {},
             "ErrorMessage": "{}",
         \t}
         """;
 
-    @ExceptionHandler
+    @ExceptionHandler(WiseShopException.class)
     public ResponseEntity<ErrorResponse> handleWiseshopException(HttpServletRequest request, WiseShopException e) {
-        log.warn(LOG_FORMAT, request.getMethod(), request.getRequestURI(), getRequestBody(request), e.getMessage(), e);
+        log.warn(LOG_FORMAT, request.getMethod(), request.getRequestURI(), e.getMessage(), e);
         return ResponseEntity.badRequest()
             .body(new ErrorResponse(e.getErrorCode(),
                 e.getMessage(),
                 HttpStatus.BAD_REQUEST.toString()));
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(HttpServletRequest request, Exception e) {
-        log.error(LOG_FORMAT, request.getMethod(), request.getRequestURI(), getRequestBody(request), e.getMessage(), e);
+        log.error(LOG_FORMAT, request.getMethod(), request.getRequestURI(), e.getMessage(), e);
         return ResponseEntity.internalServerError()
             .body(new ErrorResponse("SERVER_ERROR",
                 "서버 에러가 발생하였습니다.",

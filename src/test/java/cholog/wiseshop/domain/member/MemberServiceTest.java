@@ -1,10 +1,11 @@
-package cholog.wiseshop.api.member.service;
+package cholog.wiseshop.domain.member;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.member.dto.request.SignInRequest;
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
+import cholog.wiseshop.api.member.service.MemberService;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
@@ -43,13 +44,13 @@ class MemberServiceTest {
     @Test
     @DisplayName("새로운 사용자가 가입하는 경우 정상 동작을 검증한다.")
     void signUpNewMember() {
-        //given
+        // given
         SignUpRequest signUpRequest = new SignUpRequest("name", NEW_EMAIL, PASSWORD);
 
-        //when
+        // when
         memberService.signUpMember(signUpRequest);
 
-        //then
+        // then
         assertThat(memberRepository.findByEmail(NEW_EMAIL)).isNotEmpty();
     }
 
@@ -59,7 +60,7 @@ class MemberServiceTest {
         //given
         SignUpRequest signUpRequest = new SignUpRequest("name", EXIST_EMAIL, PASSWORD);
 
-        //then
+        // then
         assertThatThrownBy(
             () -> memberService.signUpMember(signUpRequest))
             .isInstanceOf(WiseShopException.class)
@@ -70,25 +71,25 @@ class MemberServiceTest {
     @Test
     @DisplayName("로그인의 정상 동작을 검증한다.")
     void signInMember() {
-        //given
+        // given
         MockHttpSession session = new MockHttpSession();
         SignInRequest signInRequest = new SignInRequest(EXIST_EMAIL, PASSWORD);
 
-        //when
+        // when
         memberService.signInMember(signInRequest, session);
 
-        //then
+        // then
         assertThat(session.getAttribute("member")).isNotNull();
     }
 
     @Test
     @DisplayName("가입되지 않은 사용자가 로그인 할 때 예외를 검증한다.")
     void notExistMemberSignIn() {
-        //given
+        // given
         MockHttpSession session = new MockHttpSession();
         SignInRequest signInRequest = new SignInRequest(NEW_EMAIL, PASSWORD);
 
-        //then
+        // then
         assertThatThrownBy(() -> memberService.signInMember(signInRequest, session))
             .isInstanceOf(WiseShopException.class)
             .hasMessage(WiseShopErrorCode.MEMBER_ID_NOT_FOUND.getMessage());
@@ -97,11 +98,11 @@ class MemberServiceTest {
     @Test
     @DisplayName("잘못된 비밀번호로 로그인 할 때 예외를 검증한다")
     void wrongPasswordSignIn() {
-        //given
+        // given
         MockHttpSession session = new MockHttpSession();
         SignInRequest signInRequest = new SignInRequest(NEW_EMAIL, "boyeZZANG");
 
-        //then
+        // then
         assertThatThrownBy(() -> memberService.signInMember(signInRequest, session))
             .isInstanceOf(WiseShopException.class)
             .hasMessage(WiseShopErrorCode.MEMBER_ID_NOT_FOUND.getMessage());

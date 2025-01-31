@@ -8,8 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
-@Entity
 @Table(name = "MEMBER")
+@Entity
 public class Member {
 
     @Id

@@ -21,15 +21,14 @@ import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
 @Transactional
+@SpringBootTest
 public class OrderServiceTest {
 
     @Autowired
@@ -72,31 +71,31 @@ public class OrderServiceTest {
 
     @Test
     void 주문_생성_및_조회_성공() {
-        //given
+        // given
         int orderQuantity = 5;
         Long productId = product.getId();
         CreateOrderRequest orderRequest = new CreateOrderRequest(productId, orderQuantity);
         campaign.updateState(CampaignState.IN_PROGRESS);
         Member orderMember = memberRepository.save(new Member("test2@naver.com", "초록2", "qwer2"));
 
-        //when
+        // when
         Long orderId = orderService.createOrder(orderRequest, orderMember);
         OrderResponse response = orderService.readOrder(orderId);
 
-        //then
+        // then
         assertThat(response.productName()).isEqualTo(productRequest.name());
         assertThat(response.count()).isEqualTo(orderQuantity);
     }
 
     @Test
     void 본인이_생성한_상품_주문_예외() {
-        //given
+        // given
         int orderQuantity = 5;
         Long productId = product.getId();
         CreateOrderRequest orderRequest = new CreateOrderRequest(productId, orderQuantity);
         campaign.updateState(CampaignState.IN_PROGRESS);
 
-        //when
+        // when
         assertThatThrownBy(() -> orderService.createOrder(orderRequest, member))
                 .isInstanceOf(WiseShopException.class)
                 .hasMessage(WiseShopErrorCode.ORDER_NOT_AVAILABLE.getMessage());
@@ -104,7 +103,7 @@ public class OrderServiceTest {
 
     @Test
     void 주문_목록_조회_성공() {
-        //given
+        // given
         int orderQuantity = 1;
         Long productId = product.getId();
         CreateOrderRequest orderRequest = new CreateOrderRequest(productId, orderQuantity);

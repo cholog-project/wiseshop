@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
 @RequestMapping("/api/v1")
+@RestController
 public class OrderController {
 
     private final OrderService orderService;
@@ -47,8 +47,7 @@ public class OrderController {
     }
 
     @PatchMapping("/orders/{id}")
-    public ResponseEntity<Void> modifyOrderCount(@PathVariable Long id,
-        @RequestBody ModifyOrderCountRequest request) {
+    public ResponseEntity<Void> modifyOrderCount(@PathVariable Long id, @RequestBody ModifyOrderCountRequest request) {
         orderService.modifyOrderCount(id, request);
         return ResponseEntity.ok().build();
     }

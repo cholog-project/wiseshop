@@ -118,7 +118,6 @@ public class ProductRepositoryTest {
         assertThat(productRepository.findById(createdProduct.getId())).isEmpty();
     }
 
-
     public static CreateProductRequest getCreateProductRequest() {
         String name = "보약";
         String description = "먹으면 기분이 좋아져요.";

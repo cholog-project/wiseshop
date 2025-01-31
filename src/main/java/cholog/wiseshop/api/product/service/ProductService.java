@@ -9,6 +9,8 @@ import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,36 +37,37 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductResponse getProduct(Long id) {
         return new ProductResponse(productRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("상품 조회에 실패했습니다.")));
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND)));
     }
 
     public void modifyProduct(Long productId, ModifyProductRequest request) {
         Product existedProduct = productRepository.findById(productId)
-            .orElseThrow(() -> new IllegalArgumentException("이름 및 설명글 수정할 상품이 존재하지 않습니다."));
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.MODIFY_NAME_DESCRIPTION_PRODUCT_NOT_FOUND));
         existedProduct.modifyProduct(request.name(), request.description());
         productRepository.save(existedProduct);
     }
 
     public void modifyProductPrice(Long productId, ModifyProductPriceRequest request) {
         Product existedProduct = productRepository.findById(productId)
-            .orElseThrow(() -> new IllegalArgumentException("가격 수정할 상품이 존재하지 않습니다."));
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND));
         existedProduct.modifyPrice(request.price());
         productRepository.save(existedProduct);
     }
 
+    //테스트 제외 사용되지 않는 메서드
     public void modifyStockQuantity(ModifyQuantityRequest request) {
         if (campaignService.isStarted(request.campaignId())) {
-            throw new IllegalArgumentException("캠페인이 시작되어 상품을 수정할 수 없습니다.");
+            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_ALREADY_IN_PROGRESS);
         }
         Product existedProduct = productRepository.findById(request.productId())
-            .orElseThrow(() -> new IllegalArgumentException("상품 조회에 실패했습니다."));
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
         Stock existedStock = existedProduct.getStock();
         existedStock.modifyTotalQuantity(request.modifyQuantity());
     }
 
     public void deleteProduct(Long id) {
         productRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("삭제할 상품이 존재하지 않습니다."));
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
         productRepository.deleteById(id);
     }
 }

@@ -1,5 +1,7 @@
 package cholog.wiseshop.db.stock;
 
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,7 +35,7 @@ public class Stock {
 
     public void modifyTotalQuantity(int modifyQuantity) {
         if (modifyQuantity < MINIMUM_QUANTITY) {
-            throw new IllegalArgumentException("재고 수량은 최소 1개 이상이어야 합니다.");
+            throw new WiseShopException(WiseShopErrorCode.STOCK_NOT_AVAILABLE);
         }
         this.totalQuantity = modifyQuantity;
     }

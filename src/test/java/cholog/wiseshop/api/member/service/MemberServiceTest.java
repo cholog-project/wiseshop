@@ -7,6 +7,8 @@ import cholog.wiseshop.api.member.dto.request.SignInRequest;
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +62,8 @@ class MemberServiceTest {
         //then
         assertThatThrownBy(
             () -> memberService.signUpMember(signUpRequest))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.ALREADY_EXIST_MEMBER.getMessage());
     }
 
 
@@ -87,7 +90,8 @@ class MemberServiceTest {
 
         //then
         assertThatThrownBy(() -> memberService.signInMember(signInRequest, session))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.MEMBER_ID_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -99,6 +103,7 @@ class MemberServiceTest {
 
         //then
         assertThatThrownBy(() -> memberService.signInMember(signInRequest, session))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.MEMBER_ID_NOT_FOUND.getMessage());
     }
 }

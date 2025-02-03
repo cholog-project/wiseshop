@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- 로컬 환경 -->
+  <springProfile name="dev">
+    <appender name="DEV_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>[%thread] %logger %p %d{yyyy-MM-dd HH:mm:ss.SSS} %msg %n</pattern>
+      </encoder>
+    </appender>
+
+    <root level="INFO">
+      <appender-ref ref="DEV_CONSOLE" />
+    </root>
+  </springProfile>
+
+  <!-- 운영 환경 -->
+  <springProfile name="prod">
+    <appender name="PROD_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 로그파일 저장위치 -->
+      <file>logs/wiseshop.log</file>
+
+      <!-- 로그파일 롤링 정책 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>logs/wiseshop.%d{yyyy-MM-dd}.log</fileNamePattern>
+        <!-- 30일 간의 로그파일 보관 -->
+        <maxHistory>30</maxHistory>
+      </rollingPolicy>
+
+      <encoder>
+        <pattern>[%thread] %logger %p %d{yyyy-MM-dd HH:mm:ss.SSS} %msg %n</pattern>
+      </encoder>
+    </appender>
+
+    <root level="INFO">
+      <appender-ref ref="PROD_FILE" />
+    </root>
+  </springProfile>
+</configuration>
+

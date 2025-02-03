@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
+import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
@@ -31,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ProductControllerTest {
+public class ProductControllerTest extends BaseTest {
 
     @Autowired
     private ProductRepository productRepository;

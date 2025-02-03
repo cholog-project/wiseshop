@@ -10,6 +10,7 @@ import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.service.ProductService;
+import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
@@ -22,10 +23,8 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-public class CampaignServiceTest {
+public class CampaignServiceTest extends BaseTest {
 
     @Autowired
     private CampaignService campaignService;
@@ -56,14 +55,14 @@ public class CampaignServiceTest {
         Integer goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
         // then
         assertThat(findCampaign.getStartDate().truncatedTo(ChronoUnit.SECONDS))
-            .isEqualTo(startDate.truncatedTo(ChronoUnit.SECONDS));
+                .isEqualTo(startDate.truncatedTo(ChronoUnit.SECONDS));
         assertThat(findCampaign.getEndDate().truncatedTo(ChronoUnit.SECONDS))
-            .isEqualTo(endDate.truncatedTo(ChronoUnit.SECONDS));
+                .isEqualTo(endDate.truncatedTo(ChronoUnit.SECONDS));
         assertThat(findCampaign.getGoalQuantity()).isEqualTo(goalQuantity);
         assertThat(findCampaign.getState()).isEqualTo(CampaignState.WAITING);
     }
@@ -80,16 +79,16 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         ReadCampaignResponse response = campaignService.readCampaign(campaignId);
 
         // then
         assertAll(
-            () -> assertThat(response.campaignId()).isEqualTo(campaignId),
-            () -> assertThat(response.product().name()).isEqualTo(request.name()),
-            () -> assertThat(response.product().description()).isEqualTo(request.description()),
-            () -> assertThat(response.product().price()).isEqualTo(request.price()),
-            () -> assertThat(response.product().totalQuantity()).isEqualTo(request.totalQuantity())
+                () -> assertThat(response.campaignId()).isEqualTo(campaignId),
+                () -> assertThat(response.product().name()).isEqualTo(request.name()),
+                () -> assertThat(response.product().description()).isEqualTo(request.description()),
+                () -> assertThat(response.product().price()).isEqualTo(request.price()),
+                () -> assertThat(response.product().totalQuantity()).isEqualTo(request.totalQuantity())
         );
     }
 
@@ -104,12 +103,12 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Long wrongId = campaignId + 1;
 
         // then
         assertThatThrownBy(() -> campaignService.readCampaign(wrongId))
-            .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -123,16 +122,16 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
 
         // then
         Awaitility.await()
-            .dontCatchUncaughtExceptions()
-            .until(() -> {
-                Campaign modifiedCampaign = campaignRepository.findById(campaignId)
-                    .orElseThrow();
-                return modifiedCampaign.getState().equals(CampaignState.IN_PROGRESS);
-            });
+                .dontCatchUncaughtExceptions()
+                .until(() -> {
+                    Campaign modifiedCampaign = campaignRepository.findById(campaignId)
+                            .orElseThrow();
+                    return modifiedCampaign.getState().equals(CampaignState.IN_PROGRESS);
+                });
     }
 
     @Test
@@ -146,18 +145,18 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         Campaign findCampaign = campaignRepository.findById(campaignId).orElseThrow();
 
         // then
         Awaitility.await()
-            .dontCatchUncaughtExceptions()
-            .atMost(200, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> {
-                Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
-                    .orElseThrow();
-                assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
-            });
+                .dontCatchUncaughtExceptions()
+                .atMost(200, TimeUnit.MILLISECONDS)
+                .untilAsserted(() -> {
+                    Campaign modifiedCampaign = campaignRepository.findById(findCampaign.getId())
+                            .orElseThrow();
+                    assertThat(modifiedCampaign.getState()).isEqualTo(CampaignState.FAILED);
+                });
     }
 
     @Test
@@ -172,11 +171,11 @@ public class CampaignServiceTest {
         int goalQuantity = 5;
 
         Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
         // then
         Awaitility.await()
-            .atLeast(1, TimeUnit.SECONDS)
-            .untilAsserted(() -> assertThat(campaignService.isStarted(campaignId)).isTrue());
+                .atLeast(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> assertThat(campaignService.isStarted(campaignId)).isTrue());
     }
 
     @Test
@@ -187,14 +186,14 @@ public class CampaignServiceTest {
         LocalDateTime endDate = LocalDateTime.now().plusSeconds(2);
         int goalQuantity = 5;
         campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+                new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
 
         // when
         List<ReadCampaignResponse> result = campaignService.readAllCampaign();
 
         // then
         Awaitility.await()
-            .atMost(101, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> assertThat(result).hasSize(1));
+                .atMost(101, TimeUnit.MILLISECONDS)
+                .untilAsserted(() -> assertThat(result).hasSize(1));
     }
 }

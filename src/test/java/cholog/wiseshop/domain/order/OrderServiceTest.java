@@ -8,6 +8,7 @@ import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
@@ -24,12 +25,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-@SpringBootTest
-public class OrderServiceTest {
+public class OrderServiceTest extends BaseTest {
 
     @Autowired
     private CampaignRepository campaignRepository;

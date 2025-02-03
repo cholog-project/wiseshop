@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import cholog.wiseshop.api.member.dto.request.SignInRequest;
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
 import cholog.wiseshop.api.member.service.MemberService;
+import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
@@ -20,7 +21,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class MemberServiceTest {
+class MemberServiceTest extends BaseTest {
 
     @Autowired
     private MemberRepository memberRepository;

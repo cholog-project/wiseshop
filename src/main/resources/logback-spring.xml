@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <!-- 로컬 환경 -->
-  <springProfile name="dev">
-    <appender name="DEV_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+  <springProfile name="local">
+    <appender name="LOCAL_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
       <encoder>
         <pattern>[%thread] %logger %p %d{yyyy-MM-dd HH:mm:ss.SSS} %msg %n</pattern>
       </encoder>
     </appender>
 
     <root level="INFO">
-      <appender-ref ref="DEV_CONSOLE" />
+      <appender-ref ref="LOCAL_CONSOLE" />
     </root>
   </springProfile>
 

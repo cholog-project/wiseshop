@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record CampaignModel(
+        Long id,
         Long goalQuantity,
         LocalDateTime startDate,
         LocalDateTime endDate,

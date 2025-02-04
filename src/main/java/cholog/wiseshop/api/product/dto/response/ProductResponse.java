@@ -1,20 +1,22 @@
 package cholog.wiseshop.api.product.dto.response;
 
-import cholog.wiseshop.db.product.Product;
+import cholog.wiseshop.api.product.domain.ProductModel;
 
-public record ProductResponse(Long id,
-                              String name,
-                              String description,
-                              Integer price,
-                              Integer totalQuantity) {
+public record ProductResponse(
+        Long id,
+        String name,
+        String description,
+        Long price,
+        Long totalQuantity
+) {
 
-    public ProductResponse(Product product) {
+    public ProductResponse(ProductModel product) {
         this(
-            product.getId(),
-            product.getName(),
-            product.getDescription(),
-            product.getPrice(),
-            product.getStock().getTotalQuantity()
+                product.id(),
+                product.name(),
+                product.description(),
+                product.price(),
+                product.quantity()
         );
     }
 }

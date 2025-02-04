@@ -6,8 +6,10 @@ import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyQuantityRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
+import cholog.wiseshop.db.campaign.Campaign;
+import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
-import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.product.JdbcProductRepository;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
@@ -18,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProductService {
 
-    private final ProductRepository productRepository;
+    private final JdbcProductRepository productRepository;
     private final CampaignService campaignService;
 
-    public ProductService(ProductRepository productRepository, CampaignService campaignService) {
+    public ProductService(JdbcProductRepository productRepository, CampaignService campaignService) {
         this.productRepository = productRepository;
         this.campaignService = campaignService;
     }
@@ -35,8 +37,12 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductResponse getProduct(Long id) {
-        return new ProductResponse(productRepository.findById(id)
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND)));
+        // TODO: Model 만드는 Repository로 바꿔주기
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
+        Campaign campaign = product.getCampaign();
+        Member member = campaign.getMember();
+        return new ProductResponse(product.toModel(member.toModel()));
     }
 
     public void modifyProduct(Long productId, ModifyProductRequest request) {

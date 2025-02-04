@@ -1,5 +1,6 @@
 package cholog.wiseshop.db.member;
 
+import cholog.wiseshop.api.member.domain.MemberModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 @Table(name = "MEMBER")
 @Entity
@@ -55,5 +58,14 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public MemberModel toModel() {
+        return new MemberModel(
+                name,
+                email,
+                List.of(), // todo: address 추가
+                List.of() // todo : payments 추가 (결제수단)
+        );
     }
 }

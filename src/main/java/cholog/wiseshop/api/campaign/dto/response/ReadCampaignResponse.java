@@ -1,21 +1,24 @@
 package cholog.wiseshop.api.campaign.dto.response;
 
+import cholog.wiseshop.api.campaign.domain.CampaignModel;
+import cholog.wiseshop.api.product.domain.ProductModel;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
-import cholog.wiseshop.db.campaign.Campaign;
-import cholog.wiseshop.db.product.Product;
 
-public record ReadCampaignResponse(Long campaignId,
-                                   String startDate,
-                                   String endDate,
-                                   int goalQuantity,
-                                   ProductResponse product) {
+public record ReadCampaignResponse(
+        Long campaignId,
+        String startDate,
+        String endDate,
+        long goalQuantity,
+        ProductResponse product
+) {
 
-    public static ReadCampaignResponse of(Product product, Campaign campaign) {
+    public static ReadCampaignResponse of(ProductModel product, CampaignModel campaign) {
         return new ReadCampaignResponse(
-            campaign.getId(),
-            campaign.getStartDate().toString(),
-            campaign.getEndDate().toString(),
-            campaign.getGoalQuantity(),
-            new ProductResponse(product));
+                campaign.id(),
+                campaign.startDate().toString(),
+                campaign.endDate().toString(),
+                campaign.goalQuantity(),
+                new ProductResponse(product)
+        );
     }
 }

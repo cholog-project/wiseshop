@@ -5,20 +5,20 @@ import cholog.wiseshop.api.product.domain.ProductModel;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 
 public record ReadCampaignResponse(
-        Long campaignId,
-        String startDate,
-        String endDate,
-        long goalQuantity,
-        ProductResponse product
+    Long campaignId,
+    String startDate,
+    String endDate,
+    long goalQuantity,
+    ProductResponse product
 ) {
 
     public static ReadCampaignResponse of(ProductModel product, CampaignModel campaign) {
         return new ReadCampaignResponse(
-                campaign.id(),
-                campaign.startDate().toString(),
-                campaign.endDate().toString(),
-                campaign.goalQuantity(),
-                new ProductResponse(product)
+            campaign.id(),
+            campaign.startDate().toString(),
+            campaign.endDate().toString(),
+            campaign.goalQuantity(),
+            new ProductResponse(product)
         );
     }
 }

@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
-import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
@@ -34,7 +34,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class CampaignControllerTest {
+public class CampaignControllerTest extends BaseTest {
 
     private static final String SESSION_KEY = "member";
 

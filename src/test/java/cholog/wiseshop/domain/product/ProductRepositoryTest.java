@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
@@ -13,12 +14,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest
 @Transactional
-public class ProductRepositoryTest {
+public class ProductRepositoryTest extends BaseTest {
 
     @Autowired
     private ProductRepository productRepository;

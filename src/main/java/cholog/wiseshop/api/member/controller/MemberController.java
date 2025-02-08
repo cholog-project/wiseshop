@@ -41,7 +41,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/member")
-    public ResponseEntity<Void> deleteAccount(@Auth Member member) {
+    public ResponseEntity<Void> deleteMember(@Auth Member member) {
         memberService.deleteMember(member);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

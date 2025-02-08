@@ -89,19 +89,19 @@ public class CampaignService {
 		LocalDateTime startDate,
 		LocalDateTime endDate) {
 		Runnable startCampaign = () -> transactionTemplate.execute(status -> {
-			changeCampaingState(campaignId, CampaignState.IN_PROGRESS);
+			changeCampaignState(campaignId, CampaignState.IN_PROGRESS);
 			return null;
 		});
 		scheduler.schedule(startCampaign, startDate.atZone(ZoneId.systemDefault()).toInstant());
 
 		Runnable endCampaign = () -> transactionTemplate.execute(status -> {
-			changeCampaingState(campaignId, CampaignState.FAILED);
+			changeCampaignState(campaignId, CampaignState.FAILED);
 			return null;
 		});
 		scheduler.schedule(endCampaign, endDate.atZone(ZoneId.systemDefault()).toInstant());
 	}
 
-	public void changeCampaingState(Long campaignId, CampaignState state) {
+	public void changeCampaignState(Long campaignId, CampaignState state) {
 		Campaign campaign = campaignRepository.findById(campaignId)
 			.orElseThrow(() -> new IllegalArgumentException("상태 변경할 캠페인 정보가 존재하지 않습니다."));
 		campaign.updateState(state);

@@ -21,60 +21,70 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-    private final ProductRepository productRepository;
+	private final OrderRepository orderRepository;
+	private final ProductRepository productRepository;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
-        this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
-    }
+	public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+		this.orderRepository = orderRepository;
+		this.productRepository = productRepository;
+	}
 
-    public Long createOrder(CreateOrderRequest request, Member member) {
-        Product product = productRepository.findById(request.productId())
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
-        Stock stock = product.getStock();
-        if (!stock.hasQuantity(request.orderQuantity())) {
-            throw new WiseShopException(WiseShopErrorCode.ORDER_LIMIT_EXCEED, stock.getTotalQuantity());
-        }
+	public Long createOrder(CreateOrderRequest request, Member member) {
+		Product product = productRepository.findById(request.productId())
+			.orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
+		Campaign campaign = product.getCampaign();
+		validateCampaignState(campaign);
+		Stock stock = product.getStock();
+		validateQuantity(campaign, stock, request.orderQuantity());
+		Member campaignOwner = campaign.getMember();
+		validateOrderOwner(campaign, campaignOwner);
+		Order order = orderRepository.save(request.from(product, member));
+		campaign.increaseSoldQuantity(request.orderQuantity());
+		return order.getId();
+	}
 
-        Campaign campaign = product.getCampaign();
-        if (!campaign.isInProgress()) {
-            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS);
-        }
+	@Transactional(readOnly = true)
+	public OrderResponse readOrder(Long id) {
+		Order order = orderRepository.findById(id)
+			.orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
+		return new OrderResponse(order);
+	}
 
-        Member campaignMember = campaign.getMember();
+	@Transactional(readOnly = true)
+	public List<OrderResponse> readMemberOrders(Member member) {
+		return orderRepository.findByMemberId(member.getId())
+			.stream().map(OrderResponse::new).toList();
+	}
 
-        if (Objects.equals(campaignMember.getId(), member.getId())) {
-            throw new WiseShopException(WiseShopErrorCode.ORDER_NOT_AVAILABLE);
-        }
+	public void modifyOrderCount(Long orderId, ModifyOrderCountRequest request) {
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
+		order.updateCount(request.count());
+	}
 
-        Order order = orderRepository.save(request.from(product, member));
-        stock.reduceQuantity(request.orderQuantity());
-        campaign.increaseSoldQuantity(request.orderQuantity());
-        return order.getId();
-    }
+	public void deleteOrder(Long id) {
+		orderRepository.findById(id)
+			.orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
+		orderRepository.deleteById(id);
+	}
 
-    @Transactional(readOnly = true)
-    public OrderResponse readOrder(Long id) {
-        Order order = orderRepository.findById(id)
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
-        return new OrderResponse(order);
-    }
+	public void validateQuantity(Campaign campaign, Stock stock, int orderQuantity) {
+		int remainQuantity = stock.getTotalQuantity() - campaign.getSoldQuantity();
 
-    @Transactional(readOnly = true)
-    public List<OrderResponse> readMemberOrders(Member member) {
-        return orderRepository.findByMemberId(member.getId()).stream().map(OrderResponse::new).toList();
-    }
+		if (remainQuantity - orderQuantity < 0) {
+			throw new WiseShopException(WiseShopErrorCode.ORDER_LIMIT_EXCEED, remainQuantity);
+		}
+	}
 
-    public void modifyOrderCount(Long orderId, ModifyOrderCountRequest request) {
-        Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
-        order.updateCount(request.count());
-    }
+	public void validateCampaignState(Campaign campaign) {
+		if (!campaign.isInProgress()) {
+			throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS);
+		}
+	}
 
-    public void deleteOrder(Long id) {
-        orderRepository.findById(id)
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
-        orderRepository.deleteById(id);
-    }
+	public void validateOrderOwner(Campaign campaign, Member campaignOwner) {
+		if (Objects.equals(campaign.getId(), campaignOwner.getId())) {
+			throw new WiseShopException(WiseShopErrorCode.ORDER_NOT_AVAILABLE);
+		}
+	}
 }

@@ -37,7 +37,7 @@ public class OrderService {
 		Stock stock = product.getStock();
 		validateQuantity(campaign, stock, request.orderQuantity());
 		Member campaignOwner = campaign.getMember();
-		validateOrderOwner(campaign, campaignOwner);
+		validateOrderOwner(campaignOwner, member);
 		Order order = orderRepository.save(request.from(product, member));
 		campaign.increaseSoldQuantity(request.orderQuantity());
 		return order.getId();
@@ -82,8 +82,8 @@ public class OrderService {
 		}
 	}
 
-	public void validateOrderOwner(Campaign campaign, Member campaignOwner) {
-		if (Objects.equals(campaign.getId(), campaignOwner.getId())) {
+	public void validateOrderOwner(Member campaignOwner, Member orderMember) {
+		if (Objects.equals(campaignOwner.getId(), orderMember.getId())) {
 			throw new WiseShopException(WiseShopErrorCode.ORDER_NOT_AVAILABLE);
 		}
 	}

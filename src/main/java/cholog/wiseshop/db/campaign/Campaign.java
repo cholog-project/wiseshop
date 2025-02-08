@@ -45,9 +45,9 @@ public class Campaign {
     private Member member;
 
     public Campaign(LocalDateTime startDate,
-                    LocalDateTime endDate,
-                    int goalQuantity,
-                    Member member) {
+        LocalDateTime endDate,
+        int goalQuantity,
+        Member member) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalQuantity = goalQuantity;
@@ -56,8 +56,8 @@ public class Campaign {
     }
 
     public Campaign(LocalDateTime startDate,
-                    LocalDateTime endDate,
-                    int goalQuantity) {
+        LocalDateTime endDate,
+        int goalQuantity) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalQuantity = goalQuantity;
@@ -76,6 +76,10 @@ public class Campaign {
         if (soldQuantity - orderQuantity == 0) {
             this.state = CampaignState.SUCCESS;
         }
+    }
+
+    public boolean isStarted() {
+        return getState().equals(CampaignState.IN_PROGRESS);
     }
 
     public Long getId() {

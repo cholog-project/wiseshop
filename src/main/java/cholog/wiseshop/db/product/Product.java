@@ -53,6 +53,14 @@ public class Product {
         this.price = price;
     }
 
+    public Product(String name, String description, int price, Campaign campaign, Stock stock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.campaign = campaign;
+        this.stock = stock;
+    }
+
     public Product() {
 
     }

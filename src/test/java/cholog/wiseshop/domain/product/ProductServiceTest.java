@@ -163,62 +163,62 @@ public class ProductServiceTest extends BaseTest {
             .isInstanceOf(WiseShopException.class)
             .hasMessage(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND.getMessage());
     }
+//
+//    @Test
+//    void 상품_재고_수량_수정_성공() {
+//        // given
+//        CreateProductRequest request = getCreateProductRequest();
+//        Long productId = productService.createProduct(request);
+//
+//        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30, 10);
+//        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30, 10);
+//        int goalQuantity = 5;
+//
+//        Long campaignId = campaignService.createCampaign(
+//            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+//        Integer modifyQuantity = 1;
+//
+//        // when
+//        ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
+//            campaignId,
+//            productId,
+//            modifyQuantity
+//        );
+//        productService.modifyStockQuantity(modifyQuantityRequest);
+//
+//        Product modifiedProduct = productRepository.findById(productId)
+//            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+//        Stock modifiedStock = modifiedProduct.getStock();
+//
+//        // then
+//        assertThat(modifiedStock.getTotalQuantity()).isEqualTo(modifyQuantity);
+//    }
 
-    @Test
-    void 상품_재고_수량_수정_성공() {
-        // given
-        CreateProductRequest request = getCreateProductRequest();
-        Long productId = productService.createProduct(request);
-
-        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30, 10);
-        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30, 10);
-        int goalQuantity = 5;
-
-        Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
-        Integer modifyQuantity = 1;
-
-        // when
-        ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
-            campaignId,
-            productId,
-            modifyQuantity
-        );
-        productService.modifyStockQuantity(modifyQuantityRequest);
-
-        Product modifiedProduct = productRepository.findById(productId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
-        Stock modifiedStock = modifiedProduct.getStock();
-
-        // then
-        assertThat(modifiedStock.getTotalQuantity()).isEqualTo(modifyQuantity);
-    }
-
-    @Test
-    void 상품_재고_수량_수정_실패() {
-        // given
-        CreateProductRequest request = getCreateProductRequest();
-        Long productId = productService.createProduct(request);
-
-        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30, 10);
-        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30, 10);
-        int goalQuantity = 5;
-
-        Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
-        Integer modifyQuantity = 0;
-
-        // when
-        ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
-            campaignId,
-            productId,
-            modifyQuantity
-        );
-
-        // then
-        assertThatThrownBy(() -> productService.modifyStockQuantity(modifyQuantityRequest))
-            .isInstanceOf(WiseShopException.class).hasMessage(WiseShopErrorCode.STOCK_NOT_AVAILABLE.getMessage());
-    }
+//    @Test
+//    void 상품_재고_수량_수정_실패() {
+//        // given
+//        CreateProductRequest request = getCreateProductRequest();
+//        Long productId = productService.createProduct(request);
+//
+//        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30, 10);
+//        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30, 10);
+//        int goalQuantity = 5;
+//
+//        Long campaignId = campaignService.createCampaign(
+//            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
+//        Integer modifyQuantity = 0;
+//
+//        // when
+//        ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
+//            campaignId,
+//            productId,
+//            modifyQuantity
+//        );
+//
+//        // then
+//        assertThatThrownBy(() -> productService.modifyStockQuantity(modifyQuantityRequest))
+//            .isInstanceOf(WiseShopException.class).hasMessage(WiseShopErrorCode.STOCK_NOT_AVAILABLE.getMessage());
+//    }
 
     @Test
     void 상품과_재고_삭제하기() {

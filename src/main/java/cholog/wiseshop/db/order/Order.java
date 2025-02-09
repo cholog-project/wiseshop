@@ -1,6 +1,7 @@
 package cholog.wiseshop.db.order;
 
 import cholog.wiseshop.db.BaseTimeEntity;
+import cholog.wiseshop.db.address.Address;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import jakarta.persistence.Entity;
@@ -21,6 +22,8 @@ public class Order extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private int count;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", unique = false)
     private Product product;
@@ -29,21 +32,23 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private int count;
+    @OneToOne
+    @JoinColumn(name = "shipping_address_id")
+    private Address shippingAddress;
 
     public Order() {
     }
 
-    public Order(Product product,
-                 int count,
-                 Member member) {
+    public Order(
+        int count,
+        Product product,
+        Member member,
+        Address shippingAddress
+    ) {
+        this.count = count;
         this.product = product;
-        this.count = count;
         this.member = member;
-    }
-
-    public void updateCount(int count) {
-        this.count = count;
+        this.shippingAddress = shippingAddress;
     }
 
     public Long getId() {
@@ -56,5 +61,13 @@ public class Order extends BaseTimeEntity {
 
     public int getCount() {
         return count;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public Address getShippingAddress() {
+        return shippingAddress;
     }
 }

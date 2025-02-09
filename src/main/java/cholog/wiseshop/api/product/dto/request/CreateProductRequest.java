@@ -9,13 +9,12 @@ public record CreateProductRequest(
     int price,
     int totalQuantity
 ) {
-
     public Product from() {
-        return new Product(
-            name,
-            description,
-            price,
-            new Stock(totalQuantity)
-        );
+        return Product.builder()
+            .name(name)
+            .description(description)
+            .price(price)
+            .stock(new Stock(totalQuantity))
+            .build();
     }
 }

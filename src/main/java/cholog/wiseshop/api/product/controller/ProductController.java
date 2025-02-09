@@ -30,14 +30,17 @@ public class ProductController {
     }
 
     @PatchMapping("/products/{id}")
-    public ResponseEntity<Void> modifyProduct(@PathVariable Long id, @RequestBody ModifyProductRequest request) {
+    public ResponseEntity<Void> modifyProduct(@PathVariable Long id,
+        @RequestBody ModifyProductRequest request) {
         productService.modifyProduct(id, request);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/products/{id}/price")
-    public ResponseEntity<Void> modifyProductPrice(@PathVariable Long id,
-                                                   @RequestBody ModifyProductPriceRequest request) {
+    public ResponseEntity<Void> modifyProductPrice(
+        @PathVariable Long id,
+        @RequestBody ModifyProductPriceRequest request
+    ) {
         productService.modifyProductPrice(id, request);
         return ResponseEntity.ok().build();
     }

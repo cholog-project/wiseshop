@@ -28,19 +28,11 @@ public class Member {
     @Column(name = "password", nullable = false)
     private String password;
 
-    public Member(Long id,
-                  String email,
-                  String name,
-                  String password) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.password = password;
-    }
-
-    public Member(String email,
-                  String name,
-                  String password) {
+    public Member(
+        String email,
+        String name,
+        String password
+    ) {
         this.email = email;
         this.name = name;
         this.password = password;
@@ -51,6 +43,14 @@ public class Member {
 
     public Long getId() {
         return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getPassword() {

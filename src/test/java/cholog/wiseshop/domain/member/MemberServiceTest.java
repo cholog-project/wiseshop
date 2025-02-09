@@ -1,7 +1,7 @@
 package cholog.wiseshop.domain.member;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
 import cholog.wiseshop.api.member.service.MemberService;
@@ -10,7 +10,6 @@ import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.exception.WiseShopException;
 import cholog.wiseshop.fixture.MemberFixture;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

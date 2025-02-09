@@ -41,12 +41,14 @@ public class Address {
         int postalCode,
         String roadAddress,
         String detailAddress,
-        boolean isDefault
+        boolean isDefault,
+        Member member
     ) {
         this.postalCode = postalCode;
         this.roadAddress = roadAddress;
         this.detailAddress = detailAddress;
         this.isDefault = isDefault;
+        this.member = member
     }
 
     public Long getId() {

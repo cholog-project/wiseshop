@@ -1,10 +1,6 @@
 package cholog.wiseshop.db.campaign;
 
 import cholog.wiseshop.db.member.Member;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,7 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
-@Table(name = "CAMPAIGN")
+@Table(name = "campaign")
 @Entity
 public class Campaign {
 
@@ -25,12 +21,8 @@ public class Campaign {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime startDate;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime endDate;
 
     private int goalQuantity;
@@ -41,30 +33,79 @@ public class Campaign {
     private CampaignState state;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "member_id")
     private Member member;
 
-    public Campaign(LocalDateTime startDate,
+    protected Campaign() {
+    }
+
+    public Campaign(
+        LocalDateTime startDate,
         LocalDateTime endDate,
         int goalQuantity,
-        Member member) {
+        Member member
+    ) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalQuantity = goalQuantity;
         this.state = CampaignState.WAITING;
+        // TODO : 현재 시간과 비교하여 state를 유동적으로 변경할 수 있게 하면 어떨지..
+        // ex) endDate < now 이면 생성될 수 없고, startDate <= now && now <= endDate 이면 IN_PROGRESS로 생성된다.
         this.member = member;
     }
 
-    public Campaign(LocalDateTime startDate,
-        LocalDateTime endDate,
-        int goalQuantity) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.goalQuantity = goalQuantity;
-        this.state = CampaignState.WAITING;
+    public static CampaignBuilder builder() {
+        return new CampaignBuilder();
     }
 
-    public Campaign() {
+    public static final class CampaignBuilder {
+
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
+        private int goalQuantity;
+        private int soldQuantity;
+        private CampaignState state;
+        private Member member;
+
+        private CampaignBuilder() {
+        }
+
+        public CampaignBuilder startDate(LocalDateTime startDate) {
+            this.startDate = startDate;
+            return this;
+        }
+
+        public CampaignBuilder endDate(LocalDateTime endDate) {
+            this.endDate = endDate;
+            return this;
+        }
+
+        public CampaignBuilder goalQuantity(int goalQuantity) {
+            this.goalQuantity = goalQuantity;
+            return this;
+        }
+
+        public CampaignBuilder soldQuantity(int soldQuantity) {
+            this.soldQuantity = soldQuantity;
+            return this;
+        }
+
+        public CampaignBuilder state(CampaignState state) {
+            this.state = state;
+            return this;
+        }
+
+        public CampaignBuilder member(Member member) {
+            this.member = member;
+            return this;
+        }
+
+        public Campaign build() {
+            Campaign campaign = new Campaign(startDate, endDate, goalQuantity, member);
+            campaign.state = this.state;
+            campaign.soldQuantity = this.soldQuantity;
+            return campaign;
+        }
     }
 
     public void updateState(CampaignState state) {

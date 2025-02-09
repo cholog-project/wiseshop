@@ -1,6 +1,6 @@
 package cholog.wiseshop.api.product.service;
 
-import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;

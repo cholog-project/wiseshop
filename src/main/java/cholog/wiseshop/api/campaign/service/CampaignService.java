@@ -1,9 +1,9 @@
 package cholog.wiseshop.api.campaign.service;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
 import cholog.wiseshop.api.campaign.dto.response.CreateCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
-import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.common.ThreadTaskScheduler;
 import cholog.wiseshop.db.campaign.Campaign;
@@ -38,7 +38,8 @@ public class CampaignService {
     }
 
     @Transactional
-    public CreateCampaignResponse createCampaign(CreateCampaignRequest campaignRequest, Member member) {
+    public CreateCampaignResponse createCampaign(CreateCampaignRequest campaignRequest,
+        Member member) {
         CreateProductRequest productAtCampaignRequest = campaignRequest.productRequest();
         Stock stock = stockRepository.save(new Stock(productAtCampaignRequest.totalQuantity()));
         Campaign campaign = campaignRepository.save(new Campaign(

@@ -25,7 +25,7 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "PRODUCT_ID", unique = false)
     private Product product;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 

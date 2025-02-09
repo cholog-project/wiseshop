@@ -41,12 +41,4 @@ public class Stock {
         }
         this.totalQuantity = modifyQuantity;
     }
-
-    public void reduceQuantity(int orderQuantity) {
-        this.totalQuantity -= orderQuantity;
-    }
-
-    public boolean hasQuantity(int orderQuantity) {
-        return totalQuantity >= orderQuantity;
-    }
 }

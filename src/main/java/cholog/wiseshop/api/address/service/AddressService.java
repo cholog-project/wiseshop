@@ -18,13 +18,7 @@ public class AddressService {
     }
 
     public Long createAddress(Member member, CreateAddressRequest request) {
-        Address address = new Address(
-            request.postalCode(),
-            request.roadAddress(),
-            request.detailAddress(),
-            request.isDefault(),
-            member
-        );
+        Address address = Address.from(member, request);
         return addressRepository.save(address).getId();
     }
 }

@@ -1,5 +1,6 @@
 package cholog.wiseshop.db.address;
 
+import cholog.wiseshop.api.address.dto.CreateAddressRequest;
 import cholog.wiseshop.db.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,7 +49,7 @@ public class Address {
         this.roadAddress = roadAddress;
         this.detailAddress = detailAddress;
         this.isDefault = isDefault;
-        this.member = member
+        this.member = member;
     }
 
     public Long getId() {
@@ -69,5 +70,15 @@ public class Address {
 
     public boolean isDefault() {
         return isDefault;
+    }
+
+    public static Address from(Member member, CreateAddressRequest request) {
+        return new Address(
+            request.postalCode(),
+            request.roadAddress(),
+            request.detailAddress(),
+            request.isDefault(),
+            member
+        );
     }
 }

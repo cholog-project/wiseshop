@@ -25,6 +25,6 @@ public class AddressController {
         @Auth Member member,
         @RequestBody CreateAddressRequest request
     ) {
-        return ResponseEntity.ok().body(addressService.createAddress(request));
+        return ResponseEntity.ok().body(addressService.createAddress(member, request));
     }
 }

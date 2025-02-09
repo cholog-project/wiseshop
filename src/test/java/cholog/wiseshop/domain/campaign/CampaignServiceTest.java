@@ -179,16 +179,6 @@ public class CampaignServiceTest extends BaseTest {
     @Test
     void 기간_내_캠페인_전체조회_확인() {
         // given
-        setData();
-
-        // when
-        List<ReadCampaignResponse> result = campaignService.readAllCampaign();
-
-        // then
-        assertThat(result).hasSize(5);
-    }
-
-    void setData() {
         CreateProductRequest request = ProductFixture.getCreateProductRequest();
         Member member = new Member("123@123.123", "김수민", "비밀번호");
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
@@ -210,5 +200,11 @@ public class CampaignServiceTest extends BaseTest {
                 stock
             ));
         }
+
+        // when
+        List<ReadCampaignResponse> result = campaignService.readAllCampaign();
+
+        // then
+        assertThat(result).hasSize(5);
     }
 }

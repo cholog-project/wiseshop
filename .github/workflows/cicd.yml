@@ -56,7 +56,7 @@ jobs:
           fi
 
       - name: Run application
-        run: sudo nohup java -jar /home/ubuntu/wise-shop/wiseshop.jar > /home/ubuntu/application.log 2>&1 &
+        run: sudo nohup java -jar -Dspring.profiles.active=prod /home/ubuntu/wise-shop/wiseshop.jar > /home/ubuntu/application.log 2>&1 &
 
       - name: Discord notification on success
         if: success()

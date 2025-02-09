@@ -63,7 +63,8 @@ public class CampaignServiceTest extends BaseTest {
             );
 
             // when & then
-            Assertions.assertThatThrownBy(() -> campaignService.createCampaign(request, member, now))
+            Assertions.assertThatThrownBy(
+                    () -> campaignService.createCampaign(request, member, now))
                 .isInstanceOf(WiseShopException.class);
         }
     }

@@ -22,6 +22,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    // TODO: 안쓰면 제거
     public Long createProduct(CreateProductRequest request) {
         Stock stock = new Stock(request.totalQuantity());
         Product product = Product.builder()

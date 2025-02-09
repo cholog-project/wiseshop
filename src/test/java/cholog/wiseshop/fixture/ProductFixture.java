@@ -6,7 +6,8 @@ import cholog.wiseshop.db.product.Product;
 @SuppressWarnings("NonAsciiCharacters")
 public class ProductFixture {
 
-    public class Request {
+    public static class Request {
+
         public static CreateProductRequest 보약_생성_요청() {
             return new CreateProductRequest(
                 "보약",

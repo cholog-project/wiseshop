@@ -202,9 +202,9 @@ public class CampaignServiceTest extends BaseTest {
         }
 
         // when
-        List<ReadCampaignResponse> result = campaignService.readAllCampaign();
+        List<ReadCampaignResponse> allCampaign = campaignService.readAllCampaign();
 
         // then
-        assertThat(result).hasSize(5);
+        assertThat(allCampaign).hasSize(5);
     }
 }

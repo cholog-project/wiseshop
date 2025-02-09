@@ -72,6 +72,10 @@ public class Address {
         return isDefault;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     public static Address from(Member member, CreateAddressRequest request) {
         return new Address(
             request.postalCode(),

@@ -32,13 +32,22 @@ public class AddressService {
     public void deleteAddress(Member member, Long addressId) {
         Address address = addressRepository.findById(addressId)
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));
-        List<Order> orders = orderRepository.findByAddressId(address.getId());
+        validateAddressOwner(address, member);
+        List<Order> orders = orderRepository
+            .findByAddressIdAndMemberId(address.getId(), member.getId());
         /*
         * 아래의 배송 정보 삭제 정책 이상해요 주문한 상품이 배송 완료, 배송 중인지를 모르니
         * 그냥 주문 정보 있으면 삭제가 불가능하게 밖에 못했습니다.
          */
-        if (orders.stream().anyMatch(it -> it.getAddress().equals(address))) {
+        if (!orders.isEmpty()) {
             throw new WiseShopException(WiseShopErrorCode.ADDRESS_EXIST_INTO_ORDER);
+        }
+        addressRepository.deleteById(addressId);
+    }
+
+    public void validateAddressOwner(Address address, Member member) {
+        if (!member.equals(address.getMember())) {
+            throw new WiseShopException(WiseShopErrorCode.ADDRESS_OWNER_MISMATCH);
         }
     }
 }

@@ -8,7 +8,7 @@ public record CreateProductRequest(
     String description,
     int price,
     int totalQuantity
-    ) {
+) {
 
     public Product from() {
         return new Product(

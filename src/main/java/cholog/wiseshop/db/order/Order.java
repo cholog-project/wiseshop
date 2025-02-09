@@ -33,8 +33,8 @@ public class Order extends BaseTimeEntity {
     private Member member;
 
     @OneToOne
-    @JoinColumn(name = "shipping_address_id")
-    private Address shippingAddress;
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     public Order() {
     }
@@ -43,12 +43,12 @@ public class Order extends BaseTimeEntity {
         int count,
         Product product,
         Member member,
-        Address shippingAddress
+        Address address
     ) {
         this.count = count;
         this.product = product;
         this.member = member;
-        this.shippingAddress = shippingAddress;
+        this.address = address;
     }
 
     public Long getId() {
@@ -67,7 +67,7 @@ public class Order extends BaseTimeEntity {
         return member;
     }
 
-    public Address getShippingAddress() {
-        return shippingAddress;
+    public Address getAddress() {
+        return address;
     }
 }

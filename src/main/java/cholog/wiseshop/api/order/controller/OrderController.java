@@ -46,12 +46,6 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/orders/{id}")
-    public ResponseEntity<Void> modifyOrderCount(@PathVariable Long id, @RequestBody ModifyOrderCountRequest request) {
-        orderService.modifyOrderCount(id, request);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);

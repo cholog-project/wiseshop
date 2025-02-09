@@ -181,10 +181,10 @@ public class CampaignServiceTest extends BaseTest {
         // given
         CreateProductRequest request = ProductFixture.getCreateProductRequest();
         Member member = new Member("123@123.123", "김수민", "비밀번호");
+        memberRepository.save(member);
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30);
         LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30);
         for (int i = 0; i < 5; i++) {
-            memberRepository.save(member);
             Stock stock = stockRepository.save(new Stock(request.totalQuantity()));
             Campaign campaign = campaignRepository.save(new Campaign(
                 startDate,

@@ -38,14 +38,8 @@ public class CampaignService {
     }
 
     @Transactional
-    public CreateCampaignResponse createCampaign(CreateCampaignRequest request, Member member) {
-        Campaign campaign = saveStockAndCampaignAndProduct(request, member);
-        scheduler.scheduleCampaignByDate(campaign);
-        return CreateCampaignResponse.from(campaign.getId());
-    }
-
-    private Campaign saveStockAndCampaignAndProduct(CreateCampaignRequest campaignRequest, Member member) {
-        CreateProductRequest productAtCampaignRequest = campaignRequest.product();
+    public CreateCampaignResponse createCampaign(CreateCampaignRequest campaignRequest, Member member) {
+        CreateProductRequest productAtCampaignRequest = campaignRequest.productRequest();
         Stock stock = stockRepository.save(new Stock(productAtCampaignRequest.totalQuantity()));
         Campaign campaign = campaignRepository.save(new Campaign(
             campaignRequest.startDate(),
@@ -60,7 +54,8 @@ public class CampaignService {
             campaign,
             stock
         ));
-        return campaign;
+        scheduler.scheduleCampaignByDate(campaign);
+        return CreateCampaignResponse.from(campaign.getId());
     }
 
     public ReadCampaignResponse readCampaign(Long campaignId) {

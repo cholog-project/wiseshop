@@ -41,7 +41,7 @@ public class Campaign {
     private CampaignState state;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     public Campaign(LocalDateTime startDate,

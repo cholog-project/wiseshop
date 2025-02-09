@@ -28,11 +28,11 @@ public class Product {
     private int price;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "CAMPAIGN_ID")
+    @JoinColumn(name = "campaign_id")
     private Campaign campaign;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "STOCK_ID")
+    @JoinColumn(name = "stock_id")
     private Stock stock;
 
     public Product(String name,

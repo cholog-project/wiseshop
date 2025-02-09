@@ -38,8 +38,10 @@ public class CampaignService {
     }
 
     @Transactional
-    public CreateCampaignResponse createCampaign(CreateCampaignRequest campaignRequest,
-        Member member) {
+    public CreateCampaignResponse createCampaign(
+        CreateCampaignRequest campaignRequest,
+        Member member
+    ) {
         CreateProductRequest productAtCampaignRequest = campaignRequest.productRequest();
         Stock stock = stockRepository.save(new Stock(productAtCampaignRequest.totalQuantity()));
         Campaign campaign = campaignRepository.save(new Campaign(

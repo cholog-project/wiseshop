@@ -34,7 +34,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class CampaignControllerTest extends BaseTest {
+class CampaignControllerTest extends BaseTest {
 
     private static final String SESSION_KEY = "member";
 

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-public class CampaignServiceTest extends BaseTest {
+class CampaignServiceTest extends BaseTest {
 
     @Autowired
     private CampaignRepository campaignRepository;

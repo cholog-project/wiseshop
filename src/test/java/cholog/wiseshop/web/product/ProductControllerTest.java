@@ -33,7 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ProductControllerTest extends BaseTest {
+class ProductControllerTest extends BaseTest {
 
     @Autowired
     private ProductRepository productRepository;

@@ -1,9 +1,5 @@
 package cholog.wiseshop.domain.order;
 
-import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
@@ -21,14 +17,17 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-public class OrderServiceTest extends BaseTest {
+import java.util.List;
+
+import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+class OrderServiceTest extends BaseTest {
 
     @Autowired
     private CampaignRepository campaignRepository;
@@ -62,7 +61,7 @@ public class OrderServiceTest extends BaseTest {
         productRequest = getCreateProductRequest();
         Stock stock = stockRepository.save(new Stock(productRequest.totalQuantity()));
         product = productRepository.save(new Product(
-            productRequest.name(), productRequest.description(), productRequest.price(), stock));
+                productRequest.name(), productRequest.description(), productRequest.price(), stock));
         member = memberRepository.save(new Member("test@naver.com", "초록", "qwer"));
         campaign = campaignRepository.save(new Campaign(null, null, 5, member));
         product.addCampaign(campaign);

@@ -1,8 +1,5 @@
 package cholog.wiseshop.domain.member;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import cholog.wiseshop.api.member.dto.request.SignInRequest;
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
 import cholog.wiseshop.api.member.service.MemberService;
@@ -15,12 +12,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 class MemberServiceTest extends BaseTest {
 
     @Autowired
@@ -63,9 +60,9 @@ class MemberServiceTest extends BaseTest {
 
         // then
         assertThatThrownBy(
-            () -> memberService.signUpMember(signUpRequest))
-            .isInstanceOf(WiseShopException.class)
-            .hasMessage(WiseShopErrorCode.ALREADY_EXIST_MEMBER.getMessage());
+                () -> memberService.signUpMember(signUpRequest))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.ALREADY_EXIST_MEMBER.getMessage());
     }
 
 
@@ -92,8 +89,8 @@ class MemberServiceTest extends BaseTest {
 
         // then
         assertThatThrownBy(() -> memberService.signInMember(signInRequest, session))
-            .isInstanceOf(WiseShopException.class)
-            .hasMessage(WiseShopErrorCode.MEMBER_ID_NOT_FOUND.getMessage());
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.MEMBER_ID_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -105,7 +102,7 @@ class MemberServiceTest extends BaseTest {
 
         // then
         assertThatThrownBy(() -> memberService.signInMember(signInRequest, session))
-            .isInstanceOf(WiseShopException.class)
-            .hasMessage(WiseShopErrorCode.MEMBER_ID_NOT_FOUND.getMessage());
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.MEMBER_ID_NOT_FOUND.getMessage());
     }
 }

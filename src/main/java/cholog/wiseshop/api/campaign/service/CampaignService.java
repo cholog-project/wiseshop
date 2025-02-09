@@ -15,7 +15,6 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,25 +77,11 @@ public class CampaignService {
             new ProductResponse(findProduct)
         );
     }
-//
-//    public boolean isStarted(Long campaignId) {
-//        Campaign campaign = campaignRepository.findById(campaignId)
-//            .orElseThrow(() -> new IllegalArgumentException("캠페인이 존재하지 않습니다."));
-//        if (campaign.getState().equals(CampaignState.IN_PROGRESS)) {
-//            return true;
-//        }
-//        return false;
-//    }
 
     public List<ReadCampaignResponse> readAllCampaign() {
         List<Product> products = productRepository.findAll();
-        List<ReadCampaignResponse> allResponses = new ArrayList<>();
-        for (Product product : products) {
-            ReadCampaignResponse response = ReadCampaignResponse.of(
-                product,
-                product.getCampaign());
-            allResponses.add(response);
-        }
-        return allResponses;
+        return products.stream()
+            .map(product -> ReadCampaignResponse.of(product, product.getCampaign()))
+            .toList();
     }
 }

@@ -21,5 +21,5 @@ public abstract class BaseTest {
     public MockMvc mockMvc;
 
     @MockitoBean
-    protected PaymentClient paymentClient;  // This will prevent the real PaymentClient from being instantiated
+    protected PaymentClient paymentClient;
 }

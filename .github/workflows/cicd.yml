@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - build/alert-build
 
 jobs:
   build:
@@ -36,6 +37,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build and test
+        id: build
         run: ./gradlew build
 
       - name: Test
@@ -55,3 +57,23 @@ jobs:
 
       - name: Run application
         run: sudo nohup java -jar /home/ubuntu/wise-shop/wiseshop.jar > /home/ubuntu/application.log 2>&1 &
+
+      - name: Discord notification on success
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          title: "✅ 빌드 성공"
+          description: "빌드가 성공적으로 수행되었습니다"
+          color: 0x2ecc71
+          username: GitHub Actions
+
+      - name: Discord notification on failure
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          title: "❌ 빌드 실패"
+          description: "빌드가 실패했습니다 원인을 확인해주세요"
+          color: 0xe74c3c
+          username: GitHub Actions

@@ -73,7 +73,7 @@ public class CampaignServiceTest extends BaseTest {
         );
 
         // when
-        doNothing().when(scheduler).scheduleCampaignByDate(new Campaign());
+        doNothing().when(scheduler).scheduleCampaign(new Campaign());
         CreateCampaignResponse campaign = campaignService.createCampaign(request, member);
 
         // then
@@ -98,7 +98,7 @@ public class CampaignServiceTest extends BaseTest {
         );
 
         // when
-        doNothing().when(scheduler).scheduleCampaignByDate(new Campaign());
+        doNothing().when(scheduler).scheduleCampaign(new Campaign());
 
         CreateCampaignResponse campaign = campaignService.createCampaign(request, member);
         Campaign findCampaign = campaignRepository.findById(campaign.campaignId()).orElseThrow();

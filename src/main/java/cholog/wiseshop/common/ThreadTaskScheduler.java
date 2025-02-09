@@ -18,15 +18,17 @@ public class ThreadTaskScheduler {
     private final TransactionTemplate transactionTemplate;
     private final CampaignRepository campaignRepository;
 
-    public ThreadTaskScheduler(ThreadPoolTaskScheduler scheduler,
+    public ThreadTaskScheduler(
+        ThreadPoolTaskScheduler scheduler,
         PlatformTransactionManager transactionManager,
-        CampaignRepository campaignRepository) {
+        CampaignRepository campaignRepository
+    ) {
         this.scheduler = scheduler;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         this.campaignRepository = campaignRepository;
     }
 
-    public void scheduleCampaignByDate(Campaign campaign) {
+    public void scheduleCampaign(Campaign campaign) {
         Runnable startCampaign = () -> transactionTemplate.execute(status -> {
             changeCampaignState(campaign.getId(), CampaignState.IN_PROGRESS);
             return null;

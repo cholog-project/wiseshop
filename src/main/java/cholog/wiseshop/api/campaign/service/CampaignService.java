@@ -54,7 +54,7 @@ public class CampaignService {
             campaign,
             stock
         ));
-        scheduler.scheduleCampaignByDate(campaign);
+        scheduler.scheduleCampaign(campaign);
         return CreateCampaignResponse.from(campaign.getId());
     }
 

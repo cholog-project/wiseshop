@@ -78,10 +78,6 @@ public class Campaign {
         }
     }
 
-    public boolean isStarted() {
-        return getState().equals(CampaignState.IN_PROGRESS);
-    }
-
     public Long getId() {
         return id;
     }
@@ -107,6 +103,6 @@ public class Campaign {
     }
 
     public boolean isInProgress() {
-        return state.equals(CampaignState.IN_PROGRESS);
+        return CampaignState.IN_PROGRESS.equals(state);
     }
 }

@@ -78,9 +78,9 @@ public class CampaignServiceTest extends BaseTest {
 
         // then
         assertThat(campaignRepository.findById(campaign.campaignId())).isNotEmpty();
-        List<Product> product = productRepository.findProductsByCampaignId(campaign.campaignId());
-        assertThat(product).isNotEmpty();
-        assertThat(product.getFirst().getStock()).isNotNull();
+        List<Product> products = productRepository.findProductsByCampaignId(campaign.campaignId());
+        assertThat(products).isNotEmpty();
+        assertThat(products.getFirst().getStock()).isNotNull();
     }
 
     @Test

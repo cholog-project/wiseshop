@@ -1,10 +1,8 @@
 package cholog.wiseshop.api.product.service;
 
-import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
-import cholog.wiseshop.api.product.dto.request.ModifyQuantityRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -19,11 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final CampaignService campaignService;
 
-    public ProductService(ProductRepository productRepository, CampaignService campaignService) {
+    public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.campaignService = campaignService;
     }
 
     public Long createProduct(CreateProductRequest request) {
@@ -51,17 +47,6 @@ public class ProductService {
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND));
         existedProduct.modifyPrice(request.price());
         productRepository.save(existedProduct);
-    }
-
-    //테스트 제외 사용되지 않는 메서드
-    public void modifyStockQuantity(ModifyQuantityRequest request) {
-        if (campaignService.isStarted(request.campaignId())) {
-            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_ALREADY_IN_PROGRESS);
-        }
-        Product existedProduct = productRepository.findById(request.productId())
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
-        Stock existedStock = existedProduct.getStock();
-        existedStock.modifyTotalQuantity(request.modifyQuantity());
     }
 
     public void deleteProduct(Long id) {

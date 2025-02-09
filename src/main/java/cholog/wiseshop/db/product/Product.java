@@ -2,7 +2,6 @@ package cholog.wiseshop.db.product;
 
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.stock.Stock;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,26 +30,32 @@ public class Product {
     @JoinColumn(name = "CAMPAIGN_ID")
     private Campaign campaign;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "STOCK_ID")
     private Stock stock;
 
     public Product(String name,
-                   String description,
-                   Integer price,
-                   Stock stock) {
+        String description,
+        Integer price,
+        Stock stock) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
     }
 
-    public Product(String name,
-                   String description,
-                   int price) {
+    public Product(String name, String description, int price) {
         this.name = name;
         this.description = description;
         this.price = price;
+    }
+
+    public Product(String name, String description, int price, Campaign campaign, Stock stock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.campaign = campaign;
+        this.stock = stock;
     }
 
     public Product() {

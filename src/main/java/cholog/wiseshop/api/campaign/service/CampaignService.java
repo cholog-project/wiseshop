@@ -26,105 +26,102 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Transactional
 public class CampaignService {
 
-	private final CampaignRepository campaignRepository;
-	private final ProductRepository productRepository;
-	private final StockRepository stockRepository;
-	private final ThreadPoolTaskScheduler scheduler;
-	private final TransactionTemplate transactionTemplate;
+    private final CampaignRepository campaignRepository;
+    private final ProductRepository productRepository;
+    private final StockRepository stockRepository;
+    private final ThreadPoolTaskScheduler scheduler;
+    private final TransactionTemplate transactionTemplate;
 
-	public CampaignService(CampaignRepository campaignRepository,
-		ProductRepository productRepository,
-		StockRepository stockRepository,
-		ThreadPoolTaskScheduler scheduler,
-		PlatformTransactionManager transactionManager
-	) {
-		this.campaignRepository = campaignRepository;
-		this.productRepository = productRepository;
-		this.stockRepository = stockRepository;
-		this.scheduler = scheduler;
-		this.transactionTemplate = new TransactionTemplate(transactionManager);
-	}
+    public CampaignService(CampaignRepository campaignRepository,
+        ProductRepository productRepository,
+        StockRepository stockRepository,
+        ThreadPoolTaskScheduler scheduler,
+        PlatformTransactionManager transactionManager
+    ) {
+        this.campaignRepository = campaignRepository;
+        this.productRepository = productRepository;
+        this.stockRepository = stockRepository;
+        this.scheduler = scheduler;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
+    }
 
-	public Long createCampaign(CreateCampaignRequest request, Member member) {
-		CreateProductRequest productRequest = request.product();
-		Stock stock = stockRepository.save(new Stock(productRequest.totalQuantity()));
-		Product product = productRepository.save(
-			new Product(
-				productRequest.name(),
-				productRequest.description(),
-				productRequest.price(),
-				stock
-			)
-		);
-		Campaign campaign = campaignRepository.save(
-			new Campaign(
-				request.startDate(),
-				request.endDate(),
-				request.goalQuantity(),
-				member
-			)
-		);
-		product.addCampaign(campaign);
-		scheduleCampaignDate(campaign.getId(), request.startDate(), request.endDate());
-		return campaign.getId();
-	}
+    public Long createCampaign(CreateCampaignRequest request, Member member) {
+        CreateProductRequest productRequest = request.product();
+        Stock stock = stockRepository.save(new Stock(productRequest.totalQuantity()));
+        Product product = productRepository.save(
+            new Product(
+                productRequest.name(),
+                productRequest.description(),
+                productRequest.price(),
+                stock
+            )
+        );
+        Campaign campaign = campaignRepository.save(
+            new Campaign(
+                request.startDate(),
+                request.endDate(),
+                request.goalQuantity(),
+                member
+            )
+        );
+        product.addCampaign(campaign);
+        scheduleCampaignDate(campaign.getId(), request.startDate(), request.endDate());
+        return campaign.getId();
+    }
 
-	@Transactional(readOnly = true)
-	public ReadCampaignResponse readCampaign(Long campaignId) {
-		List<Product> findProducts = productRepository.findProductsByCampaignId(campaignId);
-		if (findProducts.isEmpty()) {
-			throw new IllegalArgumentException("캠페인이 존재하지 않습니다.");
-		}
-		Product findProduct = findProducts.get(0);
-		Campaign findCampaign = findProduct.getCampaign();
-		return new ReadCampaignResponse(
-			campaignId,
-			findCampaign.getStartDate().toString(),
-			findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
-			new ProductResponse(findProduct)
-		);
-	}
+    @Transactional(readOnly = true)
+    public ReadCampaignResponse readCampaign(Long campaignId) {
+        List<Product> findProducts = productRepository.findProductsByCampaignId(campaignId);
+        if (findProducts.isEmpty()) {
+            throw new IllegalArgumentException("캠페인이 존재하지 않습니다.");
+        }
+        Product findProduct = findProducts.getFirst();
+        Campaign findCampaign = findProduct.getCampaign();
+        return new ReadCampaignResponse(
+            campaignId,
+            findCampaign.getStartDate().toString(),
+            findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
+            new ProductResponse(findProduct)
+        );
+    }
 
-	public void scheduleCampaignDate(Long campaignId,
-		LocalDateTime startDate,
-		LocalDateTime endDate) {
-		Runnable startCampaign = () -> transactionTemplate.execute(status -> {
-			changeCampaingState(campaignId, CampaignState.IN_PROGRESS);
-			return null;
-		});
-		scheduler.schedule(startCampaign, startDate.atZone(ZoneId.systemDefault()).toInstant());
+    public void scheduleCampaignDate(Long campaignId,
+        LocalDateTime startDate,
+        LocalDateTime endDate) {
+        Runnable startCampaign = () -> transactionTemplate.execute(status -> {
+            changeCampaingState(campaignId, CampaignState.IN_PROGRESS);
+            return null;
+        });
+        scheduler.schedule(startCampaign, startDate.atZone(ZoneId.systemDefault()).toInstant());
 
-		Runnable endCampaign = () -> transactionTemplate.execute(status -> {
-			changeCampaingState(campaignId, CampaignState.FAILED);
-			return null;
-		});
-		scheduler.schedule(endCampaign, endDate.atZone(ZoneId.systemDefault()).toInstant());
-	}
+        Runnable endCampaign = () -> transactionTemplate.execute(status -> {
+            changeCampaingState(campaignId, CampaignState.FAILED);
+            return null;
+        });
+        scheduler.schedule(endCampaign, endDate.atZone(ZoneId.systemDefault()).toInstant());
+    }
 
-	public void changeCampaingState(Long campaignId, CampaignState state) {
-		Campaign campaign = campaignRepository.findById(campaignId)
-			.orElseThrow(() -> new IllegalArgumentException("상태 변경할 캠페인 정보가 존재하지 않습니다."));
-		campaign.updateState(state);
-	}
+    public void changeCampaingState(Long campaignId, CampaignState state) {
+        Campaign campaign = campaignRepository.findById(campaignId)
+            .orElseThrow(() -> new IllegalArgumentException("상태 변경할 캠페인 정보가 존재하지 않습니다."));
+        campaign.updateState(state);
+    }
 
-	public boolean isStarted(Long campaignId) {
-		Campaign campaign = campaignRepository.findById(campaignId)
-			.orElseThrow(() -> new IllegalArgumentException("캠페인이 존재하지 않습니다."));
-		if (campaign.getState().equals(CampaignState.IN_PROGRESS)) {
-			return true;
-		}
-		return false;
-	}
+    public boolean isStarted(Long campaignId) {
+        Campaign campaign = campaignRepository.findById(campaignId)
+            .orElseThrow(() -> new IllegalArgumentException("캠페인이 존재하지 않습니다."));
+        return campaign.getState().equals(CampaignState.IN_PROGRESS);
+    }
 
-	public List<ReadCampaignResponse> readAllCampaign() {
-		List<Product> products = productRepository.findAll();
-		List<ReadCampaignResponse> allResponses = new ArrayList<>();
-		for (Product product : products) {
-			ReadCampaignResponse response = ReadCampaignResponse.of(
-				product,
-				product.getCampaign());
-			allResponses.add(response);
-		}
-		return allResponses;
-	}
+    public List<ReadCampaignResponse> readAllCampaign() {
+        List<Product> products = productRepository.findAll();
+        List<ReadCampaignResponse> allResponses = new ArrayList<>();
+        for (Product product : products) {
+            ReadCampaignResponse response = ReadCampaignResponse.of(
+                product,
+                product.getCampaign());
+            allResponses.add(response);
+        }
+        return allResponses;
+    }
 }

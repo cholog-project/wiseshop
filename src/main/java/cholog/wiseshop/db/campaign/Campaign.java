@@ -73,7 +73,7 @@ public class Campaign {
 
     public void increaseSoldQuantity(int orderQuantity) {
         soldQuantity += orderQuantity;
-        if (orderQuantity - soldQuantity == 0) {
+        if (goalQuantity - soldQuantity == 0) {
             this.state = CampaignState.SUCCESS;
         }
     }

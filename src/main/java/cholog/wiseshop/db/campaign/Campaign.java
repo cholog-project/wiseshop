@@ -1,6 +1,8 @@
 package cholog.wiseshop.db.campaign;
 
 import cholog.wiseshop.db.member.Member;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,7 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Table(name = "campaign")
 @Entity
@@ -43,8 +47,10 @@ public class Campaign {
         LocalDateTime startDate,
         LocalDateTime endDate,
         int goalQuantity,
-        Member member
+        Member member,
+        LocalDateTime now
     ) {
+        validateStartDate(startDate, now);
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalQuantity = goalQuantity;
@@ -52,6 +58,13 @@ public class Campaign {
         // TODO : 현재 시간과 비교하여 state를 유동적으로 변경할 수 있게 하면 어떨지..
         // ex) endDate < now 이면 생성될 수 없고, startDate <= now && now <= endDate 이면 IN_PROGRESS로 생성된다.
         this.member = member;
+    }
+
+    private void validateStartDate(LocalDateTime startDate, LocalDateTime now) {
+        Duration duration = Duration.between(startDate, now);
+        if (duration.toHours() > 24) {
+            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_INVALID_START_DATE);
+        }
     }
 
     public static CampaignBuilder builder() {
@@ -66,6 +79,7 @@ public class Campaign {
         private int soldQuantity;
         private CampaignState state;
         private Member member;
+        private LocalDateTime now;
 
         private CampaignBuilder() {
         }
@@ -100,8 +114,13 @@ public class Campaign {
             return this;
         }
 
+        public CampaignBuilder now(LocalDateTime now) {
+            this.now = Objects.requireNonNullElseGet(now, LocalDateTime::now);
+            return this;
+        }
+
         public Campaign build() {
-            Campaign campaign = new Campaign(startDate, endDate, goalQuantity, member);
+            Campaign campaign = new Campaign(startDate, endDate, goalQuantity, member, now);
             campaign.state = this.state;
             campaign.soldQuantity = this.soldQuantity;
             return campaign;

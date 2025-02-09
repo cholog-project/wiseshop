@@ -21,6 +21,9 @@ public class Stock {
     private int totalQuantity;
 
     public Stock(int totalQuantity) {
+        if (totalQuantity < 1) {
+            throw new WiseShopException(WiseShopErrorCode.STOCK_NOT_AVAILABLE);
+        }
         this.totalQuantity = totalQuantity;
     }
 

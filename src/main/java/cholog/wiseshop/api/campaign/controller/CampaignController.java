@@ -7,6 +7,7 @@ import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,9 @@ public class CampaignController {
     }
 
     @PostMapping("/campaigns")
-    public ResponseEntity<CreateCampaignResponse> createCampaigns(@Auth Member member, @RequestBody CreateCampaignRequest request) {
-        CreateCampaignResponse response = campaignService.createCampaign(request, member);
+    public ResponseEntity<CreateCampaignResponse> createCampaigns(@Auth Member member,
+        @RequestBody CreateCampaignRequest request) {
+        var response = campaignService.createCampaign(request, member, LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

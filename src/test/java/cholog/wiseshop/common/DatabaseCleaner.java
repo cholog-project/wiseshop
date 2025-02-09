@@ -3,6 +3,7 @@ package cholog.wiseshop.common;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Table;
 import jakarta.persistence.metamodel.EntityType;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,29 +19,36 @@ public class DatabaseCleaner {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @SuppressWarnings("unchecked")
     @PostConstruct
     private void findDatabaseTableNames() {
         Set<EntityType<?>> entities = entityManager.getMetamodel().getEntities();
         for (EntityType<?> entity : entities) {
-            tableNames.add(entity.getName());
-        }
-    }
-
-    private void truncate() {
-        try {
-            for (String tableName : tableNames) {
-                entityManager.createQuery("DELETE FROM " + tableName).executeUpdate();
-            }
-            entityManager.flush();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to clean database", e);
+            // Get actual table name if @Table annotation is present
+            Table tableAnnotation = entity.getJavaType().getAnnotation(Table.class);
+            String tableName = tableAnnotation != null ? tableAnnotation.name() : entity.getName();
+            tableNames.add(tableName);
         }
     }
 
     @Transactional
     public void clear() {
         entityManager.clear();
-        truncate();
+
+        try {
+            // Disable foreign key checks
+            entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
+
+            for (String tableName : tableNames) {
+                // Use truncate for faster cleaning
+                entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
+            }
+
+            // Re-enable foreign key checks
+            entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
+
+            entityManager.flush();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to clean database: " + e.getMessage(), e);
+        }
     }
 }

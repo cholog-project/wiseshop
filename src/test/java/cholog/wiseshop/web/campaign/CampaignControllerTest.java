@@ -106,7 +106,7 @@ public class CampaignControllerTest extends BaseTest {
                 .content(new ObjectMapper().writeValueAsString(request))
                 .session(mockHttpSession))
             .andExpect(status().isCreated())
-            .andExpect(content().string("1"))
+            .andExpect(jsonPath("$.campaignId").value(1))
             .andDo(print());
     }
 
@@ -129,7 +129,7 @@ public class CampaignControllerTest extends BaseTest {
                 .content(new ObjectMapper().writeValueAsString(request))
                 .session(mockHttpSession))
             .andExpect(status().isCreated())
-            .andExpect(content().string("1"))
+            .andExpect(jsonPath("$.campaignId").value(1))
             .andDo(print());
         String getUrl = "http://localhost:" + port + "/api/v1/campaigns/" + 1;
 
@@ -158,13 +158,13 @@ public class CampaignControllerTest extends BaseTest {
         String postUrl = "http://localhost:" + port + "/api/v1/campaigns";
 
         mockMvc.perform(post(postUrl)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(new ObjectMapper().writeValueAsString(request)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8")
+            .content(new ObjectMapper().writeValueAsString(request)));
         mockMvc.perform(post(postUrl)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(new ObjectMapper().writeValueAsString(request)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8")
+            .content(new ObjectMapper().writeValueAsString(request)));
 
         String getUrl = "http://localhost:" + port + "/api/v1/campaigns";
 

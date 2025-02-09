@@ -1,6 +1,5 @@
 package cholog.wiseshop.web.product;
 
-import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProductRequest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -15,6 +14,8 @@ import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.db.stock.StockRepository;
+import cholog.wiseshop.fixture.ProductFixture;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +39,9 @@ public class ProductControllerTest extends BaseTest {
     private ProductRepository productRepository;
 
     @Autowired
+    private StockRepository stockRepository;
+
+    @Autowired
     private WebApplicationContext context;
 
     @Autowired
@@ -53,8 +57,8 @@ public class ProductControllerTest extends BaseTest {
         mockMvc = MockMvcBuilders
             .webAppContextSetup(context)
             .build();
-
-        productRepository.deleteAll();
+        stockRepository.deleteAllInBatch();
+        productRepository.deleteAllInBatch();
     }
 
     @AfterEach
@@ -67,16 +71,17 @@ public class ProductControllerTest extends BaseTest {
     @Test
     public void 상품_조회하기() throws Exception {
         // given
-        CreateProductRequest request = getCreateProductRequest();
+        CreateProductRequest request = ProductFixture.getCreateProductRequest();
+        Stock stock = stockRepository.save(new Stock(request.totalQuantity()));
         Product product = productRepository.save(new Product(
             request.name(),
             request.description(),
             request.price(),
-            new Stock(request.totalQuantity())
+            stock
         ));
 
         // when
-        String getUrl = "http://localhost:" + port + "/api/v1/products/" + product.getId();
+        String getUrl = "/api/v1/products/" + product.getId();
 
         // then
         mockMvc.perform(get(getUrl)

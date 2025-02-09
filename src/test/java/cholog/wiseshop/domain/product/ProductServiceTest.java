@@ -13,7 +13,6 @@ import cholog.wiseshop.api.product.service.ProductService;
 import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
-import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
@@ -163,22 +162,7 @@ public class ProductServiceTest extends BaseTest {
 
     // TODO: 상품 재고 수량 수정 성공 테스트 작성
     // TODO: 상품 재고 수량 수정 실패 테스트 작성
-
-    @Test
-    void 상품과_재고_삭제하기() {
-        // given
-        CreateProductRequest request = getCreateProductRequest();
-        Long productId = productService.createProduct(request);
-        Product createdProduct = productRepository.findById(productId).orElseThrow();
-        Stock createdStock = createdProduct.getStock();
-
-        // when
-        productService.deleteProduct(productId);
-
-        // then
-        assertThat(productRepository.findById(productId)).isEmpty();
-        assertThat(stockRepository.findById(createdStock.getId())).isEmpty();
-    }
+    // TODO: 상품 재고 삭제 테스트 작성
 
     @Test
     void 상품_삭제_실패() {

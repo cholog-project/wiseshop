@@ -17,11 +17,11 @@ public class Member {
     private Long id;
 
     @NotNull
-    @Column(name = "member_email", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @NotNull
-    @Column(name = "member_name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @NotNull

@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-@Table(name = "PRODUCT")
+@Table(name = "product")
 @Entity
 public class Product {
 
@@ -27,11 +27,11 @@ public class Product {
     private int price;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "campaign_id", nullable = true)
+    @JoinColumn(name = "campaign_id")
     private Campaign campaign;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stock_id", nullable = true)
+    @JoinColumn(name = "stock_id")
     private Stock stock;
 
     protected Product() {

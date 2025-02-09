@@ -56,17 +56,11 @@ public class OrderService {
             .stream().map(OrderResponse::new).toList();
     }
 
-    public void modifyOrderCount(Long orderId, ModifyOrderCountRequest request) {
-        Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
-        order.updateCount(request.count());
-    }
-
-    public void deleteOrder(Long id) {
-        orderRepository.findById(id)
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
-        orderRepository.deleteById(id);
-    }
+	public void deleteOrder(Long id) {
+		orderRepository.findById(id)
+			.orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
+		orderRepository.deleteById(id);
+	}
 
     public void validateQuantity(Campaign campaign, Stock stock, int orderQuantity) {
         int remainQuantity = stock.getTotalQuantity() - campaign.getSoldQuantity();

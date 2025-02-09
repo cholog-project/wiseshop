@@ -9,9 +9,11 @@ import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.db.stock.StockRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +27,16 @@ public class ProductRepositoryTest extends BaseTest {
     @Autowired
     private CampaignRepository campaignRepository;
 
+    @Autowired
+    private StockRepository stockRepository;
+
     private static CreateProductRequest request;
 
-    @BeforeEach
+    @AfterEach
     public void cleanUp() {
-        productRepository.deleteAll();
+        productRepository.deleteAllInBatch();
+        stockRepository.deleteAllInBatch();
+        campaignRepository.deleteAllInBatch();
         request = getCreateProductRequest();
     }
 
@@ -38,38 +45,49 @@ public class ProductRepositoryTest extends BaseTest {
         // given
         LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
         LocalDateTime endDate = LocalDateTime.now().plusMinutes(2);
-        Integer goalQuantity = 5;
+        int goalQuantity = 5;
+        int totalQuantity = 10;
+        int price = 2000;
+        Stock stock = new Stock(totalQuantity);
+        stockRepository.save(stock);
         Campaign campaign = campaignRepository.save(new Campaign(startDate, endDate, goalQuantity));
-
-        Product product = productRepository.save(request.from());
-        product.addCampaign(campaign);
+        productRepository.save(new Product("name", "description", price, campaign, stock));
 
         // when
         List<Product> products = productRepository.findProductsByCampaignId(campaign.getId());
+        System.out.println("products.size() = " + products.size());
 
         // then
         assertAll(
             () -> assertThat(products).hasSize(1),
-            () -> assertThat(products.get(0).getName()).isEqualTo(request.name()),
-            () -> assertThat(products.get(0).getDescription()).isEqualTo(request.description()),
-            () -> assertThat(products.get(0).getPrice()).isEqualTo(request.price()),
-            () -> assertThat(products.get(0).getStock().getTotalQuantity()).isEqualTo(
-                request.totalQuantity()),
-            () -> assertThat(products.get(0).getCampaign().getId()).isEqualTo(campaign.getId())
+            () -> assertThat(products.getFirst().getName()).isEqualTo("name"),
+            () -> assertThat(products.getFirst().getDescription()).isEqualTo("description"),
+            () -> assertThat(products.getFirst().getPrice()).isEqualTo(price),
+            () -> assertThat(products.getFirst().getStock().getTotalQuantity()).isEqualTo(totalQuantity),
+            () -> assertThat(products.getFirst().getCampaign().getId()).isEqualTo(campaign.getId())
         );
     }
 
     @Test
     void 상품_저장_조회하기() {
-        // when
-        Product savedProduct = productRepository.save(request.from());
+        // given
+        LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime endDate = LocalDateTime.now().plusMinutes(2);
+        int goalQuantity = 5;
+        int totalQuantity = 10;
+        int price = 2000;
+        Stock stock = new Stock(totalQuantity);
+        stockRepository.save(stock);
+        Campaign campaign = campaignRepository.save(new Campaign(startDate, endDate, goalQuantity));
+        Product savedProduct = productRepository.save(new Product("name", "description", price, campaign, stock));
 
+        // when
         Product product = productRepository.findById(savedProduct.getId()).orElseThrow();
 
         // then
-        assertThat(product.getName()).isEqualTo(request.name());
-        assertThat(product.getDescription()).isEqualTo(request.description());
-        assertThat(product.getPrice()).isEqualTo(request.price());
+        assertThat(product.getName()).isEqualTo("name");
+        assertThat(product.getDescription()).isEqualTo("description");
+        assertThat(product.getPrice()).isEqualTo(price);
     }
 
     @Test
@@ -77,9 +95,17 @@ public class ProductRepositoryTest extends BaseTest {
         // given
         String modifiedName = "보약2";
         String modifiedDescription = "먹으면 기분이 안좋아져요.";
+        LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime endDate = LocalDateTime.now().plusMinutes(2);
+        int goalQuantity = 5;
+        int totalQuantity = 10;
+        int price = 2000;
+        Stock stock = new Stock(totalQuantity);
+        stockRepository.save(stock);
+        Campaign campaign = campaignRepository.save(new Campaign(startDate, endDate, goalQuantity));
+        Product createdProduct = productRepository.save(new Product("name", "description", price, campaign, stock));
 
         // when
-        Product createdProduct = productRepository.save(request.from());
         createdProduct.modifyProduct(modifiedName, modifiedDescription);
         productRepository.save(createdProduct);
 
@@ -94,9 +120,17 @@ public class ProductRepositoryTest extends BaseTest {
     void 상품_가격_수정하기() {
         // given
         int modifiedPrice = 20000;
+        LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime endDate = LocalDateTime.now().plusMinutes(2);
+        int goalQuantity = 5;
+        int totalQuantity = 10;
+        int price = 2000;
+        Stock stock = new Stock(totalQuantity);
+        stockRepository.save(stock);
+        Campaign campaign = campaignRepository.save(new Campaign(startDate, endDate, goalQuantity));
+        Product createdProduct = productRepository.save(new Product("name", "description", price, campaign, stock));
 
         // when
-        Product createdProduct = productRepository.save(request.from());
         createdProduct.modifyPrice(modifiedPrice);
         productRepository.save(createdProduct);
 
@@ -108,9 +142,18 @@ public class ProductRepositoryTest extends BaseTest {
 
     @Test
     void 상품_삭제하기() {
-        // when
-        Product createdProduct = productRepository.save(request.from());
+        // given
+        LocalDateTime startDate = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime endDate = LocalDateTime.now().plusMinutes(2);
+        int goalQuantity = 5;
+        int totalQuantity = 10;
+        int price = 2000;
+        Stock stock = new Stock(totalQuantity);
+        stockRepository.save(stock);
+        Campaign campaign = campaignRepository.save(new Campaign(startDate, endDate, goalQuantity));
+        Product createdProduct = productRepository.save(new Product("name", "description", price, campaign, stock));
 
+        // when
         productRepository.deleteById(createdProduct.getId());
 
         // then

@@ -11,6 +11,6 @@ public record CreateCampaignRequest(
         @JsonSerialize(using = LocalDateTimeSerializer.class)
         LocalDateTime endDate,
         int goalQuantity,
-        CreateProductRequest product) {
+        CreateProductRequest productRequest) {
 
 }

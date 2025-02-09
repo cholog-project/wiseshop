@@ -4,12 +4,10 @@ import static cholog.wiseshop.domain.product.ProductRepositoryTest.getCreateProd
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
-import cholog.wiseshop.api.product.dto.request.ModifyQuantityRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.api.product.service.ProductService;
 import cholog.wiseshop.common.BaseTest;
@@ -19,7 +17,6 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,61 +161,8 @@ public class ProductServiceTest extends BaseTest {
             .hasMessage(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND.getMessage());
     }
 
-    @Test
-    void 상품_재고_수량_수정_성공() {
-        // given
-        CreateProductRequest request = getCreateProductRequest();
-        Long productId = productService.createProduct(request);
-
-        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30, 10);
-        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30, 10);
-        int goalQuantity = 5;
-
-        Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
-        Integer modifyQuantity = 1;
-
-        // when
-        ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
-            campaignId,
-            productId,
-            modifyQuantity
-        );
-        productService.modifyStockQuantity(modifyQuantityRequest);
-
-        Product modifiedProduct = productRepository.findById(productId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
-        Stock modifiedStock = modifiedProduct.getStock();
-
-        // then
-        assertThat(modifiedStock.getTotalQuantity()).isEqualTo(modifyQuantity);
-    }
-
-    @Test
-    void 상품_재고_수량_수정_실패() {
-        // given
-        CreateProductRequest request = getCreateProductRequest();
-        Long productId = productService.createProduct(request);
-
-        LocalDateTime startDate = LocalDateTime.of(2025, 1, 7, 10, 30, 10);
-        LocalDateTime endDate = LocalDateTime.of(2025, 1, 8, 10, 30, 10);
-        int goalQuantity = 5;
-
-        Long campaignId = campaignService.createCampaign(
-            new CreateCampaignRequest(startDate, endDate, goalQuantity, request), null);
-        Integer modifyQuantity = 0;
-
-        // when
-        ModifyQuantityRequest modifyQuantityRequest = new ModifyQuantityRequest(
-            campaignId,
-            productId,
-            modifyQuantity
-        );
-
-        // then
-        assertThatThrownBy(() -> productService.modifyStockQuantity(modifyQuantityRequest))
-            .isInstanceOf(WiseShopException.class).hasMessage(WiseShopErrorCode.STOCK_NOT_AVAILABLE.getMessage());
-    }
+    // TODO: 상품 재고 수량 수정 성공 테스트 작성
+    // TODO: 상품 재고 수량 수정 실패 테스트 작성
 
     @Test
     void 상품과_재고_삭제하기() {

@@ -13,6 +13,7 @@ public enum WiseShopErrorCode {
     MODIFY_NAME_DESCRIPTION_PRODUCT_NOT_FOUND("이름 및 설명글 수정할 상품이 존재하지 않습니다."),
     MODIFY_PRICE_PRODUCT_NOT_FOUND("가격 수정할 상품이 존재하지 않습니다."),
     ORDER_LIMIT_EXCEED("주문 가능한 수량을 초과하였습니다. 주문 가능한 수량 : %d개"),
+    CAMPAIGN_NOT_FOUND("존재하지 않는 캠페인 입니다."),
     CAMPAIGN_NOT_IN_PROGRESS("현재 캠페인이 진행 중이지 않습니다."),
     CAMPAIGN_ALREADY_IN_PROGRESS("캠페인이 이미 진행 중 입니다."),
     STOCK_NOT_AVAILABLE("재고 수량은 최소 1개 이상이어야 합니다."),

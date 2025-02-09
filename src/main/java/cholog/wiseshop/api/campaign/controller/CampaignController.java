@@ -2,6 +2,7 @@ package cholog.wiseshop.api.campaign.controller;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.response.AllCampaignResponse;
+import cholog.wiseshop.api.campaign.dto.response.CreateCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.common.auth.Auth;
@@ -27,9 +28,9 @@ public class CampaignController {
     }
 
     @PostMapping("/campaigns")
-    public ResponseEntity<Long> createCampaigns(@Auth Member member, @RequestBody CreateCampaignRequest request) {
-        Long campaignId = campaignService.createCampaign(request, member);
-        return ResponseEntity.status(HttpStatus.CREATED).body(campaignId);
+    public ResponseEntity<CreateCampaignResponse> createCampaigns(@Auth Member member, @RequestBody CreateCampaignRequest request) {
+        CreateCampaignResponse response = campaignService.createCampaign(request, member);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/campaigns/{id}")

@@ -32,24 +32,13 @@ public class OrderService {
     public Long createOrder(CreateOrderRequest request, Member member) {
         Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
-        Stock stock = product.getStock();
-        if (!stock.hasQuantity(request.orderQuantity())) {
-            throw new WiseShopException(WiseShopErrorCode.ORDER_LIMIT_EXCEED, stock.getTotalQuantity());
-        }
-
         Campaign campaign = product.getCampaign();
-        if (!campaign.isInProgress()) {
-            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS);
-        }
-
-        Member campaignMember = campaign.getMember();
-
-        if (Objects.equals(campaignMember.getId(), member.getId())) {
-            throw new WiseShopException(WiseShopErrorCode.ORDER_NOT_AVAILABLE);
-        }
-
+        validateCampaignState(campaign);
+        Stock stock = product.getStock();
+        validateQuantity(campaign, stock, request.orderQuantity());
+        Member campaignOwner = campaign.getMember();
+        validateOrderOwner(campaignOwner, member);
         Order order = orderRepository.save(request.from(product, member));
-        stock.reduceQuantity(request.orderQuantity());
         campaign.increaseSoldQuantity(request.orderQuantity());
         return order.getId();
     }
@@ -63,7 +52,8 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<OrderResponse> readMemberOrders(Member member) {
-        return orderRepository.findByMemberId(member.getId()).stream().map(OrderResponse::new).toList();
+        return orderRepository.findByMemberId(member.getId())
+            .stream().map(OrderResponse::new).toList();
     }
 
     public void modifyOrderCount(Long orderId, ModifyOrderCountRequest request) {
@@ -76,5 +66,25 @@ public class OrderService {
         orderRepository.findById(id)
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
         orderRepository.deleteById(id);
+    }
+
+    public void validateQuantity(Campaign campaign, Stock stock, int orderQuantity) {
+        int remainQuantity = stock.getTotalQuantity() - campaign.getSoldQuantity();
+
+        if (remainQuantity - orderQuantity < 0) {
+            throw new WiseShopException(WiseShopErrorCode.ORDER_LIMIT_EXCEED, remainQuantity);
+        }
+    }
+
+    public void validateCampaignState(Campaign campaign) {
+        if (!campaign.isInProgress()) {
+            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS);
+        }
+    }
+
+    public void validateOrderOwner(Member campaignOwner, Member orderMember) {
+        if (Objects.equals(campaignOwner.getId(), orderMember.getId())) {
+            throw new WiseShopException(WiseShopErrorCode.ORDER_NOT_AVAILABLE);
+        }
     }
 }

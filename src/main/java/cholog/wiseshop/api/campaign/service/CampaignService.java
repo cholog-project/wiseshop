@@ -8,6 +8,7 @@ import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.common.ThreadTaskScheduler;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
+import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -86,10 +87,12 @@ public class CampaignService {
         );
     }
 
-    public List<ReadCampaignResponse> readAllCampaign() {
-        List<Product> products = productRepository.findAll();
-        return products.stream()
-            .map(product -> ReadCampaignResponse.of(product, product.getCampaign()))
-            .toList();
+    public List<ReadCampaignResponse> readInProgressCampaign() {
+        List<Campaign> campaigns = campaignRepository.findAllByState(CampaignState.IN_PROGRESS);
+        return campaigns.stream()
+            .map(campaign -> {
+                Product product = productRepository.findAllByCampaign(campaign).getFirst();
+                return ReadCampaignResponse.of(product, campaign);
+            }).toList();
     }
 }

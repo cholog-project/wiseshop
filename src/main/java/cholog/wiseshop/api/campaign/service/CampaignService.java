@@ -1,9 +1,9 @@
 package cholog.wiseshop.api.campaign.service;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
+import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
 import cholog.wiseshop.api.campaign.dto.response.CreateCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
-import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.common.ThreadTaskScheduler;
 import cholog.wiseshop.db.campaign.Campaign;
@@ -15,6 +15,7 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,14 +39,19 @@ public class CampaignService {
     }
 
     @Transactional
-    public CreateCampaignResponse createCampaign(CreateCampaignRequest campaignRequest, Member member) {
+    public CreateCampaignResponse createCampaign(
+        CreateCampaignRequest campaignRequest,
+        Member member,
+        LocalDateTime now
+    ) {
         CreateProductRequest productAtCampaignRequest = campaignRequest.productRequest();
         Stock stock = stockRepository.save(new Stock(productAtCampaignRequest.totalQuantity()));
         Campaign campaign = campaignRepository.save(new Campaign(
             campaignRequest.startDate(),
             campaignRequest.endDate(),
             campaignRequest.goalQuantity(),
-            member
+            member,
+            now
         ));
         productRepository.save(new Product(
             productAtCampaignRequest.name(),

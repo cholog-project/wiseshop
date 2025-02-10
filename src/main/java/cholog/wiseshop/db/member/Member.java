@@ -17,30 +17,22 @@ public class Member {
     private Long id;
 
     @NotNull
-    @Column(name = "member_email", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @NotNull
-    @Column(name = "member_name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
 
-    public Member(Long id,
-                  String email,
-                  String name,
-                  String password) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.password = password;
-    }
-
-    public Member(String email,
-                  String name,
-                  String password) {
+    public Member(
+        String email,
+        String name,
+        String password
+    ) {
         this.email = email;
         this.name = name;
         this.password = password;
@@ -51,6 +43,14 @@ public class Member {
 
     public Long getId() {
         return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getPassword() {

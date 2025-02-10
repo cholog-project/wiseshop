@@ -7,11 +7,6 @@ server:
       charset: utf-8
       enabled: true
 
-
-spring:
-  profiles:
-    active: prod
-
 springdoc:
   packages-to-scan: cholog
   default-consumes-media-type: application/json

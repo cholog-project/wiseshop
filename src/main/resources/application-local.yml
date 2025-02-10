@@ -5,10 +5,10 @@ spring:
       path: /h2-console
 
   datasource:
-    url: jdbc:h2:mem:wiseshop
+    url: jdbc:h2:mem:testdb;MODE=MySQL;
+    driver-class-name: org.h2.Driver
     username: sa
-    password: password
-    driverClassName: org.h2.Driver
+    password:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect

@@ -1,15 +1,28 @@
 package cholog.wiseshop.fixture;
 
-import cholog.wiseshop.api.product.dto.request.CreateProductRequest;
+import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
+import cholog.wiseshop.db.product.Product;
 
+@SuppressWarnings("NonAsciiCharacters")
 public class ProductFixture {
 
-    public static CreateProductRequest getCreateProductRequest() {
-        String name = "보약";
-        String description = "먹으면 기분이 좋아져요.";
-        int price = 10000;
-        int totalQuantity = 5;
+    public static Product 보약() {
+        return Product.builder()
+            .name("보약")
+            .description("먹으면 기분이 좋아져요.")
+            .price(10000)
+            .build();
+    }
 
-        return new CreateProductRequest(name, description, price, totalQuantity);
+    public static class Request {
+
+        public static CreateProductRequest 보약_생성_요청() {
+            return new CreateProductRequest(
+                "보약",
+                "먹으면 기분이 좋아져요.",
+                10000,
+                100
+            );
+        }
     }
 }

@@ -84,6 +84,14 @@ public class Campaign {
         return CampaignState.WAITING;
     }
 
+    public void setStateWhenFinish() {
+        if (soldQuantity < goalQuantity) {
+            state = CampaignState.FAILED;
+        } else {
+            state = CampaignState.SUCCESS;
+        }
+    }
+
     public static CampaignBuilder builder() {
         return new CampaignBuilder();
     }

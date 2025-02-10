@@ -45,6 +45,7 @@ public class CampaignService {
         LocalDateTime now
     ) {
         CreateProductRequest productAtCampaignRequest = campaignRequest.productRequest();
+        validateQuantity(productAtCampaignRequest.totalQuantity(), campaignRequest.goalQuantity());
         Stock stock = stockRepository.save(new Stock(productAtCampaignRequest.totalQuantity()));
         Campaign campaign = campaignRepository.save(new Campaign(
             campaignRequest.startDate(),
@@ -62,6 +63,12 @@ public class CampaignService {
         ));
         scheduler.scheduleCampaign(campaign);
         return CreateCampaignResponse.from(campaign.getId());
+    }
+
+    private void validateQuantity(int totalQuantity, int goalQuantity) {
+        if (totalQuantity <= goalQuantity) {
+            throw new WiseShopException(WiseShopErrorCode.INVALID_QUANTITY);
+        }
     }
 
     public ReadCampaignResponse readCampaign(Long campaignId) {

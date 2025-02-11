@@ -1,12 +1,15 @@
 package cholog.wiseshop.api.order.service;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
+import cholog.wiseshop.api.payment.dto.PaymentRequest;
+import cholog.wiseshop.api.payment.service.PaymentClient;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.order.OrderRepository;
+import cholog.wiseshop.db.payment.Payment;
+import cholog.wiseshop.db.payment.PaymentRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
@@ -24,9 +27,17 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    private final PaymentClient paymentClient;
+    private final PaymentRepository paymentRepository;
+
+    public OrderService(OrderRepository orderRepository,
+                        ProductRepository productRepository,
+                        PaymentClient paymentClient,
+                        PaymentRepository paymentRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.paymentClient = paymentClient;
+        this.paymentRepository = paymentRepository;
     }
 
     public Long createOrder(CreateOrderRequest request, Member member) {
@@ -40,6 +51,13 @@ public class OrderService {
         validateOrderOwner(campaignOwner, member);
         Order order = orderRepository.save(request.from(product, member));
         campaign.increaseSoldQuantity(request.orderQuantity());
+
+        /**
+         * Payment : Toss PG 결제 승인 API 응답 결과를 변환한 객체
+         */
+        Payment payment = paymentClient.confirm(
+            new PaymentRequest(request.paymentOrderId(), request.amount(), request.paymentKey()));
+
         return order.getId();
     }
 

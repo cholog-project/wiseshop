@@ -8,8 +8,6 @@ import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 @RestController
 public class OrderController {
-
-    private final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     private final OrderService orderService;
 

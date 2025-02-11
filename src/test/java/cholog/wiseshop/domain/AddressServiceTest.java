@@ -1,6 +1,7 @@
 package cholog.wiseshop.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.address.dto.CreateAddressRequest;
 import cholog.wiseshop.api.address.service.AddressService;
@@ -9,6 +10,7 @@ import cholog.wiseshop.db.address.Address;
 import cholog.wiseshop.db.address.AddressRepository;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
+import cholog.wiseshop.exception.WiseShopException;
 import cholog.wiseshop.fixture.AddressFixture;
 import cholog.wiseshop.fixture.MemberFixture;
 import org.junit.jupiter.api.Nested;
@@ -71,6 +73,15 @@ public class AddressServiceTest extends BaseTest {
 
     @Test
     void 배송지_소유가_삭제를_요청한_사용자와_다르면_예외_발생() {
+        // given
+        Member junho = MemberFixture.최준호();
+        Member junesoo = MemberFixture.김준수();
+        memberRepository.save(junho);
+        Address address = AddressFixture.집주소(junho);
+        addressRepository.save(address);
 
+        // when & then
+        assertThatThrownBy(() -> addressService.deleteAddress(junesoo, address.getId()))
+            .isInstanceOf(WiseShopException.class);
     }
 }

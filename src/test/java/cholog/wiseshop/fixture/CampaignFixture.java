@@ -18,4 +18,15 @@ public class CampaignFixture {
             .member(member)
             .build();
     }
+
+    public static Campaign 진행중인_보약_캠페인(Member member) {
+        LocalDateTime now = LocalDateTime.now();
+        return Campaign.builder()
+            .startDate(now.minusDays(3))
+            .endDate(now.plusDays(5))
+            .goalQuantity(100)
+            .soldQuantity(0)
+            .member(member)
+            .build();
+    }
 }

@@ -1,14 +1,17 @@
 package cholog.wiseshop.domain.member;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
 import cholog.wiseshop.api.member.service.MemberService;
 import cholog.wiseshop.common.BaseTest;
+import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.exception.WiseShopException;
+import cholog.wiseshop.fixture.CampaignFixture;
 import cholog.wiseshop.fixture.MemberFixture;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -57,6 +60,37 @@ class MemberServiceTest extends BaseTest {
             // when & then
             assertThatThrownBy(() -> memberService.signUpMember(request))
                 .isInstanceOf(WiseShopException.class);
+        }
+    }
+
+    @Nested
+    class 사용자가_회원탈퇴를_수행한다 {
+
+        @Test
+        void 사용자가_회원탈퇴를_정상적으로_수행한다() {
+            // given
+            Member member = MemberFixture.최준호();
+            memberRepository.save(member);
+
+            // when
+            memberService.deleteMember(member);
+
+            // then
+            assertThat(memberRepository.findById(member.getId())).isEmpty();
+        }
+
+        @Test
+        void 진행중인_캠페인이_존재하면_예외() {
+            // given
+            Member member = MemberFixture.최준호();
+            memberRepository.save(member);
+            Campaign campaign = CampaignFixture.보약_캠페인(member);
+
+            // when
+
+
+            // then
+
         }
     }
 }

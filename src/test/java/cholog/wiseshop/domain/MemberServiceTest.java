@@ -1,7 +1,6 @@
-package cholog.wiseshop.domain.member;
+package cholog.wiseshop.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
@@ -88,7 +87,8 @@ class MemberServiceTest extends BaseTest {
             // given
             Member member = MemberFixture.최준호();
             memberRepository.save(member);
-            campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(member);
+            campaignRepository.save(campaign);
 
             // when & then
             assertThatThrownBy(() -> memberService.deleteMember(member))

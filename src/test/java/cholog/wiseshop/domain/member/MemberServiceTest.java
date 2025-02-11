@@ -8,6 +8,7 @@ import cholog.wiseshop.api.member.dto.request.SignUpRequest;
 import cholog.wiseshop.api.member.service.MemberService;
 import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.campaign.Campaign;
+import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.exception.WiseShopException;
@@ -22,6 +23,9 @@ class MemberServiceTest extends BaseTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private CampaignRepository campaignRepository;
 
     @Autowired
     private MemberService memberService;
@@ -84,13 +88,11 @@ class MemberServiceTest extends BaseTest {
             // given
             Member member = MemberFixture.최준호();
             memberRepository.save(member);
-            Campaign campaign = CampaignFixture.보약_캠페인(member);
+            campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
 
-            // when
-
-
-            // then
-
+            // when & then
+            assertThatThrownBy(() -> memberService.deleteMember(member))
+                .isInstanceOf(WiseShopException.class);
         }
     }
 }

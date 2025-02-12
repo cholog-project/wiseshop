@@ -62,7 +62,8 @@ public class CampaignService {
             campaign,
             stock
         ));
-        scheduler.scheduleCampaign(campaign);
+        scheduler.scheduleCampaignToStart(campaign);
+        scheduler.scheduleCampaignToFinish(campaign);
         return CreateCampaignResponse.from(campaign.getId());
     }
 

@@ -21,13 +21,15 @@ public class ThreadTaskScheduler {
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
-    public void scheduleCampaign(Campaign campaign) {
+    public void scheduleCampaignToStart(Campaign campaign) {
         Runnable startCampaign = () -> transactionTemplate.execute(status -> {
             campaign.setState(campaign.getStartDate(), campaign.getEndDate());
             return null;
         });
         scheduler.schedule(startCampaign, campaign.getStartDate().atZone(ZoneId.systemDefault()).toInstant());
+    }
 
+    public void scheduleCampaignToFinish(Campaign campaign) {
         Runnable endCampaign = () -> transactionTemplate.execute(status -> {
             campaign.setStateWhenFinish();
             return null;

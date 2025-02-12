@@ -146,7 +146,7 @@ public class CampaignServiceTest extends BaseTest {
         }
 
         @Test
-        void 종료_후_목표수량_달성_시_상태설정(){
+        void 종료_후_목표수량_달성_시_상태설정() {
             // given
             LocalDateTime now = LocalDateTime.now();
             Campaign campaign = Campaign.builder()
@@ -184,7 +184,8 @@ public class CampaignServiceTest extends BaseTest {
             // when & then
             assertThatThrownBy(
                 () -> campaignService.createCampaign(request, member, now))
-                .isInstanceOf(WiseShopException.class);
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.INVALID_QUANTITY.getMessage());
         }
     }
 }

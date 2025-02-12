@@ -21,6 +21,9 @@ public class Stock {
     private int totalQuantity;
 
     public Stock(int totalQuantity) {
+        if (totalQuantity < 1) {
+            throw new WiseShopException(WiseShopErrorCode.STOCK_NOT_AVAILABLE);
+        }
         this.totalQuantity = totalQuantity;
     }
 
@@ -40,13 +43,5 @@ public class Stock {
             throw new WiseShopException(WiseShopErrorCode.STOCK_NOT_AVAILABLE);
         }
         this.totalQuantity = modifyQuantity;
-    }
-
-    public void reduceQuantity(int orderQuantity) {
-        this.totalQuantity -= orderQuantity;
-    }
-
-    public boolean hasQuantity(int orderQuantity) {
-        return totalQuantity >= orderQuantity;
     }
 }

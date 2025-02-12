@@ -8,9 +8,10 @@ public record CreateOrderRequest(Long productId, int orderQuantity) {
 
     public Order from(Product product, Member member) {
         return new Order(
+            0,
             product,
-            this.orderQuantity,
-            member
+            member,
+            ""
         );
     }
 }

@@ -10,6 +10,7 @@ import cholog.wiseshop.db.address.Address;
 import cholog.wiseshop.db.address.AddressRepository;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
+import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import cholog.wiseshop.fixture.AddressFixture;
 import cholog.wiseshop.fixture.MemberFixture;
@@ -82,6 +83,7 @@ public class AddressServiceTest extends BaseTest {
 
         // when & then
         assertThatThrownBy(() -> addressService.deleteAddress(junesoo, address.getId()))
-            .isInstanceOf(WiseShopException.class);
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.ADDRESS_OWNER_MISMATCH.getMessage());
     }
 }

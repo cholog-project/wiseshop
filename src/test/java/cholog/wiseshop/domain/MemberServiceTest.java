@@ -10,6 +10,7 @@ import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
+import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import cholog.wiseshop.fixture.CampaignFixture;
 import cholog.wiseshop.fixture.MemberFixture;
@@ -62,7 +63,8 @@ class MemberServiceTest extends BaseTest {
 
             // when & then
             assertThatThrownBy(() -> memberService.signUpMember(request))
-                .isInstanceOf(WiseShopException.class);
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.ALREADY_EXIST_MEMBER.getMessage());
         }
     }
 
@@ -92,7 +94,8 @@ class MemberServiceTest extends BaseTest {
 
             // when & then
             assertThatThrownBy(() -> memberService.deleteMember(member))
-                .isInstanceOf(WiseShopException.class);
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.MEMBER_INPROGRESS_CAMPAIGN_EXIST.getMessage());
         }
     }
 }

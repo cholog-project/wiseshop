@@ -14,4 +14,12 @@ public class MemberFixture {
             "12341234"
         );
     }
+
+    public static Member 김준수() {
+        return new Member(
+            "junesoo@test.com",
+            "김준수",
+            "12341234"
+        );
+    }
 }

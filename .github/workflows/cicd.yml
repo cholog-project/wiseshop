@@ -60,6 +60,7 @@ jobs:
         run: |
           sudo nohup java -jar \
           -Dspring.profiles.active=prod \
+          -Dlogging.config=classpath:logback-spring.xml \
           -DRDS_HOST=${{ secrets.RDS_HOST }} \
           -DRDS_USERNAME=${{ secrets.RDS_USERNAME }} \
           -DRDS_PASSWORD=${{ secrets.RDS_PASSWORD }} \

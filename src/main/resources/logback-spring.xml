@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true">
+<configuration>
   <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
   <property name="LOCAL_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%highlight(%5level)] %logger{0} [%F:%line] : %msg%n"/>
@@ -29,15 +29,17 @@
 
   <!-- 운영 환경 -->
   <springProfile name="prod">
+    <include resource="info-appender.xml"/>
     <include resource="warn-appender.xml"/>
     <include resource="error-appender.xml"/>
 
     <logger name="org.hibernate.SQL" level="WARN"/>
     <logger name="org.hibernate.orm.jdbc.bind" level="OFF"/>
 
-    <root level="WARN">
+    <root level="INFO">
       <appender-ref ref="WARN"/>
       <appender-ref ref="ERROR"/>
+      <appender-ref ref="INFO"/>
     </root>
   </springProfile>
 

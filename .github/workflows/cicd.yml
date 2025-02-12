@@ -54,8 +54,16 @@ jobs:
             echo "No running application found."
           fi
 
+      # GitHub Secrets에 환경 변수 추가 필요
       - name: Run application
-        run: sudo nohup java -jar -Dspring.profiles.active=prod /home/ubuntu/wise-shop/wiseshop.jar > /home/ubuntu/application.log 2>&1 &
+        run: |
+          sudo nohup java -jar \
+          -Dspring.profiles.active=prod \
+          -DRDS_HOST=${{ secrets.RDS_HOST }} \
+          -DRDS_USERNAME=${{ secrets.RDS_USERNAME }} \
+          -DRDS_PASSWORD=${{ secrets.RDS_PASSWORD }} \
+          -DTOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }} \
+          /home/ubuntu/wise-shop/wiseshop.jar > /home/ubuntu/application.log 2>&1 &
 
       - name: Discord notification on success
         if: success()

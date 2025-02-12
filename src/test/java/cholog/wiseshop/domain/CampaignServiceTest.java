@@ -1,4 +1,4 @@
-package cholog.wiseshop.domain.member;
+package cholog.wiseshop.domain;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;

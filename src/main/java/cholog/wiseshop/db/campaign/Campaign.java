@@ -55,7 +55,7 @@ public class Campaign {
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalQuantity = goalQuantity;
-        this.state = setState(startDate, endDate);
+        setState(startDate, endDate);
         this.member = member;
     }
 
@@ -72,16 +72,16 @@ public class Campaign {
         }
     }
 
-    // TODO: 상태 변경 테스트
-    public CampaignState setState(LocalDateTime startDate, LocalDateTime endDate) {
+    public void setState(LocalDateTime startDate, LocalDateTime endDate) {
         LocalDateTime now = LocalDateTime.now();
         if (endDate.isBefore(now)) {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_INVALID_DATE_RANGE);
         }
         if (startDate.isBefore(now) && now.isBefore(endDate)) {
-            return CampaignState.IN_PROGRESS;
+            state = CampaignState.IN_PROGRESS;
+        } else {
+            state = CampaignState.WAITING;
         }
-        return CampaignState.WAITING;
     }
 
     public void setStateWhenFinish() {

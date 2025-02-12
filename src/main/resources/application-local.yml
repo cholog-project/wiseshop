@@ -20,4 +20,4 @@ spring:
         format_sql: true
 toss:
   payments:
-    secret-key: ${TOSS_SECRET_KEY}
+    secret-key: TOSS_SECRET_KEY

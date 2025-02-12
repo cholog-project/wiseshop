@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true">
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+  <property name="LOCAL_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%highlight(%5level)] %logger{0} [%F:%line] : %msg%n"/>
+  <property name="WARN_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [WARN] [%logger{36}] [%F:%line] : %msg%n"/>
+  <property name="ERROR_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [ERROR] [%logger{40}] [%F:%line] [%M] : %msg%n"/>
+  <property name="INFO_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [INFO] %msg%n"/>
+
+  <property name="LOG_PATH" value="../logs"/>
+  <property name="MAX_FILE_SIZE" value="50MB"/>
+  <property name="MAX_HISTORY" value="30"/>
+  <property name="TOTAL_SIZE_CAP" value="1GB"/>
+  <timestamp key="BY_DATE" datePattern="yyyy-MM-dd"/>
+
   <!-- 로컬 환경 -->
   <springProfile name="local">
     <appender name="LOCAL_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
       <encoder>
-        <pattern>[%thread] %logger %p %d{yyyy-MM-dd HH:mm:ss.SSS} %msg %n</pattern>
+        <pattern>${LOCAL_LOG_PATTERN}</pattern>
+        <charset>UTF-8</charset>
       </encoder>
     </appender>
 
@@ -15,25 +29,16 @@
 
   <!-- 운영 환경 -->
   <springProfile name="prod">
-    <appender name="PROD_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-      <!-- 로그파일 저장위치 -->
-      <file>logs/wiseshop.log</file>
+    <include resource="warn-appender.xml"/>
+    <include resource="error-appender.xml"/>
 
-      <!-- 로그파일 롤링 정책 -->
-      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <fileNamePattern>logs/wiseshop.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <!-- 30일 간의 로그파일 보관 -->
-        <maxHistory>30</maxHistory>
-      </rollingPolicy>
-
-      <encoder>
-        <pattern>[%thread] %logger %p %d{yyyy-MM-dd HH:mm:ss.SSS} %msg %n</pattern>
-      </encoder>
-    </appender>
+    <logger name="org.hibernate.SQL" level="WARN"/>
+    <logger name="org.hibernate.orm.jdbc.bind" level="OFF"/>
 
     <root level="WARN">
-      <appender-ref ref="PROD_FILE" />
+      <appender-ref ref="WARN"/>
+      <appender-ref ref="ERROR"/>
     </root>
   </springProfile>
-</configuration>
 
+</configuration>

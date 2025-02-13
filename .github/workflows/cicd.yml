@@ -45,18 +45,22 @@ jobs:
 
       - name: Stop running application
         run: |
-          PID=$(pgrep -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar")
-          
+          PID=$(pgrep -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar" || echo "")
+
           if [ -n "$PID" ]; then
             echo "Stopping existing application with PID $PID..."
             sudo kill -9 "$PID"
+          else
+            echo "No running application found."
           fi
-          
-          NOHUP_PID=$(pgrep -f "nohup java -jar /home/ubuntu/wise-shop/wiseshop.jar")
-          
+
+          NOHUP_PID=$(pgrep -f "nohup java -jar /home/ubuntu/wise-shop/wiseshop.jar" || echo "")
+
           if [ -n "$NOHUP_PID" ]; then
             echo "Stopping nohup process with PID $NOHUP_PID..."
             sudo kill -9 "$NOHUP_PID"
+          else
+            echo "No nohup process found."
           fi
 
       - name: Copy jar

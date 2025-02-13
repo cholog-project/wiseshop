@@ -58,8 +58,11 @@ public class ProductService {
     }
 
     public void deleteProduct(Long id) {
-        productRepository.findById(id)
+        Product product = productRepository.findById(id)
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
+        if (product.getCampaign().isNotWaiting()) {
+            throw new WiseShopException(WiseShopErrorCode.INVALID_CAMPAIGN_DELETE_STATE);
+        }
         productRepository.deleteById(id);
     }
 }

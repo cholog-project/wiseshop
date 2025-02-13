@@ -48,9 +48,9 @@ jobs:
 
       - name: Stop running application
         run: |
-          if pgrep -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"; then
+          if sudo pgrep -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"; then
             echo "Stopping existing application..."
-            pkill -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"
+            sudo pkill -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"
           else
             echo "No running application found."
           fi

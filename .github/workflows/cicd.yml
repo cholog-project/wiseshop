@@ -43,9 +43,6 @@ jobs:
       - name: Test
         run: pwd
 
-      - name: Copy jar
-        run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
-
       - name: Stop running application
         run: |
           PID=$(sudo pgrep -f "java -jar .*wiseshop.jar" | tail -n 1)
@@ -61,6 +58,9 @@ jobs:
             echo "Stopping nohup process with PID $NOHUP_PID..."
             sudo kill -9 "$NOHUP_PID"
           fi
+
+      - name: Copy jar
+        run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
 
       # GitHub Secrets에 환경 변수 추가 필요
       - name: Run application

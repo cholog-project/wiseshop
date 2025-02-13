@@ -7,7 +7,7 @@
   <property name="ERROR_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [ERROR] [%logger{40}] [%F:%line] [%M] : %msg%n"/>
   <property name="INFO_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [INFO] %msg%n"/>
 
-  <property name="LOG_PATH" value="../logs"/>
+  <property name="LOG_PATH" value="/home/ubuntu/logs"/>
   <property name="MAX_FILE_SIZE" value="50MB"/>
   <property name="MAX_HISTORY" value="30"/>
   <property name="TOTAL_SIZE_CAP" value="1GB"/>
@@ -33,13 +33,25 @@
     <include resource="warn-appender.xml"/>
     <include resource="error-appender.xml"/>
 
-    <logger name="org.hibernate.SQL" level="WARN"/>
+    <logger name="org.hibernate.SQL" level="INFO"/>
     <logger name="org.hibernate.orm.jdbc.bind" level="OFF"/>
 
+<!--    <logger name="INFO_LOGGER" level="INFO" additivity="false">-->
+<!--      <appender-ref ref="INFO"/>-->
+<!--    </logger>-->
+
+<!--    <logger name="WARN_LOGGER" level="WARN" additivity="false">-->
+<!--      <appender-ref ref="WARN"/>-->
+<!--    </logger>-->
+
+<!--    <logger name="ERROR_LOGGER" level="ERROR" additivity="false">-->
+<!--      <appender-ref ref="ERROR"/>-->
+<!--    </logger>-->
+
     <root level="INFO">
+      <appender-ref ref="INFO"/>
       <appender-ref ref="WARN"/>
       <appender-ref ref="ERROR"/>
-      <appender-ref ref="INFO"/>
     </root>
   </springProfile>
 

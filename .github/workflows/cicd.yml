@@ -45,14 +45,14 @@ jobs:
 
       - name: Stop running application
         run: |
-          PID=$(sudo pgrep -f "java -jar /home/ubuntu/wise-shop/*.jar")
+          PID=$(sudo pgrep -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar")
           
           if [ -n "$PID" ]; then
             echo "Stopping existing application with PID $PID..."
             sudo kill -9 "$PID"
           fi
           
-          NOHUP_PID=$(sudo pgrep -f "nohup java -jar /home/ubuntu/wise-shop/*.jar")
+          NOHUP_PID=$(sudo pgrep -f "nohup java -jar /home/ubuntu/wise-shop/wiseshop.jar")
           
           if [ -n "$NOHUP_PID" ]; then
             echo "Stopping nohup process with PID $NOHUP_PID..."

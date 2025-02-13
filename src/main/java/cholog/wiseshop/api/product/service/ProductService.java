@@ -49,11 +49,11 @@ public class ProductService {
         productRepository.save(existedProduct);
     }
 
-    public void modifyProductPrice(Long productId, ModifyProductPriceRequest request) {
+    public void modifyProductPriceAndStock(Long productId, ModifyProductPriceRequest request) {
         Product existedProduct = productRepository.findById(productId)
             .orElseThrow(
                 () -> new WiseShopException(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND));
-        existedProduct.modifyPrice(request.price());
+        existedProduct.modifyPriceAndStock(request.price(), request.totalQuantity());
         productRepository.save(existedProduct);
     }
 

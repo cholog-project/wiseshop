@@ -77,7 +77,7 @@ public class Campaign {
         if (endDate.isBefore(now)) {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_INVALID_DATE_RANGE);
         }
-        if (startDate.isBefore(now) && now.isBefore(endDate)) {
+        if (startDate.isBefore(now) && endDate.isAfter(now)) {
             state = CampaignState.IN_PROGRESS;
         } else {
             state = CampaignState.WAITING;

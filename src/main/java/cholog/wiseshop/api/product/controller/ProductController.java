@@ -26,7 +26,8 @@ public class ProductController {
 
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(id));
+        ProductResponse response = productService.getProduct(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PatchMapping("/products/{id}")

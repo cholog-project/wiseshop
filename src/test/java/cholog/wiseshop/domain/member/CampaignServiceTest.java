@@ -5,17 +5,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
+import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.campaign.Campaign;
+import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
+import cholog.wiseshop.db.product.Product;
+import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import cholog.wiseshop.fixture.MemberFixture;
 import cholog.wiseshop.fixture.ProductFixture.Request;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +35,15 @@ public class CampaignServiceTest extends BaseTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private CampaignRepository campaignRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private StockRepository stockRepository;
 
     @Nested
     class 캠페인을_생성한다 {
@@ -162,6 +178,92 @@ public class CampaignServiceTest extends BaseTest {
 
             // then
             assertThat(campaign.getState()).isEqualTo(CampaignState.SUCCESS);
+        }
+
+        @Test
+        void 캠페인_전체조회_시_진행중_캠페인들만_조회() {
+            // given
+            LocalDateTime now = LocalDateTime.now();
+            Stock stockA = new Stock(10);
+            Stock stockB = new Stock(10);
+            Stock stockC = new Stock(10);
+            stockRepository.saveAll(List.of(stockA, stockB, stockC));
+            Campaign campaignA = Campaign.builder()
+                .startDate(now.plusHours(1))
+                .endDate(now.plusHours(2))
+                .goalQuantity(5)
+                .state(CampaignState.WAITING)
+                .now(now)
+                .build();
+            Product productA = new Product("product", "zzang", 2000, campaignA, stockA);
+
+            Campaign campaignB = Campaign.builder()
+                .startDate(now.plusHours(1))
+                .endDate(now.plusHours(2))
+                .goalQuantity(5)
+                .state(CampaignState.WAITING)
+                .now(now)
+                .build();
+            Product productB = new Product("product", "zzang", 2000, campaignB, stockB);
+
+            Campaign waitingCampaign = Campaign.builder()
+                .startDate(now.plusHours(1))
+                .endDate(now.plusHours(2))
+                .goalQuantity(5)
+                .state(CampaignState.WAITING)
+                .now(now)
+                .build();
+            Product productC = new Product("product", "zzang", 2000, waitingCampaign, stockC);
+
+            campaignA.setState(now.minusHours(1), now.plusHours(2));
+            campaignB.setState(now.minusHours(1), now.plusHours(2));
+            campaignRepository.saveAll(List.of(campaignA, campaignB, waitingCampaign));
+            productRepository.saveAll(List.of(productA, productB, productC));
+
+            // when
+            List<ReadCampaignResponse> response = campaignService.readInProgressCampaign();
+
+            // then
+            assertThat(response).hasSize(2);
+        }
+
+        @Test
+        void 캠페인_단건_조회() {
+            // given
+            LocalDateTime now = LocalDateTime.now();
+            Stock stockA = new Stock(10);
+            Stock stockB = new Stock(10);
+            stockRepository.saveAll(List.of(stockA, stockB));
+
+            Campaign campaignA = Campaign.builder()
+                .startDate(now.plusHours(1))
+                .endDate(now.plusHours(2))
+                .goalQuantity(5)
+                .state(CampaignState.WAITING)
+                .now(now)
+                .build();
+            Product productA = new Product("productA", "zzang", 2000, campaignA, stockA);
+
+            Campaign campaignB = Campaign.builder()
+                .startDate(now.minusHours(2))
+                .endDate(now.plusHours(3))
+                .goalQuantity(6)
+                .state(CampaignState.IN_PROGRESS)
+                .now(now)
+                .build();
+            Product productB = new Product("productB", "zzang", 2000, campaignB, stockB);
+
+            campaignRepository.saveAll(List.of(campaignA, campaignB));
+            productRepository.saveAll(List.of(productA, productB));
+
+            // when
+            ReadCampaignResponse response = campaignService.readCampaign(campaignA.getId());
+
+            // then
+            assertThat(response.product().id()).isEqualTo(productA.getId());
+            assertThat(response.startDate()).isEqualTo(now.plusHours(1).toString());
+            assertThat(response.endDate()).isEqualTo(now.plusHours(2).toString());
+            assertThat(response.goalQuantity()).isEqualTo(5);
         }
 
         @Test

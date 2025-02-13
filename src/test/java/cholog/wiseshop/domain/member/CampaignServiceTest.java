@@ -73,7 +73,7 @@ public class CampaignServiceTest extends BaseTest {
             assertThatThrownBy(
                 () -> campaignService.createCampaign(campaignRequest, member, now))
                 .isInstanceOf(WiseShopException.class)
-                .hasMessage(WiseShopErrorCode.INVALID_QUANTITY.getMessage());
+                .hasMessage(WiseShopErrorCode.INVALID_GOAL_QUANTITY.getMessage());
         }
 
         @Test
@@ -185,7 +185,7 @@ public class CampaignServiceTest extends BaseTest {
             assertThatThrownBy(
                 () -> campaignService.createCampaign(request, member, now))
                 .isInstanceOf(WiseShopException.class)
-                .hasMessage(WiseShopErrorCode.INVALID_QUANTITY.getMessage());
+                .hasMessage(WiseShopErrorCode.INVALID_GOAL_QUANTITY.getMessage());
         }
     }
 }

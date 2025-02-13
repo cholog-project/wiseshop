@@ -21,7 +21,7 @@ public enum WiseShopErrorCode {
     ORDER_NOT_FOUND("주문 정보가 존재하지 않습니다."),
     ORDER_NOT_AVAILABLE("자신이 만든 캠페인은 주문이 불가능합니다."),
     CAMPAIGN_INVALID_DATE_RANGE("잘못된 캠페인 날짜입니다."),
-    INVALID_QUANTITY("목표수량은 재고보다 적어야 합니다.");
+    INVALID_GOAL_QUANTITY("목표수량은 재고보다 적어야 합니다.");
 
     private String message;
 

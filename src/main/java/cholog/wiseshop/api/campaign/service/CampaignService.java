@@ -69,7 +69,7 @@ public class CampaignService {
 
     private void validateQuantity(int totalQuantity, int goalQuantity) {
         if (totalQuantity <= goalQuantity) {
-            throw new WiseShopException(WiseShopErrorCode.INVALID_QUANTITY);
+            throw new WiseShopException(WiseShopErrorCode.INVALID_GOAL_QUANTITY);
         }
     }
 

@@ -36,18 +36,6 @@
     <logger name="org.hibernate.SQL" level="INFO"/>
     <logger name="org.hibernate.orm.jdbc.bind" level="OFF"/>
 
-<!--    <logger name="INFO_LOGGER" level="INFO" additivity="false">-->
-<!--      <appender-ref ref="INFO"/>-->
-<!--    </logger>-->
-
-<!--    <logger name="WARN_LOGGER" level="WARN" additivity="false">-->
-<!--      <appender-ref ref="WARN"/>-->
-<!--    </logger>-->
-
-<!--    <logger name="ERROR_LOGGER" level="ERROR" additivity="false">-->
-<!--      <appender-ref ref="ERROR"/>-->
-<!--    </logger>-->
-
     <root level="INFO">
       <appender-ref ref="INFO"/>
       <appender-ref ref="WARN"/>

@@ -45,7 +45,7 @@ jobs:
 
       - name: Stop running application
         run: |
-          PID=$(sudo lsof -i :8080 || echo "")
+          PID=$(sudo lsof -t -i :8080 || echo "")
 
           if [ -n "$PID" ]; then
             echo "Stopping existing application with PID $PID..."

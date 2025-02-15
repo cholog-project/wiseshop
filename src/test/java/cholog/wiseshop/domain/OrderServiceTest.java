@@ -1,6 +1,7 @@
 package cholog.wiseshop.domain;
 
 import cholog.wiseshop.common.BaseTest;
+import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.db.order.OrderRepository;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -18,6 +19,9 @@ public class OrderServiceTest extends BaseTest {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CampaignRepository campaignRepository;
 
     @Nested
     class 사용자가_주문을_수행한다 {

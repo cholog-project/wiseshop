@@ -3,6 +3,8 @@ package cholog.wiseshop.api.order.service;
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
+import cholog.wiseshop.db.address.Address;
+import cholog.wiseshop.db.address.AddressRepository;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
@@ -24,22 +26,30 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final AddressRepository addressRepository;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(
+        OrderRepository orderRepository,
+        ProductRepository productRepository,
+        AddressRepository addressRepository
+    ) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.addressRepository = addressRepository;
     }
 
     public Long createOrder(CreateOrderRequest request, Member member) {
         Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
+        Address address = addressRepository.findById(request.addressId())
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
         Campaign campaign = product.getCampaign();
         validateCampaignStateInProgress(campaign);
         Stock stock = product.getStock();
         validateQuantity(campaign, stock, request.orderQuantity());
         Member campaignOwner = campaign.getMember();
         validateOrderOwner(campaignOwner, member);
-        Order order = orderRepository.save(request.from(product, member));
+        Order order = orderRepository.save(request.from(product, member, address));
         campaign.increaseSoldQuantity(request.orderQuantity());
         return order.getId();
     }

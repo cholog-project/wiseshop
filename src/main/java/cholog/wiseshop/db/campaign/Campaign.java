@@ -51,12 +51,11 @@ public class Campaign {
         LocalDateTime now
     ) {
         validateStartDate(startDate, now);
+        validateDuration(startDate, endDate);
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalQuantity = goalQuantity;
-        this.state = CampaignState.WAITING;
-        // TODO : 현재 시간과 비교하여 state를 유동적으로 변경할 수 있게 하면 어떨지..
-        // ex) endDate < now 이면 생성될 수 없고, startDate <= now && now <= endDate 이면 IN_PROGRESS로 생성된다.
+        setState(startDate, endDate);
         this.member = member;
     }
 
@@ -64,6 +63,32 @@ public class Campaign {
         Duration duration = Duration.between(startDate, now);
         if (duration.toHours() > 24) {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_INVALID_START_DATE);
+        }
+    }
+
+    private void validateDuration(LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_INVALID_DATE_RANGE);
+        }
+    }
+
+    public void setState(LocalDateTime startDate, LocalDateTime endDate) {
+        LocalDateTime now = LocalDateTime.now();
+        if (endDate.isBefore(now)) {
+            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_INVALID_DATE_RANGE);
+        }
+        if (startDate.isBefore(now) && endDate.isAfter(now)) {
+            state = CampaignState.IN_PROGRESS;
+        } else {
+            state = CampaignState.WAITING;
+        }
+    }
+
+    public void setStateWhenFinish() {
+        if (soldQuantity < goalQuantity) {
+            state = CampaignState.FAILED;
+        } else {
+            state = CampaignState.SUCCESS;
         }
     }
 
@@ -168,5 +193,13 @@ public class Campaign {
 
     public boolean isInProgress() {
         return CampaignState.IN_PROGRESS.equals(state);
+    }
+
+    public boolean isWaiting() {
+        return CampaignState.WAITING.equals(state);
+    }
+
+    public boolean isNotWaiting() {
+        return !isWaiting();
     }
 }

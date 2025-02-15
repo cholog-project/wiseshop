@@ -17,6 +17,20 @@ public class CampaignFixture {
             .goalQuantity(100)
             .soldQuantity(0)
             .member(member)
+            .now(now)
+            .build();
+    }
+
+    public static Campaign 대기중인_보약_캠페인(Member member) {
+        LocalDateTime now = LocalDateTime.now();
+        return Campaign.builder()
+            .startDate(now.plusDays(2))
+            .endDate(now.plusDays(2))
+            .goalQuantity(10)
+            .soldQuantity(0)
+            .state(CampaignState.WAITING)
+            .member(member)
+            .now(now)
             .build();
     }
 

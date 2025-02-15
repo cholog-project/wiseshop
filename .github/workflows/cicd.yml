@@ -42,23 +42,26 @@ jobs:
       - name: Test
         run: pwd
 
-      - name: Copy jar
-        run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
-
       - name: Stop running application
         run: |
-          if pgrep -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"; then
-            echo "Stopping existing application..."
-            pkill -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"
+          PID=$(sudo lsof -t -i :8080 || echo "")
+
+          if [ -n "$PID" ]; then
+            echo "Stopping existing application with PID $PID..."
+            sudo kill -9 "$PID"
           else
             echo "No running application found."
           fi
+
+      - name: Copy jar
+        run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
 
       # GitHub Secrets에 환경 변수 추가 필요
       - name: Run application
         run: |
           sudo nohup java -jar \
           -Dspring.profiles.active=prod \
+          -Dlogging.config=classpath:logback-spring.xml \
           -DRDS_HOST=${{ secrets.RDS_HOST }} \
           -DRDS_USERNAME=${{ secrets.RDS_USERNAME }} \
           -DRDS_PASSWORD=${{ secrets.RDS_PASSWORD }} \

@@ -36,8 +36,10 @@ public class OrderController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<Long> createOrder(@Auth Member member, @RequestBody CreateOrderRequest request) {
-        Long orderId = orderService.createOrder(request, member);
+    public ResponseEntity<Long> createOrder(@Auth Member member,
+                                            @RequestBody CreateOrderRequest request,
+                                            HttpSession session) {
+        Long orderId = orderService.createOrder(request, member, session);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
     }
 

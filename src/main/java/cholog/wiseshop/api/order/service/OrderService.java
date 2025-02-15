@@ -15,6 +15,7 @@ import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class OrderService {
         this.paymentRepository = paymentRepository;
     }
 
-    public Long createOrder(CreateOrderRequest request, Member member) {
+    public Long createOrder(CreateOrderRequest request, Member member, HttpSession session) {
         Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
         Campaign campaign = product.getCampaign();
@@ -52,12 +53,20 @@ public class OrderService {
         Order order = orderRepository.save(request.from(product, member));
         campaign.increaseSoldQuantity(request.orderQuantity());
 
+        validatePaymentRequest(request, session);
         Payment payment = paymentClient.confirm(
             new PaymentRequest(request.paymentOrderId(), request.amount(), request.paymentKey()));
         payment.addOrder(order);
         paymentRepository.save(payment);
 
         return order.getId();
+    }
+
+    private void validatePaymentRequest(CreateOrderRequest request, HttpSession session) {
+        Long amount = (Long) session.getAttribute(request.paymentOrderId());
+        if (amount == null || !Objects.equals(amount, request.amount())) {
+            throw new WiseShopException(WiseShopErrorCode.PAYMENT_NOT_MATCHED);
+        }
     }
 
     @Transactional(readOnly = true)

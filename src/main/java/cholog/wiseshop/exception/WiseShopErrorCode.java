@@ -19,8 +19,8 @@ public enum WiseShopErrorCode {
     CAMPAIGN_INVALID_START_DATE("캠페인의 시작 날짜는 현재로부터 24시간을 넘을 수 없습니다."),
     STOCK_NOT_AVAILABLE("재고 수량은 최소 1개 이상이어야 합니다."),
     ORDER_NOT_FOUND("주문 정보가 존재하지 않습니다."),
-    ORDER_NOT_AVAILABLE("자신이 만든 캠페인은 주문이 불가능합니다.")
-    ;
+    ORDER_NOT_AVAILABLE("자신이 만든 캠페인은 주문이 불가능합니다."),
+    PAYMENT_NOT_MATCHED("결제 정보가 일치하지 않습니다.");
 
     private String message;
 

@@ -1,6 +1,5 @@
 package cholog.wiseshop.api.product.service;
 
-import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceAndStockRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
@@ -8,7 +7,6 @@ import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
-import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import org.springframework.stereotype.Service;

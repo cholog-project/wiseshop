@@ -1,7 +1,6 @@
 package cholog.wiseshop.db.order;
 
 import cholog.wiseshop.db.BaseTimeEntity;
-import cholog.wiseshop.db.address.Address;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import jakarta.persistence.Entity;

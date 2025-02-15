@@ -1,12 +1,14 @@
 package cholog.wiseshop.api.address.controller;
 
-import cholog.wiseshop.api.address.dto.CreateAddressRequest;
+import cholog.wiseshop.api.address.dto.request.CreateAddressRequest;
+import cholog.wiseshop.api.address.dto.response.MemberAddressListResponse;
 import cholog.wiseshop.api.address.service.AddressService;
 import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +30,14 @@ public class AddressController {
         @Auth Member member,
         @RequestBody CreateAddressRequest request
     ) {
-        return ResponseEntity.ok().body(addressService.createAddress(member, request));
+        Long response = addressService.createAddress(member, request);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/member/addresses")
+    public ResponseEntity<MemberAddressListResponse> readMemberAddresses(@Auth Member member) {
+        MemberAddressListResponse response = addressService.readMemberAddresses(member);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/member/address/{id}")

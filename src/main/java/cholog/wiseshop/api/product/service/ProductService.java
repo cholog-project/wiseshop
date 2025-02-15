@@ -26,19 +26,6 @@ public class ProductService {
         this.campaignRepository = campaignRepository;
     }
 
-    // TODO: 안쓰면 제거
-    public Long createProduct(CreateProductRequest request) {
-        Stock stock = new Stock(request.totalQuantity());
-        Product product = Product.builder()
-            .name(request.name())
-            .description(request.description())
-            .price(request.price())
-            .stock(stock)
-            .build();
-        Product createdProduct = productRepository.save(product);
-        return createdProduct.getId();
-    }
-
     @Transactional(readOnly = true)
     public ProductResponse getProduct(Long id) {
         return new ProductResponse(productRepository.findById(id)

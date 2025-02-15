@@ -32,6 +32,21 @@ class AddressServiceTest extends BaseTest {
     @Autowired
     private AddressService addressService;
 
+    @Test
+    void 배송지_소유자가_삭제를_요청한_사용자와_다르면_예외_발생() {
+        // given
+        Member junho = MemberFixture.최준호();
+        Member junesoo = MemberFixture.김준수();
+        memberRepository.save(junho);
+        Address address = AddressFixture.집주소(junho);
+        addressRepository.save(address);
+
+        // when & then
+        assertThatThrownBy(() -> addressService.deleteAddress(junesoo, address.getId()))
+            .isInstanceOf(WiseShopException.class)
+            .hasMessage(WiseShopErrorCode.NOT_OWNER.getMessage());
+    }
+
     @Nested
     class 사용자가_배송지를_등록한다 {
 
@@ -92,20 +107,5 @@ class AddressServiceTest extends BaseTest {
             // then
             assertThat(addressRepository.findById(address.getId())).isEmpty();
         }
-    }
-
-    @Test
-    void 배송지_소유가_삭제를_요청한_사용자와_다르면_예외_발생() {
-        // given
-        Member junho = MemberFixture.최준호();
-        Member junesoo = MemberFixture.김준수();
-        memberRepository.save(junho);
-        Address address = AddressFixture.집주소(junho);
-        addressRepository.save(address);
-
-        // when & then
-        assertThatThrownBy(() -> addressService.deleteAddress(junesoo, address.getId()))
-            .isInstanceOf(WiseShopException.class)
-            .hasMessage(WiseShopErrorCode.ADDRESS_OWNER_MISMATCH.getMessage());
     }
 }

@@ -29,7 +29,9 @@ public class AddressService {
     public void deleteAddress(Member member, Long addressId) {
         Address address = addressRepository.findById(addressId)
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));
-        address.validatesOwner(member);
+        if (!address.isOwner(member)) {
+            throw new WiseShopException(WiseShopErrorCode.NOT_OWNER);
+        }
         addressRepository.deleteById(addressId);
     }
 

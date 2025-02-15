@@ -63,7 +63,8 @@ public class CampaignService {
             productAtCampaignRequest.description(),
             productAtCampaignRequest.price(),
             campaign,
-            stock
+            stock,
+            member
         ));
         scheduler.scheduleCampaignToStart(campaign);
         scheduler.scheduleCampaignToFinish(campaign);
@@ -89,7 +90,8 @@ public class CampaignService {
             findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
             findCampaign.getSoldQuantity(),
             findProduct.getStock().getTotalQuantity(),
-            new ProductResponse(findProduct)
+            new ProductResponse(findProduct),
+            findCampaign.getMember().getId()
         );
     }
 
@@ -105,7 +107,8 @@ public class CampaignService {
                     campaign.getGoalQuantity(),
                     campaign.getSoldQuantity(),
                     product.getStock().getTotalQuantity(),
-                    new ProductResponse(product)
+                    new ProductResponse(product),
+                    campaign.getMember().getId()
                 );
             }).toList();
     }

@@ -195,7 +195,11 @@ public class Campaign {
         return CampaignState.IN_PROGRESS.equals(state);
     }
 
+    public boolean isWaiting() {
+        return CampaignState.WAITING.equals(state);
+    }
+
     public boolean isNotWaiting() {
-        return !CampaignState.WAITING.equals(state);
+        return !isWaiting();
     }
 }

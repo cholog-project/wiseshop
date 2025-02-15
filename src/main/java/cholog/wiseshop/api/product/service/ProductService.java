@@ -1,7 +1,7 @@
 package cholog.wiseshop.api.product.service;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
-import cholog.wiseshop.api.product.dto.request.ModifyProductPriceAntStockRequest;
+import cholog.wiseshop.api.product.dto.request.ModifyProductPriceAndStockRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.db.campaign.Campaign;
@@ -53,10 +53,9 @@ public class ProductService {
         productRepository.save(existedProduct);
     }
 
-    public void modifyProductPriceAndStock(Long productId, ModifyProductPriceAntStockRequest request) {
+    public void modifyProductPriceAndStock(Long productId, ModifyProductPriceAndStockRequest request) {
         Product existedProduct = productRepository.findById(productId)
-            .orElseThrow(
-                () -> new WiseShopException(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND));
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND));
         existedProduct.modifyPriceAndStock(request.price(), request.totalQuantity());
         productRepository.save(existedProduct);
     }

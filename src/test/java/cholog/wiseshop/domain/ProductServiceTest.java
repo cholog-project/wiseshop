@@ -3,7 +3,7 @@ package cholog.wiseshop.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import cholog.wiseshop.api.product.dto.request.ModifyProductPriceAntStockRequest;
+import cholog.wiseshop.api.product.dto.request.ModifyProductPriceAndStockRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.service.ProductService;
 import cholog.wiseshop.common.BaseTest;
@@ -76,7 +76,7 @@ class ProductServiceTest extends BaseTest {
             Stock stock = new Stock(20);
             stockRepository.save(stock);
             Product product = productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
-            ModifyProductPriceAntStockRequest request = new ModifyProductPriceAntStockRequest(
+            ModifyProductPriceAndStockRequest request = new ModifyProductPriceAndStockRequest(
                 2000,
                 30
             );
@@ -98,7 +98,7 @@ class ProductServiceTest extends BaseTest {
             Stock stock = new Stock(20);
             stockRepository.save(stock);
             Product product = productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
-            ModifyProductPriceAntStockRequest request = new ModifyProductPriceAntStockRequest(
+            ModifyProductPriceAndStockRequest request = new ModifyProductPriceAndStockRequest(
                 2000,
                 30
             );
@@ -117,7 +117,7 @@ class ProductServiceTest extends BaseTest {
             Stock stock = new Stock(20);
             stockRepository.save(stock);
             Product product = productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
-            ModifyProductPriceAntStockRequest request = new ModifyProductPriceAntStockRequest(
+            ModifyProductPriceAndStockRequest request = new ModifyProductPriceAndStockRequest(
                 2000,
                 1
             );
@@ -126,7 +126,6 @@ class ProductServiceTest extends BaseTest {
             assertThatThrownBy(() -> productService.modifyProductPriceAndStock(product.getId(), request))
                 .isInstanceOf(WiseShopException.class)
                 .hasMessage(WiseShopErrorCode.INVALID_TOTAL_QUANTITY.getMessage());
-
         }
     }
 

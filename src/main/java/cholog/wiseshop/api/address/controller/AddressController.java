@@ -34,12 +34,6 @@ public class AddressController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/member/addresses")
-    public ResponseEntity<MemberAddressListResponse> readMemberAddresses(@Auth Member member) {
-        MemberAddressListResponse response = addressService.readMemberAddresses(member);
-        return ResponseEntity.ok().body(response);
-    }
-
     @DeleteMapping("/member/address/{id}")
     public ResponseEntity<Void> deleteAddress(@Auth Member member, @PathVariable Long id) {
         addressService.deleteAddress(member, id);

@@ -27,12 +27,6 @@ public class AddressService {
         return addressRepository.save(address).getId();
     }
 
-    public MemberAddressListResponse readMemberAddresses(Member member) {
-        List<MemberAddressResponse> memberAddresses = addressRepository.findAllByMemberId(member.getId())
-            .stream().map(MemberAddressResponse::new).toList();
-        return new MemberAddressListResponse(memberAddresses);
-    }
-
     public void deleteAddress(Member member, Long addressId) {
         Address address = addressRepository.findById(addressId)
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));

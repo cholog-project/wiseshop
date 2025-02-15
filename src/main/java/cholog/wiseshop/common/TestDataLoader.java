@@ -49,7 +49,7 @@ public class TestDataLoader implements CommandLineRunner {
         ));
         LocalDateTime now = LocalDateTime.now();
         Campaign campaign = campaignRepository.save(Campaign.builder()
-            .startDate(now.plusDays(1))
+            .startDate(now.minusDays(1))
             .endDate(now.plusDays(2))
             .goalQuantity(100)
             .soldQuantity(0)

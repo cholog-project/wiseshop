@@ -3,6 +3,7 @@
   <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
   <property name="LOCAL_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%highlight(%5level)] %logger{0} [%F:%line] : %msg%n"/>
+  <property name="PROD_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%highlight(%5level)] [%X{requestId}] [%X{userId}] %logger{40} [%F:%line] [%M] - %msg%n | Request: [%X{request}] | Response: [%X{response}] | ExecutionTime: [%X{executionTime}ms]%n"/>
   <property name="WARN_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [WARN] [%logger{36}] [%F:%line] : %msg%n"/>
   <property name="ERROR_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [ERROR] [%logger{40}] [%F:%line] [%M] : %msg%n"/>
   <property name="INFO_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [INFO] %msg%n"/>
@@ -29,6 +30,13 @@
 
   <!-- 운영 환경 -->
   <springProfile name="prod">
+    <appender name="PROD_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>${PROD_LOG_PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+    </appender>
+
     <include resource="info-appender.xml"/>
     <include resource="warn-appender.xml"/>
     <include resource="error-appender.xml"/>

@@ -2,6 +2,8 @@ package cholog.wiseshop.db.product;
 
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -99,8 +101,15 @@ public class Product {
         this.campaign = campaign;
     }
 
-    public void modifyPrice(int price) {
+    public void modifyPriceAndStock(int price, int totalQuantity) {
+        if (campaign.isInProgress()) {
+            throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_ALREADY_IN_PROGRESS);
+        }
+        if (totalQuantity <= campaign.getGoalQuantity()) {
+            throw new WiseShopException(WiseShopErrorCode.INVALID_TOTAL_QUANTITY);
+        }
         this.price = price;
+        this.stock.modifyTotalQuantity(totalQuantity);
     }
 
     public Long getId() {

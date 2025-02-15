@@ -4,6 +4,7 @@ import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
 import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.db.campaign.Campaign;
+import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.order.OrderRepository;
@@ -33,7 +34,7 @@ public class OrderService {
         Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
         Campaign campaign = product.getCampaign();
-        validateCampaignState(campaign);
+        validateCampaignStateInProgress(campaign);
         Stock stock = product.getStock();
         validateQuantity(campaign, stock, request.orderQuantity());
         Member campaignOwner = campaign.getMember();
@@ -57,8 +58,10 @@ public class OrderService {
     }
 
 	public void deleteOrder(Long id) {
-		orderRepository.findById(id)
+		Order order = orderRepository.findById(id)
 			.orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
+        Campaign campaign = order.getProduct().getCampaign();
+        validateCampaignStateInProgress(campaign);
 		orderRepository.deleteById(id);
 	}
 
@@ -70,7 +73,7 @@ public class OrderService {
         }
     }
 
-    public void validateCampaignState(Campaign campaign) {
+    public void validateCampaignStateInProgress(Campaign campaign) {
         if (!campaign.isInProgress()) {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS);
         }

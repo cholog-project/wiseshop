@@ -2,6 +2,8 @@ package cholog.wiseshop.db.address;
 
 import cholog.wiseshop.api.address.dto.CreateAddressRequest;
 import cholog.wiseshop.db.member.Member;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -84,5 +86,11 @@ public class Address {
             request.isDefault(),
             member
         );
+    }
+
+    public void validatesOwner(Member member) {
+        if (!getMember().getEmail().equals(member.getEmail())) {
+            throw new WiseShopException(WiseShopErrorCode.ADDRESS_OWNER_MISMATCH);
+        }
     }
 }

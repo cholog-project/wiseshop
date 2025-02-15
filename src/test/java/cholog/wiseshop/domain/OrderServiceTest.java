@@ -33,7 +33,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class OrderServiceTest extends BaseTest {
+@SuppressWarnings("NonAsciiCharacters")
+class OrderServiceTest extends BaseTest {
 
     @Autowired
     private MemberRepository memberRepository;
@@ -75,6 +76,7 @@ public class OrderServiceTest extends BaseTest {
             productRepository.save(product);
 
             CreateOrderRequest request = new CreateOrderRequest(
+                1,
                 product.getId(),
                 address.getId(),
                 10
@@ -102,6 +104,7 @@ public class OrderServiceTest extends BaseTest {
             Long invalidProductId = 1L;
 
             CreateOrderRequest request = new CreateOrderRequest(
+                1,
                 invalidProductId,
                 address.getId(),
                 10
@@ -129,6 +132,7 @@ public class OrderServiceTest extends BaseTest {
             Long invalidAddressId = 1L;
 
             CreateOrderRequest request = new CreateOrderRequest(
+                1,
                 product.getId(),
                 invalidAddressId,
                 10
@@ -157,6 +161,7 @@ public class OrderServiceTest extends BaseTest {
             productRepository.save(product);
 
             CreateOrderRequest request = new CreateOrderRequest(
+                1,
                 product.getId(),
                 address.getId(),
                 10
@@ -184,6 +189,7 @@ public class OrderServiceTest extends BaseTest {
             productRepository.save(product);
 
             CreateOrderRequest request = new CreateOrderRequest(
+                1,
                 product.getId(),
                 address.getId(),
                 201
@@ -210,6 +216,7 @@ public class OrderServiceTest extends BaseTest {
             productRepository.save(product);
 
             CreateOrderRequest request = new CreateOrderRequest(
+                1,
                 product.getId(),
                 address.getId(),
                 10

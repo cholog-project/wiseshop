@@ -5,7 +5,8 @@ public record AddressResponse(
     int postalCode,
     String roadAddress,
     String detailAddress,
-    boolean isDefault
+    boolean isDefault,
+    Long ownerId
 ) {
 
 }

@@ -1,12 +1,15 @@
 package cholog.wiseshop.api.address.controller;
 
-import cholog.wiseshop.api.address.dto.CreateAddressRequest;
+import cholog.wiseshop.api.address.dto.request.CreateAddressRequest;
+import cholog.wiseshop.api.address.dto.response.AddressResponse;
 import cholog.wiseshop.api.address.service.AddressService;
 import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +24,13 @@ public class AddressController {
 
     public AddressController(AddressService addressService) {
         this.addressService = addressService;
+    }
+
+    @GetMapping("/member/address")
+    public ResponseEntity<List<AddressResponse>> createAddress(
+        @Auth Member member
+    ) {
+        return ResponseEntity.ok().body(addressService.getAll(member));
     }
 
     @PostMapping("/member/address")

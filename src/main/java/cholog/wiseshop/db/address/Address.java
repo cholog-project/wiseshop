@@ -1,6 +1,6 @@
 package cholog.wiseshop.db.address;
 
-import cholog.wiseshop.api.address.dto.CreateAddressRequest;
+import cholog.wiseshop.api.address.dto.request.CreateAddressRequest;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;

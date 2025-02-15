@@ -6,6 +6,12 @@ server:
     encoding:
       charset: utf-8
       enabled: true
+    session:
+      cookie:
+        secure: true
+        http-only: true
+        same-site: none
+        max-age: 36000
 
 springdoc:
   packages-to-scan: cholog

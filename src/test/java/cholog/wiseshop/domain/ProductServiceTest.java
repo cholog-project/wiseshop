@@ -1,4 +1,4 @@
-package cholog.wiseshop.domain.member;
+package cholog.wiseshop.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

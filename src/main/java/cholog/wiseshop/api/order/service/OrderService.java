@@ -62,13 +62,6 @@ public class OrderService {
         return order.getId();
     }
 
-    private void validatePaymentRequest(CreateOrderRequest request, HttpSession session) {
-        Long amount = (Long) session.getAttribute(request.paymentOrderId());
-        if (amount == null || !Objects.equals(amount, request.amount())) {
-            throw new WiseShopException(WiseShopErrorCode.PAYMENT_NOT_MATCHED);
-        }
-    }
-
     @Transactional(readOnly = true)
     public OrderResponse readOrder(Long id) {
         Order order = orderRepository.findById(id)
@@ -105,6 +98,13 @@ public class OrderService {
     public void validateOrderOwner(Member campaignOwner, Member orderMember) {
         if (Objects.equals(campaignOwner.getId(), orderMember.getId())) {
             throw new WiseShopException(WiseShopErrorCode.ORDER_NOT_AVAILABLE);
+        }
+    }
+
+    private void validatePaymentRequest(CreateOrderRequest request, HttpSession session) {
+        Long amount = (Long) session.getAttribute(request.paymentOrderId());
+        if (amount == null || !Objects.equals(amount, request.amount())) {
+            throw new WiseShopException(WiseShopErrorCode.PAYMENT_NOT_MATCHED);
         }
     }
 }

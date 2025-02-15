@@ -236,7 +236,8 @@ public class CampaignServiceTest extends BaseTest {
             Campaign campaign = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
             Stock stock = new Stock(20);
             stockRepository.save(stock);
-            Product product = productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
+            Product product = productRepository.save(
+                ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
 
             // when
             ReadCampaignResponse response = campaignService.readCampaign(campaign.getId());

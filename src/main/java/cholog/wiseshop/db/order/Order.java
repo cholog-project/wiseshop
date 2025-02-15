@@ -48,6 +48,50 @@ public class Order extends BaseTimeEntity {
         this.address = address;
     }
 
+    public static OrderBuilder builder() {
+        return new OrderBuilder();
+    }
+
+    public static final class OrderBuilder {
+
+        private int count;
+        private Product product;
+        private Member member;
+        private String address;
+
+        private OrderBuilder() {
+        }
+
+        public OrderBuilder count(int count) {
+            this.count = count;
+            return this;
+        }
+
+        public OrderBuilder product(Product product) {
+            this.product = product;
+            return this;
+        }
+
+        public OrderBuilder member(Member member) {
+            this.member = member;
+            return this;
+        }
+
+        public OrderBuilder address(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public Order build() {
+            return new Order(
+                count,
+                product,
+                member,
+                address
+            );
+        }
+    }
+
     public Long getId() {
         return id;
     }

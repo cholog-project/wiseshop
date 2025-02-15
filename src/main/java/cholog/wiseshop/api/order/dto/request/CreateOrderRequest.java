@@ -16,7 +16,7 @@ public record CreateOrderRequest(
             0,
             product,
             member,
-            address.getRoadAddress() + address.getDetailAddress()
+            address.getRoadAddress() + " " + address.getDetailAddress()
         );
     }
 }

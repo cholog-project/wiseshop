@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
+import cholog.wiseshop.api.order.dto.response.MemberOrderListResponse;
+import cholog.wiseshop.api.order.dto.response.MemberOrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
 import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.address.Address;
@@ -13,6 +15,7 @@ import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
+import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.order.OrderRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -23,6 +26,7 @@ import cholog.wiseshop.exception.WiseShopException;
 import cholog.wiseshop.fixture.AddressFixture;
 import cholog.wiseshop.fixture.CampaignFixture;
 import cholog.wiseshop.fixture.MemberFixture;
+import cholog.wiseshop.fixture.OrderFixture;
 import cholog.wiseshop.fixture.ProductFixture;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -56,7 +60,7 @@ public class OrderServiceTest extends BaseTest {
     class 사용자가_주문을_수행한다 {
 
         @Test
-        void 사용자는_주문을_정상적으로_수행한다() {
+        void 사용자는_주문을_정상적으로_수행하고_본인의_주문목록을_조회한다() {
             // given
             Member junho = MemberFixture.최준호();
             Member junesoo = MemberFixture.김준수();
@@ -223,17 +227,75 @@ public class OrderServiceTest extends BaseTest {
 
         @Test
         void 사용자는_본인의_주문목록을_조회한다() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
+            Order order = OrderFixture.주문하기(product, junesoo, address);
+            orderRepository.save(order);
 
+            // when
+            MemberOrderListResponse response = orderService.readMemberOrders(junesoo);
+            MemberOrderResponse orderResponse = response.responses().getFirst();
+
+            // then
+            assertThat(orderResponse.address()).isEqualTo(order.getAddress());
+            assertThat(orderResponse.count()).isEqualTo(order.getCount());
         }
 
         @Test
         void 사용자는_주문을_상세조회_한다() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
+            Order order = OrderFixture.주문하기(product, junesoo, address);
+            orderRepository.save(order);
 
+            // when
+            MemberOrderResponse response = orderService.readOrder(junesoo, order.getId());
+
+            // then
+            assertThat(response.address()).isEqualTo(order.getAddress());
+            assertThat(response.count()).isEqualTo(order.getCount());
         }
 
         @Test
         void 주문이_존재하지_않으면_예외() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
+            Long invalidOrderId = 1L;
 
+            // when & then
+            assertThatThrownBy(() -> orderService.readOrder(junesoo, invalidOrderId))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.ORDER_NOT_FOUND.getMessage());
         }
     }
 
@@ -242,17 +304,72 @@ public class OrderServiceTest extends BaseTest {
 
         @Test
         void 사용자는_주문을_정상적으로_취소한다() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
+            Order order = OrderFixture.주문하기(product, junesoo, address);
+            Order junesooOrder = orderRepository.save(order);
 
+            // when
+            orderService.deleteOrder(junesooOrder.getId());
+
+            // then
+            assertThat(orderRepository.findById(junesooOrder.getId())).isEmpty();
         }
 
         @Test
         void 주문_정보가_존재하지_않으면_예외() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
+            Long invalidOrderId = 1L;
 
+            // when & then
+            assertThatThrownBy(() -> orderService.deleteOrder(invalidOrderId))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.ORDER_NOT_FOUND.getMessage());
         }
 
         @Test
         void 캠페인이_진행중이지_않으면_예외() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaign.updateState(CampaignState.SUCCESS);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
+            Order order = OrderFixture.주문하기(product, junesoo, address);
+            Order junesooOrder = orderRepository.save(order);
 
+            // when & then
+            assertThatThrownBy(() -> orderService.deleteOrder(junesooOrder.getId()))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS.getMessage());
         }
     }
 }

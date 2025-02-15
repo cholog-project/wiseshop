@@ -38,7 +38,8 @@ public class AddressController {
         @Auth Member member,
         @RequestBody CreateAddressRequest request
     ) {
-        return ResponseEntity.ok().body(addressService.createAddress(member, request));
+        Long response = addressService.createAddress(member, request);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/member/address/{id}")

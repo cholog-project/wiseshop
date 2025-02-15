@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.address.dto.request.CreateAddressRequest;
+import cholog.wiseshop.api.address.dto.response.AddressResponse;
 import cholog.wiseshop.api.address.service.AddressService;
 import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.address.Address;
@@ -14,6 +15,7 @@ import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import cholog.wiseshop.fixture.AddressFixture;
 import cholog.wiseshop.fixture.MemberFixture;
+import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,26 @@ class AddressServiceTest extends BaseTest {
 
             // then
             assertThat(addressRepository.findById(addressId)).isNotEmpty();
+        }
+    }
+
+    @Nested
+    class 사용자가_배송지를_조회한다 {
+
+        @Test
+        void 사용자가_등록한_배송지들을_정상적으로_조회한다() {
+            // given
+            Member member = MemberFixture.최준호();
+            memberRepository.save(member);
+            Address home = AddressFixture.집주소(member);
+            Address company = AddressFixture.집주소(member);
+            addressRepository.saveAll(List.of(home, company));
+
+            // when
+            List<AddressResponse> response = addressService.getAll(member);
+
+            // then
+            assertThat(response).hasSize(2);
         }
     }
 

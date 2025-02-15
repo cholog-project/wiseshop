@@ -17,4 +17,14 @@ public class AddressFixture {
             member
         );
     }
+
+    public static Address 회사주소(Member member) {
+        return new Address(
+            06160,
+            "서울 송파구 올림픽로 35다길 42",
+            "루터회관 14층",
+            false,
+            member
+        );
+    }
 }

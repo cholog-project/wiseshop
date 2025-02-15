@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScheduleRegister {
 
-
     private final CampaignRepository campaignRepository;
     private final ThreadTaskScheduler scheduler;
 

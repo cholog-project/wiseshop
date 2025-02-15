@@ -52,11 +52,10 @@ public class OrderService {
         Order order = orderRepository.save(request.from(product, member));
         campaign.increaseSoldQuantity(request.orderQuantity());
 
-        /**
-         * Payment : Toss PG 결제 승인 API 응답 결과를 변환한 객체
-         */
         Payment payment = paymentClient.confirm(
             new PaymentRequest(request.paymentOrderId(), request.amount(), request.paymentKey()));
+        payment.addOrder(order);
+        paymentRepository.save(payment);
 
         return order.getId();
     }

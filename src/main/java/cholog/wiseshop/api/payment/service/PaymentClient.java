@@ -7,7 +7,6 @@ import java.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestClient;
@@ -36,13 +35,11 @@ public class PaymentClient {
             .getBytes(StandardCharsets.UTF_8));
         String authorizations = "Basic " + new String(encodedBytes);
 
-        ResponseEntity<Payment> response = restClient.post()
+        return restClient.post()
             .uri(TOSS_PAYMENTS_API_URL + "/confirm")
             .header(HttpHeaders.AUTHORIZATION, authorizations)
             .body(request)
             .retrieve()
-            .toEntity(Payment.class);
-
-        return response.getBody();
+            .body(Payment.class);
     }
 }

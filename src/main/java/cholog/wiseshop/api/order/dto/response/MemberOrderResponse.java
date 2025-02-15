@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record MemberOrderResponse(
     Long id,
+    Long ownerId,
     Long productId,
     String productName,
     String address,
@@ -19,6 +20,7 @@ public record MemberOrderResponse(
     public MemberOrderResponse(Order order) {
         this(
             order.getId(),
+            order.getMember().getId(),
             order.getProduct().getId(),
             order.getProduct().getName(),
             order.getAddress(),

@@ -43,7 +43,8 @@ public class AddressService {
             it.getPostalCode(),
             it.getRoadAddress(),
             it.getDetailAddress(),
-            it.isDefault()
+            it.isDefault(),
+            member.getId()
         )).toList();
     }
 }

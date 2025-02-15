@@ -156,6 +156,10 @@ public class Campaign {
         this.state = state;
     }
 
+    public void cancelSoldQuantity(int cancelQuantity) {
+        this.soldQuantity = cancelQuantity;
+    }
+
     public void increaseSoldQuantity(int orderQuantity) {
         soldQuantity += orderQuantity;
         if (goalQuantity - soldQuantity == 0) {

@@ -45,14 +45,16 @@ jobs:
       - name: Copy jar
         run: sudo cp build/libs/wiseshop.jar /home/ubuntu/wise-shop
 
-      - name: Stop running application
+      - name: Check and kill process on port 8080
         run: |
-          if pgrep -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"; then
-            echo "Stopping existing application..."
-            pkill -f "java -jar /home/ubuntu/wise-shop/wiseshop.jar"
+          PORT_PID=$(sudo lsof -t -i:8080 || echo "")
+          if [ ! -z "$PORT_PID" ]; then
+            echo "Found process using port 8080. Killing process..."
+            sudo kill -9 $PORT_PID
+            echo "Process killed"
           else
-            echo "No running application found."
-          fi
+            echo "No process found using port 8080"
+          fi 
 
       # GitHub Secrets에 환경 변수 추가 필요
       - name: Run application

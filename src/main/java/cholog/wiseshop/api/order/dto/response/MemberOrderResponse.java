@@ -1,6 +1,7 @@
 package cholog.wiseshop.api.order.dto.response;
 
 import cholog.wiseshop.db.order.Order;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 public record MemberOrderResponse(
@@ -9,7 +10,9 @@ public record MemberOrderResponse(
     String productName,
     String address,
     int count,
+    @JsonFormat(pattern = "yyyy-MM-ddTHH:mm:ss")
     LocalDateTime createdDate,
+    @JsonFormat(pattern = "yyyy-MM-ddTHH:mm:ss")
     LocalDateTime modifiedDate
 ) {
 

@@ -1,7 +1,6 @@
 package cholog.wiseshop.api.order.service;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.response.MemberOrderListResponse;
 import cholog.wiseshop.api.order.dto.response.MemberOrderResponse;
 import cholog.wiseshop.db.address.Address;
 import cholog.wiseshop.db.address.AddressRepository;
@@ -14,6 +13,7 @@ import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,9 +60,10 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public MemberOrderListResponse readMemberOrders(Member member) {
-        return new MemberOrderListResponse(orderRepository.findByMemberId(member.getId())
-            .stream().map(MemberOrderResponse::new).toList());
+    public List<MemberOrderResponse> readMemberOrders(Member member) {
+        return orderRepository.findByMemberId(member.getId()).stream()
+            .map(MemberOrderResponse::new)
+            .toList();
     }
 
     public void deleteOrder(Long id) {

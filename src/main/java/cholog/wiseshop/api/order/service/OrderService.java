@@ -1,17 +1,21 @@
 package cholog.wiseshop.api.order.service;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
+import cholog.wiseshop.api.payment.dto.PaymentRequest;
+import cholog.wiseshop.api.payment.service.PaymentClient;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.order.OrderRepository;
+import cholog.wiseshop.db.payment.Payment;
+import cholog.wiseshop.db.payment.PaymentRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
@@ -24,12 +28,20 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    private final PaymentClient paymentClient;
+    private final PaymentRepository paymentRepository;
+
+    public OrderService(OrderRepository orderRepository,
+                        ProductRepository productRepository,
+                        PaymentClient paymentClient,
+                        PaymentRepository paymentRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.paymentClient = paymentClient;
+        this.paymentRepository = paymentRepository;
     }
 
-    public Long createOrder(CreateOrderRequest request, Member member) {
+    public Long createOrder(CreateOrderRequest request, Member member, HttpSession session) {
         Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.PRODUCT_NOT_FOUND));
         Campaign campaign = product.getCampaign();
@@ -40,6 +52,13 @@ public class OrderService {
         validateOrderOwner(campaignOwner, member);
         Order order = orderRepository.save(request.from(product, member));
         campaign.increaseSoldQuantity(request.orderQuantity());
+
+        validatePaymentRequest(request, session);
+        Payment payment = paymentClient.confirm(
+            new PaymentRequest(request.paymentOrderId(), request.amount(), request.paymentKey()));
+        payment.addOrder(order);
+        paymentRepository.save(payment);
+
         return order.getId();
     }
 
@@ -79,6 +98,13 @@ public class OrderService {
     public void validateOrderOwner(Member campaignOwner, Member orderMember) {
         if (Objects.equals(campaignOwner.getId(), orderMember.getId())) {
             throw new WiseShopException(WiseShopErrorCode.ORDER_NOT_AVAILABLE);
+        }
+    }
+
+    private void validatePaymentRequest(CreateOrderRequest request, HttpSession session) {
+        Long amount = (Long) session.getAttribute(request.paymentOrderId());
+        if (amount == null || !Objects.equals(amount, request.amount())) {
+            throw new WiseShopException(WiseShopErrorCode.PAYMENT_NOT_MATCHED);
         }
     }
 }

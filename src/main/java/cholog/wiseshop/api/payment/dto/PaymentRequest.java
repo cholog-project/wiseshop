@@ -1,6 +1,8 @@
 package cholog.wiseshop.api.payment.dto;
 
-public record PaymentRequest(String orderId,
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record PaymentRequest(@JsonProperty("orderId") String paymentOrderId,
                              Long amount,
                              String paymentKey) {
 

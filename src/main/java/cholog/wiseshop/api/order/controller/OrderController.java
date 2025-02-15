@@ -1,17 +1,17 @@
 package cholog.wiseshop.api.order.controller;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.request.ModifyOrderCountRequest;
+import cholog.wiseshop.api.order.dto.request.CreateOrderSessionRequest;
 import cholog.wiseshop.api.order.dto.response.OrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
 import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +28,18 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    @PostMapping("/orders/session")
+    public ResponseEntity<Void> createOrderSession(HttpSession session,
+                                                   @RequestBody CreateOrderSessionRequest request) {
+        session.setAttribute(request.paymentOrderId(),request.amount());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @PostMapping("/orders")
-    public ResponseEntity<Long> createOrder(@Auth Member member, @RequestBody CreateOrderRequest request) {
-        Long orderId = orderService.createOrder(request, member);
+    public ResponseEntity<Long> createOrder(@Auth Member member,
+                                            @RequestBody CreateOrderRequest request,
+                                            HttpSession session) {
+        Long orderId = orderService.createOrder(request, member, session);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
     }
 

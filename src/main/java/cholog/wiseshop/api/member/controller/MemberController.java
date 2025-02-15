@@ -2,6 +2,7 @@ package cholog.wiseshop.api.member.controller;
 
 import cholog.wiseshop.api.member.dto.request.SignInRequest;
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
+import cholog.wiseshop.api.member.dto.response.SignInResponse;
 import cholog.wiseshop.api.member.service.MemberService;
 import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
@@ -33,11 +34,12 @@ public class MemberController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<Void> signIn(@RequestBody SignInRequest signInRequest,
+    public ResponseEntity<SignInResponse> signIn(@RequestBody SignInRequest signInRequest,
         HttpServletRequest httpServletRequest) {
         HttpSession session = httpServletRequest.getSession();
-        memberService.signInMember(signInRequest, session);
-        return ResponseEntity.ok().build();
+        SignInResponse response = memberService.signInMember(signInRequest, session);
+        return ResponseEntity.ok()
+            .body(response);
     }
 
     @DeleteMapping("/me")

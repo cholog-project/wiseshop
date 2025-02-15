@@ -2,6 +2,7 @@ package cholog.wiseshop.api.member.service;
 
 import cholog.wiseshop.api.member.dto.request.SignInRequest;
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
+import cholog.wiseshop.api.member.dto.response.SignInResponse;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +47,7 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public void signInMember(SignInRequest signInRequest, HttpSession session) {
+    public SignInResponse signInMember(SignInRequest signInRequest, HttpSession session) {
         Member member = memberRepository.findByEmail(signInRequest.email())
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.MEMBER_ID_NOT_FOUND));
         boolean matches = passwordEncoder.matches(signInRequest.password(), member.getPassword());
@@ -53,6 +55,7 @@ public class MemberService {
             throw new WiseShopException(WiseShopErrorCode.MEMBER_ID_NOT_FOUND);
         }
         session.setAttribute(SESSION_KEY, member);
+        return new SignInResponse(UUID.randomUUID().toString());
     }
 
     public void signOut(HttpSession session, HttpServletResponse response) {

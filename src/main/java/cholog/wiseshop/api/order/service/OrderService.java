@@ -71,6 +71,7 @@ public class OrderService {
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
         Campaign campaign = order.getProduct().getCampaign();
         validateCampaignStateInProgress(campaign);
+        campaign.cancelSoldQuantity(order.getCount());
         orderRepository.deleteById(id);
     }
 

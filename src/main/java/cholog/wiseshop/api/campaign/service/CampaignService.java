@@ -10,8 +10,6 @@ import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
-import cholog.wiseshop.db.order.Order;
-import cholog.wiseshop.db.order.OrderRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
@@ -31,17 +29,17 @@ public class CampaignService {
     private final ProductRepository productRepository;
     private final StockRepository stockRepository;
     private final ThreadTaskScheduler scheduler;
-    private final OrderRepository orderRepository;
 
-    public CampaignService(CampaignRepository campaignRepository,
+    public CampaignService(
+        CampaignRepository campaignRepository,
         ProductRepository productRepository,
-        StockRepository stockRepository, ThreadTaskScheduler scheduler,
-        OrderRepository orderRepository) {
+        StockRepository stockRepository,
+        ThreadTaskScheduler scheduler
+    ) {
         this.campaignRepository = campaignRepository;
         this.productRepository = productRepository;
         this.stockRepository = stockRepository;
         this.scheduler = scheduler;
-        this.orderRepository = orderRepository;
     }
 
     @Transactional
@@ -80,17 +78,16 @@ public class CampaignService {
 
     public ReadCampaignResponse readCampaign(Long campaignId) {
         List<Product> findProducts = productRepository.findProductsByCampaignId(campaignId);
-        if (findProducts.isEmpty()){
+        if (findProducts.isEmpty()) {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_FOUND);
         }
         Product findProduct = findProducts.getFirst();
         Campaign findCampaign = findProduct.getCampaign();
-        List<Order> orders = orderRepository.findAllByProductId(findProduct.getId());
         return new ReadCampaignResponse(
             campaignId,
             findCampaign.getStartDate().toString(),
             findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
-            orders.stream().mapToInt(Order::getCount).sum(),
+            findCampaign.getSoldQuantity(),
             findProduct.getStock().getTotalQuantity(),
             new ProductResponse(findProduct)
         );
@@ -101,13 +98,12 @@ public class CampaignService {
         return campaigns.stream()
             .map(campaign -> {
                 Product product = productRepository.findAllByCampaign(campaign).getFirst();
-                List<Order> orders = orderRepository.findAllByProductId(product.getId());
                 return new ReadCampaignResponse(
                     campaign.getId(),
                     campaign.getStartDate().toString(),
                     campaign.getEndDate().toString(),
                     campaign.getGoalQuantity(),
-                    orders.stream().mapToInt(Order::getCount).sum(),
+                    campaign.getSoldQuantity(),
                     product.getStock().getTotalQuantity(),
                     new ProductResponse(product)
                 );

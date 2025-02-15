@@ -1,9 +1,11 @@
 package cholog.wiseshop.api.product.service;
 
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
-import cholog.wiseshop.api.product.dto.request.ModifyProductPriceRequest;
+import cholog.wiseshop.api.product.dto.request.ModifyProductPriceAntStockRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
+import cholog.wiseshop.db.campaign.Campaign;
+import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.db.stock.Stock;
@@ -17,9 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CampaignRepository campaignRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, CampaignRepository campaignRepository) {
         this.productRepository = productRepository;
+        this.campaignRepository = campaignRepository;
     }
 
     // TODO: 안쓰면 제거
@@ -49,7 +53,7 @@ public class ProductService {
         productRepository.save(existedProduct);
     }
 
-    public void modifyProductPriceAndStock(Long productId, ModifyProductPriceRequest request) {
+    public void modifyProductPriceAndStock(Long productId, ModifyProductPriceAntStockRequest request) {
         Product existedProduct = productRepository.findById(productId)
             .orElseThrow(
                 () -> new WiseShopException(WiseShopErrorCode.MODIFY_PRICE_PRODUCT_NOT_FOUND));
@@ -63,6 +67,10 @@ public class ProductService {
         if (product.getCampaign().isNotWaiting()) {
             throw new WiseShopException(WiseShopErrorCode.INVALID_CAMPAIGN_DELETE_STATE);
         }
+        Campaign campaign = product.getCampaign();
         productRepository.deleteById(id);
+        if (productRepository.findAllByCampaign(campaign).isEmpty()) {
+            campaignRepository.delete(campaign);
+        }
     }
 }

@@ -157,7 +157,7 @@ public class Campaign {
     }
 
     public void cancelSoldQuantity(int cancelQuantity) {
-        this.soldQuantity = cancelQuantity;
+        this.soldQuantity -= cancelQuantity;
     }
 
     public void increaseSoldQuantity(int orderQuantity) {

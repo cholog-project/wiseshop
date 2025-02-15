@@ -1,6 +1,6 @@
 package cholog.wiseshop.api.product.dto.request;
 
-public record ModifyProductPriceRequest(
+public record ModifyProductPriceAntStockRequest(
     int price,
     int totalQuantity
 ) {

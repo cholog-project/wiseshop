@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/orders")
 @RestController
 public class OrderController {
 
@@ -26,7 +26,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/orders")
+    @PostMapping
     public ResponseEntity<Long> createOrder(
         @Auth Member member,
         @RequestBody CreateOrderRequest request
@@ -35,7 +35,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
     }
 
-    @GetMapping("/orders/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<MemberOrderResponse> readOrder(
         @Auth Member member,
         @PathVariable Long id
@@ -44,7 +44,7 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/orders")
+    @GetMapping
     public ResponseEntity<List<MemberOrderResponse>> readMemberOrders(@Auth Member member) {
         var response = orderService.readMemberOrders(member);
         return ResponseEntity.ok(response);

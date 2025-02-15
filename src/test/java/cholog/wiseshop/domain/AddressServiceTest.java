@@ -3,7 +3,7 @@ package cholog.wiseshop.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import cholog.wiseshop.api.address.dto.CreateAddressRequest;
+import cholog.wiseshop.api.address.dto.request.CreateAddressRequest;
 import cholog.wiseshop.api.address.service.AddressService;
 import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.address.Address;
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SuppressWarnings("NonAsciiCharacters")
-public class AddressServiceTest extends BaseTest {
+class AddressServiceTest extends BaseTest {
 
     @Autowired
     private AddressRepository addressRepository;

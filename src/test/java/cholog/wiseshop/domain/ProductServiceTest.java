@@ -49,13 +49,14 @@ class ProductServiceTest extends BaseTest {
         @Test
         void 상품_정보를_정상적으로_수정한다() {
             // given
-            Product product = productRepository.save(ProductFixture.보약());
+            Member member = memberRepository.save(MemberFixture.최준호());
+            Product product = productRepository.save(ProductFixture.보약(member));
             ModifyProductRequest request = new ModifyProductRequest(
                 "수정된 보약",
                 "수정된 보약 설명"
             );
             // when
-            productService.modifyProduct(product.getId(), request);
+            productService.modifyProduct(member, product.getId(), request);
 
             // then
             Product modified = productRepository.findById(product.getId()).get();
@@ -75,14 +76,16 @@ class ProductServiceTest extends BaseTest {
             Campaign campaign = campaignRepository.save(CampaignFixture.대기중인_보약_캠페인(member));
             Stock stock = new Stock(20);
             stockRepository.save(stock);
-            Product product = productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
+            Product product = productRepository.save(
+                ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, member)
+            );
             ModifyProductPriceAndStockRequest request = new ModifyProductPriceAndStockRequest(
                 2000,
                 30
             );
 
             // when
-            productService.modifyProductPriceAndStock(product.getId(), request);
+            productService.modifyProductPriceAndStock(member, product.getId(), request);
 
             // then
             Product modified = productRepository.findById(product.getId()).get();
@@ -97,14 +100,17 @@ class ProductServiceTest extends BaseTest {
             Campaign campaign = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
             Stock stock = new Stock(20);
             stockRepository.save(stock);
-            Product product = productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
+            Product product = productRepository.save(
+                ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, member)
+            );
             ModifyProductPriceAndStockRequest request = new ModifyProductPriceAndStockRequest(
                 2000,
                 30
             );
 
             // when & then
-            assertThatThrownBy(() -> productService.modifyProductPriceAndStock(product.getId(), request))
+            assertThatThrownBy(
+                () -> productService.modifyProductPriceAndStock(member, product.getId(), request))
                 .isInstanceOf(WiseShopException.class)
                 .hasMessage(WiseShopErrorCode.CAMPAIGN_ALREADY_IN_PROGRESS.getMessage());
         }
@@ -116,14 +122,17 @@ class ProductServiceTest extends BaseTest {
             Campaign campaign = campaignRepository.save(CampaignFixture.대기중인_보약_캠페인(member));
             Stock stock = new Stock(20);
             stockRepository.save(stock);
-            Product product = productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
+            Product product = productRepository.save(
+                ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, member)
+            );
             ModifyProductPriceAndStockRequest request = new ModifyProductPriceAndStockRequest(
                 2000,
                 1
             );
 
             // when & then
-            assertThatThrownBy(() -> productService.modifyProductPriceAndStock(product.getId(), request))
+            assertThatThrownBy(
+                () -> productService.modifyProductPriceAndStock(member, product.getId(), request))
                 .isInstanceOf(WiseShopException.class)
                 .hasMessage(WiseShopErrorCode.INVALID_TOTAL_QUANTITY.getMessage());
         }
@@ -137,10 +146,10 @@ class ProductServiceTest extends BaseTest {
             // given
             Member member = memberRepository.save(MemberFixture.최준호());
             Campaign campaign = campaignRepository.save(CampaignFixture.대기중인_보약_캠페인(member));
-            Product product = productRepository.save(ProductFixture.캠페인의_보약(campaign));
+            Product product = productRepository.save(ProductFixture.캠페인의_보약(campaign, member));
 
             // when
-            productService.deleteProduct(product.getId());
+            productService.deleteProduct(member, product.getId());
 
             //then
             assertThat(productRepository.findById(product.getId())).isEmpty();
@@ -152,10 +161,10 @@ class ProductServiceTest extends BaseTest {
             // given
             Member member = memberRepository.save(MemberFixture.최준호());
             Campaign campaign = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
-            Product product = productRepository.save(ProductFixture.캠페인의_보약(campaign));
+            Product product = productRepository.save(ProductFixture.캠페인의_보약(campaign, member));
 
             // when & then
-            assertThatThrownBy(() -> productService.deleteProduct(product.getId()))
+            assertThatThrownBy(() -> productService.deleteProduct(member, product.getId()))
                 .isInstanceOf(WiseShopException.class)
                 .hasMessage(WiseShopErrorCode.INVALID_CAMPAIGN_DELETE_STATE.getMessage());
         }

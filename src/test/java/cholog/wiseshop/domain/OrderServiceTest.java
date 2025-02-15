@@ -71,7 +71,7 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
 
             CreateOrderRequest request = new CreateOrderRequest(
@@ -125,7 +125,7 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
 
             Long invalidAddressId = 1L;
@@ -156,7 +156,7 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
 
             CreateOrderRequest request = new CreateOrderRequest(
@@ -184,7 +184,7 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
 
             CreateOrderRequest request = new CreateOrderRequest(
@@ -211,7 +211,7 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
 
             CreateOrderRequest request = new CreateOrderRequest(
@@ -243,7 +243,7 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
             Order order = OrderFixture.주문하기(product, junesoo, address);
             orderRepository.save(order);
@@ -269,7 +269,7 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
             Order order = OrderFixture.주문하기(product, junesoo, address);
             orderRepository.save(order);
@@ -294,7 +294,7 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
             Long invalidOrderId = 1L;
 
@@ -320,13 +320,13 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
             Order order = OrderFixture.주문하기(product, junesoo, address);
             Order junesooOrder = orderRepository.save(order);
 
             // when
-            orderService.deleteOrder(junesooOrder.getId());
+            orderService.deleteOrder(junesoo, junesooOrder.getId());
 
             // then
             assertThat(orderRepository.findById(junesooOrder.getId())).isEmpty();
@@ -344,12 +344,12 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
-            Long invalidOrderId = 1L;
+            Long invalidOrderId = 999999L;
 
             // when & then
-            assertThatThrownBy(() -> orderService.deleteOrder(invalidOrderId))
+            assertThatThrownBy(() -> orderService.deleteOrder(junho, invalidOrderId))
                 .isInstanceOf(WiseShopException.class)
                 .hasMessage(WiseShopErrorCode.ORDER_NOT_FOUND.getMessage());
         }
@@ -367,13 +367,13 @@ class OrderServiceTest extends BaseTest {
             campaignRepository.save(campaign);
             Stock stock = new Stock(200);
             stockRepository.save(stock);
-            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, junho);
             productRepository.save(product);
             Order order = OrderFixture.주문하기(product, junesoo, address);
             Order junesooOrder = orderRepository.save(order);
 
             // when & then
-            assertThatThrownBy(() -> orderService.deleteOrder(junesooOrder.getId()))
+            assertThatThrownBy(() -> orderService.deleteOrder(junesoo, junesooOrder.getId()))
                 .isInstanceOf(WiseShopException.class)
                 .hasMessage(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS.getMessage());
         }

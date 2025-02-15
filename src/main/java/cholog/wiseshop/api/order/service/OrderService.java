@@ -66,9 +66,12 @@ public class OrderService {
             .toList();
     }
 
-    public void deleteOrder(Long id) {
+    public void deleteOrder(Member member, Long id) {
         Order order = orderRepository.findById(id)
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
+        if (!order.isOwner(member)) {
+            throw new WiseShopException(WiseShopErrorCode.NOT_OWNER);
+        }
         Campaign campaign = order.getProduct().getCampaign();
         validateCampaignStateInProgress(campaign);
         campaign.cancelSoldQuantity(order.getCount());

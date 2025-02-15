@@ -7,7 +7,8 @@ public record ProductResponse(
     String name,
     String description,
     Integer price,
-    Integer totalQuantity
+    Integer totalQuantity,
+    Long ownerId
 ) {
 
     public ProductResponse(Product product) {
@@ -16,7 +17,8 @@ public record ProductResponse(
             product.getName(),
             product.getDescription(),
             product.getPrice(),
-            product.getStock().getTotalQuantity()
+            product.getStock().getTotalQuantity(),
+            product.getOwner().getId()
         );
     }
 }

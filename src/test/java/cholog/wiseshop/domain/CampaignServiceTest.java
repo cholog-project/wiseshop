@@ -185,6 +185,7 @@ public class CampaignServiceTest extends BaseTest {
         @Test
         void 캠페인_전체조회_시_진행중_캠페인들만_조회() {
             // given
+            Member member = memberRepository.save(MemberFixture.최준호());
             LocalDateTime now = LocalDateTime.now();
             Stock stockA = new Stock(10);
             Stock stockB = new Stock(10);
@@ -196,8 +197,9 @@ public class CampaignServiceTest extends BaseTest {
                 .goalQuantity(5)
                 .state(CampaignState.WAITING)
                 .now(now)
+                .member(member)
                 .build();
-            Product productA = new Product("product", "zzang", 2000, campaignA, stockA);
+            Product productA = new Product("product", "zzang", 2000, campaignA, stockA, member);
 
             Campaign campaignB = Campaign.builder()
                 .startDate(now.plusHours(1))
@@ -205,8 +207,9 @@ public class CampaignServiceTest extends BaseTest {
                 .goalQuantity(5)
                 .state(CampaignState.WAITING)
                 .now(now)
+                .member(member)
                 .build();
-            Product productB = new Product("product", "zzang", 2000, campaignB, stockB);
+            Product productB = new Product("product", "zzang", 2000, campaignB, stockB, member);
 
             Campaign waitingCampaign = Campaign.builder()
                 .startDate(now.plusHours(1))
@@ -214,8 +217,10 @@ public class CampaignServiceTest extends BaseTest {
                 .goalQuantity(5)
                 .state(CampaignState.WAITING)
                 .now(now)
+                .member(member)
                 .build();
-            Product productC = new Product("product", "zzang", 2000, waitingCampaign, stockC);
+            Product productC = new Product("product", "zzang", 2000, waitingCampaign, stockC,
+                member);
 
             campaignA.setState(now.minusHours(1), now.plusHours(2));
             campaignB.setState(now.minusHours(1), now.plusHours(2));
@@ -237,7 +242,7 @@ public class CampaignServiceTest extends BaseTest {
             Stock stock = new Stock(20);
             stockRepository.save(stock);
             Product product = productRepository.save(
-                ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
+                ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, member));
 
             // when
             ReadCampaignResponse response = campaignService.readCampaign(campaign.getId());

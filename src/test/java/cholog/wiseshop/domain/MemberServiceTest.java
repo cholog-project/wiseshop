@@ -82,7 +82,7 @@ class MemberServiceTest extends BaseTest {
             memberRepository.save(member);
 
             // when
-             memberService.deleteMember(member);
+            memberService.deleteMember(member);
 
             // then
             assertThat(memberRepository.findById(member.getId())).isEmpty();

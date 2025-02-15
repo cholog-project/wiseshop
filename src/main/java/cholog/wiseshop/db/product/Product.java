@@ -1,6 +1,7 @@
 package cholog.wiseshop.db.product;
 
 import cholog.wiseshop.db.campaign.Campaign;
+import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
@@ -13,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 
 @Table(name = "product")
 @Entity
@@ -36,15 +38,27 @@ public class Product {
     @JoinColumn(name = "stock_id")
     private Stock stock;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member owner;
+
     protected Product() {
     }
 
-    public Product(String name, String description, int price, Campaign campaign, Stock stock) {
+    public Product(
+        String name,
+        String description,
+        int price,
+        Campaign campaign,
+        Stock stock,
+        Member member
+    ) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.campaign = campaign;
         this.stock = stock;
+        this.owner = member;
     }
 
     public static ProductBuilder builder() {
@@ -58,6 +72,7 @@ public class Product {
         private int price;
         private Campaign campaign;
         private Stock stock;
+        private Member owner;
 
         private ProductBuilder() {
         }
@@ -87,8 +102,13 @@ public class Product {
             return this;
         }
 
+        public ProductBuilder owner(Member member) {
+            this.owner = member;
+            return this;
+        }
+
         public Product build() {
-            return new Product(name, description, price, campaign, stock);
+            return new Product(name, description, price, campaign, stock, owner);
         }
     }
 
@@ -110,6 +130,10 @@ public class Product {
         }
         this.price = price;
         this.stock.modifyTotalQuantity(totalQuantity);
+    }
+
+    public boolean isOwner(Member member) {
+        return Objects.equals(member.getId(), owner.getId());
     }
 
     public Long getId() {
@@ -134,5 +158,9 @@ public class Product {
 
     public Stock getStock() {
         return stock;
+    }
+
+    public Member getOwner() {
+        return owner;
     }
 }

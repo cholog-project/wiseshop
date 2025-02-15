@@ -9,7 +9,8 @@ public record ReadCampaignResponse(
     int goalQuantity,
     int orderedQuantity,
     int stockQuantity,
-    ProductResponse product
+    ProductResponse product,
+    Long ownerId
 ) {
 
 }

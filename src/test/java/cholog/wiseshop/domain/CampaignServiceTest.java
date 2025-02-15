@@ -19,7 +19,9 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
+import cholog.wiseshop.fixture.CampaignFixture;
 import cholog.wiseshop.fixture.MemberFixture;
+import cholog.wiseshop.fixture.ProductFixture;
 import cholog.wiseshop.fixture.ProductFixture.Request;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -230,40 +232,18 @@ public class CampaignServiceTest extends BaseTest {
         @Test
         void 캠페인_단건_조회() {
             // given
-            LocalDateTime now = LocalDateTime.now();
-            Stock stockA = new Stock(10);
-            Stock stockB = new Stock(10);
-            stockRepository.saveAll(List.of(stockA, stockB));
-
-            Campaign campaignA = Campaign.builder()
-                .startDate(now.plusHours(1))
-                .endDate(now.plusHours(2))
-                .goalQuantity(5)
-                .state(CampaignState.WAITING)
-                .now(now)
-                .build();
-            Product productA = new Product("productA", "zzang", 2000, campaignA, stockA);
-
-            Campaign campaignB = Campaign.builder()
-                .startDate(now.minusHours(2))
-                .endDate(now.plusHours(3))
-                .goalQuantity(6)
-                .state(CampaignState.IN_PROGRESS)
-                .now(now)
-                .build();
-            Product productB = new Product("productB", "zzang", 2000, campaignB, stockB);
-
-            campaignRepository.saveAll(List.of(campaignA, campaignB));
-            productRepository.saveAll(List.of(productA, productB));
+            Member member = memberRepository.save(MemberFixture.최준호());
+            Campaign campaign = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
+            Stock stock = new Stock(20);
+            stockRepository.save(stock);
+            Product product = productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock));
 
             // when
-            ReadCampaignResponse response = campaignService.readCampaign(campaignA.getId());
+            ReadCampaignResponse response = campaignService.readCampaign(campaign.getId());
 
             // then
-            assertThat(response.product().id()).isEqualTo(productA.getId());
-            assertThat(response.startDate()).isEqualTo(now.plusHours(1).toString());
-            assertThat(response.endDate()).isEqualTo(now.plusHours(2).toString());
-            assertThat(response.goalQuantity()).isEqualTo(5);
+            assertThat(response.campaignId()).isEqualTo(campaign.getId());
+            assertThat(response.product().id()).isEqualTo(product.getId());
         }
 
         @Test

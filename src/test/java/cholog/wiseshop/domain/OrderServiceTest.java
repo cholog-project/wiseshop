@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.response.MemberOrderListResponse;
 import cholog.wiseshop.api.order.dto.response.MemberOrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
 import cholog.wiseshop.common.BaseTest;
@@ -250,8 +249,8 @@ class OrderServiceTest extends BaseTest {
             orderRepository.save(order);
 
             // when
-            MemberOrderListResponse response = orderService.readMemberOrders(junesoo);
-            MemberOrderResponse orderResponse = response.responses().getFirst();
+            var response = orderService.readMemberOrders(junesoo);
+            MemberOrderResponse orderResponse = response.getFirst();
 
             // then
             assertThat(orderResponse.address()).isEqualTo(order.getAddress());

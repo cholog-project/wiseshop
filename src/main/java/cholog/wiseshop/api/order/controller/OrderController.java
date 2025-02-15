@@ -1,11 +1,11 @@
 package cholog.wiseshop.api.order.controller;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.response.MemberOrderListResponse;
 import cholog.wiseshop.api.order.dto.response.MemberOrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
 import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,8 +45,8 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<MemberOrderListResponse> readMemberOrders(@Auth Member member) {
-        MemberOrderListResponse response = orderService.readMemberOrders(member);
+    public ResponseEntity<List<MemberOrderResponse>> readMemberOrders(@Auth Member member) {
+        var response = orderService.readMemberOrders(member);
         return ResponseEntity.ok(response);
     }
 

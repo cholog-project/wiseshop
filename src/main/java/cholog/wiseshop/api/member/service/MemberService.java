@@ -9,6 +9,8 @@ import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,6 +53,15 @@ public class MemberService {
             throw new WiseShopException(WiseShopErrorCode.MEMBER_ID_NOT_FOUND);
         }
         session.setAttribute(SESSION_KEY, member);
+    }
+
+    public void signOut(HttpSession session, HttpServletResponse response) {
+        session.invalidate();
+
+        Cookie sessionCookie = new Cookie("JSESSIONID", null);
+        sessionCookie.setMaxAge(0);     // 쿠키 즉시 만료
+        sessionCookie.setPath("/");     // 쿠키의 경로 설정
+        response.addCookie(sessionCookie);
     }
 
     public void deleteMember(Member member) {

@@ -1,8 +1,7 @@
 package cholog.wiseshop.api.address.service;
 
 import cholog.wiseshop.api.address.dto.request.CreateAddressRequest;
-import cholog.wiseshop.api.address.dto.response.MemberAddressListResponse;
-import cholog.wiseshop.api.address.dto.response.MemberAddressResponse;
+import cholog.wiseshop.api.address.dto.response.AddressResponse;
 import cholog.wiseshop.db.address.Address;
 import cholog.wiseshop.db.address.AddressRepository;
 import cholog.wiseshop.db.member.Member;
@@ -32,5 +31,17 @@ public class AddressService {
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));
         address.validatesOwner(member);
         addressRepository.deleteById(addressId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AddressResponse> getAll(Member member) {
+        List<Address> addresses = addressRepository.findAllByMemberId(member.getId());
+        return addresses.stream().map(it -> new AddressResponse(
+            it.getId(),
+            it.getPostalCode(),
+            it.getRoadAddress(),
+            it.getDetailAddress(),
+            it.isDefault()
+        )).toList();
     }
 }

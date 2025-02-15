@@ -6,11 +6,12 @@ import cholog.wiseshop.api.member.service.MemberService;
 import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,9 +41,30 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/member")
-    public ResponseEntity<Void> deleteMember(@Auth Member member) {
+    @GetMapping("/me")
+    public ResponseEntity<Void> checkSession(
+        @Auth Member member
+    ) {
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteMember(
+        @Auth Member member
+    ) {
         memberService.deleteMember(member);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<Void> signOut(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            memberService.signOut(session, response);
+        }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

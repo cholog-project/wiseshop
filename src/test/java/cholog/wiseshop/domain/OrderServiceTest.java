@@ -1,10 +1,30 @@
 package cholog.wiseshop.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
+import cholog.wiseshop.api.order.service.OrderService;
 import cholog.wiseshop.common.BaseTest;
+import cholog.wiseshop.db.address.Address;
+import cholog.wiseshop.db.address.AddressRepository;
+import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
+import cholog.wiseshop.db.campaign.CampaignState;
+import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
 import cholog.wiseshop.db.order.OrderRepository;
+import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.db.stock.Stock;
+import cholog.wiseshop.db.stock.StockRepository;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
+import cholog.wiseshop.fixture.AddressFixture;
+import cholog.wiseshop.fixture.CampaignFixture;
+import cholog.wiseshop.fixture.MemberFixture;
+import cholog.wiseshop.fixture.ProductFixture;
+import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,37 +38,183 @@ public class OrderServiceTest extends BaseTest {
     private OrderRepository orderRepository;
 
     @Autowired
+    private OrderService orderService;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
     private CampaignRepository campaignRepository;
+
+    @Autowired
+    private StockRepository stockRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Nested
     class 사용자가_주문을_수행한다 {
 
         @Test
         void 사용자는_주문을_정상적으로_수행한다() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
 
+            CreateOrderRequest request = new CreateOrderRequest(
+                product.getId(),
+                address.getId(),
+                10
+            );
+
+            // when
+            orderService.createOrder(request, junesoo);
+
+            // then
+            assertThat(orderRepository.findByMemberId(junesoo.getId())).isNotEmpty();
         }
 
         @Test
         void 상품_정보가_존재하지_않으면_예외() {
+            /// given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Long invalidProductId = 1L;
 
+            CreateOrderRequest request = new CreateOrderRequest(
+                invalidProductId,
+                address.getId(),
+                10
+            );
+
+            // when & then
+            assertThatThrownBy(() -> orderService.createOrder(request, junesoo))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.PRODUCT_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        void 배송_정보가_존재하지_않으면_예외() {
+            /// given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
+
+            Long invalidAddressId = 1L;
+
+            CreateOrderRequest request = new CreateOrderRequest(
+                product.getId(),
+                invalidAddressId,
+                10
+            );
+
+            // when & then
+            assertThatThrownBy(() -> orderService.createOrder(request, junesoo))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.ORDER_NOT_FOUND.getMessage());
         }
 
         @Test
         void 캠페인이_진행중이지_않으면_예외() {
+            /// given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaign.updateState(CampaignState.SUCCESS);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
 
+            CreateOrderRequest request = new CreateOrderRequest(
+                product.getId(),
+                address.getId(),
+                10
+            );
+
+            // when & then
+            assertThatThrownBy(() -> orderService.createOrder(request, junesoo))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.CAMPAIGN_NOT_IN_PROGRESS.getMessage());
         }
 
         @Test
         void 주문_가능한_수량을_초과하면_예외() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member junesoo = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(junho, junesoo));
+            Address address = AddressFixture.집주소(junesoo);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
 
+            CreateOrderRequest request = new CreateOrderRequest(
+                product.getId(),
+                address.getId(),
+                201
+            );
+
+            // when & then
+            assertThatThrownBy(() -> orderService.createOrder(request, junesoo))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(String.format(WiseShopErrorCode.ORDER_LIMIT_EXCEED.getMessage(), 200));
         }
 
         @Test
         void 본인의_캠페인을_주문하면_예외() {
+            // given
+            Member junho = MemberFixture.최준호();
+            memberRepository.save(junho);
+            Address address = AddressFixture.집주소(junho);
+            addressRepository.save(address);
+            Campaign campaign = CampaignFixture.진행중인_보약_캠페인(junho);
+            campaignRepository.save(campaign);
+            Stock stock = new Stock(200);
+            stockRepository.save(stock);
+            Product product = ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock);
+            productRepository.save(product);
 
+            CreateOrderRequest request = new CreateOrderRequest(
+                product.getId(),
+                address.getId(),
+                10
+            );
+
+            // when & then
+            assertThatThrownBy(() -> orderService.createOrder(request, junho))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.ORDER_NOT_AVAILABLE.getMessage());
         }
     }
 

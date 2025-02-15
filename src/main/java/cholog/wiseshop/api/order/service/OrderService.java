@@ -67,13 +67,13 @@ public class OrderService {
             .stream().map(OrderResponse::new).toList();
     }
 
-	public void deleteOrder(Long id) {
-		Order order = orderRepository.findById(id)
-			.orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
+    public void deleteOrder(Long id) {
+        Order order = orderRepository.findById(id)
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ORDER_NOT_FOUND));
         Campaign campaign = order.getProduct().getCampaign();
         validateCampaignStateInProgress(campaign);
-		orderRepository.deleteById(id);
-	}
+        orderRepository.deleteById(id);
+    }
 
     public void validateQuantity(Campaign campaign, Stock stock, int orderQuantity) {
         int remainQuantity = stock.getTotalQuantity() - campaign.getSoldQuantity();

@@ -27,13 +27,19 @@ public class OrderController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<Long> createOrder(@Auth Member member, @RequestBody CreateOrderRequest request) {
+    public ResponseEntity<Long> createOrder(
+        @Auth Member member,
+        @RequestBody CreateOrderRequest request
+    ) {
         Long orderId = orderService.createOrder(request, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
     }
 
     @GetMapping("/orders/{id}")
-    public ResponseEntity<MemberOrderResponse> readOrder(@Auth Member member, @PathVariable Long id) {
+    public ResponseEntity<MemberOrderResponse> readOrder(
+        @Auth Member member,
+        @PathVariable Long id
+    ) {
         MemberOrderResponse response = orderService.readOrder(member, id);
         return ResponseEntity.ok(response);
     }

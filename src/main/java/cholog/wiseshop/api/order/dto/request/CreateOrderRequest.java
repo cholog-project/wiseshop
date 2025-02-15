@@ -6,6 +6,7 @@ import cholog.wiseshop.db.order.Order;
 import cholog.wiseshop.db.product.Product;
 
 public record CreateOrderRequest(
+    Integer count,
     Long productId,
     Long addressId,
     int orderQuantity
@@ -13,7 +14,7 @@ public record CreateOrderRequest(
 
     public Order from(Product product, Member member, Address address) {
         return new Order(
-            0,
+            count,
             product,
             member,
             address.getRoadAddress() + " " + address.getDetailAddress()

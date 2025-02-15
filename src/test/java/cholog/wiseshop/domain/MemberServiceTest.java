@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cholog.wiseshop.api.member.dto.request.SignUpRequest;
+import cholog.wiseshop.api.member.service.AuthService;
 import cholog.wiseshop.api.member.service.MemberService;
 import cholog.wiseshop.common.BaseTest;
 import cholog.wiseshop.db.campaign.Campaign;
@@ -28,6 +29,9 @@ class MemberServiceTest extends BaseTest {
     private CampaignRepository campaignRepository;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private MemberService memberService;
 
     @Nested
@@ -43,7 +47,7 @@ class MemberServiceTest extends BaseTest {
             );
 
             // when
-            memberService.signUpMember(signUpRequest);
+            authService.signUpMember(signUpRequest);
 
             // then
             assertThat(memberRepository.findByEmail("junho@test.com")).isNotEmpty();
@@ -62,7 +66,7 @@ class MemberServiceTest extends BaseTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> memberService.signUpMember(request))
+            assertThatThrownBy(() -> authService.signUpMember(request))
                 .isInstanceOf(WiseShopException.class)
                 .hasMessage(WiseShopErrorCode.ALREADY_EXIST_MEMBER.getMessage());
         }
@@ -78,7 +82,7 @@ class MemberServiceTest extends BaseTest {
             memberRepository.save(member);
 
             // when
-            memberService.deleteMember(member);
+             memberService.deleteMember(member);
 
             // then
             assertThat(memberRepository.findById(member.getId())).isEmpty();

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/campaigns")
 @RestController
 public class CampaignController {
 
@@ -28,20 +28,20 @@ public class CampaignController {
         this.campaignService = campaignService;
     }
 
-    @PostMapping("/campaigns")
+    @PostMapping
     public ResponseEntity<CreateCampaignResponse> createCampaigns(@Auth Member member,
         @RequestBody CreateCampaignRequest request) {
         var response = campaignService.createCampaign(request, member, LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/campaigns/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ReadCampaignResponse> readCampaign(@PathVariable Long id) {
         ReadCampaignResponse response = campaignService.readCampaign(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/campaigns")
+    @GetMapping
     public ResponseEntity<AllCampaignResponse> readAllCampaign() {
         List<ReadCampaignResponse> response = campaignService.readInProgressCampaign();
         return ResponseEntity.status(HttpStatus.OK).body(new AllCampaignResponse(response));

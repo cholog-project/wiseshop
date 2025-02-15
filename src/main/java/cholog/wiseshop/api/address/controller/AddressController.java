@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/address")
 @RestController
 public class AddressController {
 
@@ -26,14 +26,14 @@ public class AddressController {
         this.addressService = addressService;
     }
 
-    @GetMapping("/member/address")
+    @GetMapping
     public ResponseEntity<List<AddressResponse>> createAddress(
         @Auth Member member
     ) {
         return ResponseEntity.ok().body(addressService.getAll(member));
     }
 
-    @PostMapping("/member/address")
+    @PostMapping
     public ResponseEntity<Long> createAddress(
         @Auth Member member,
         @RequestBody CreateAddressRequest request
@@ -42,7 +42,7 @@ public class AddressController {
         return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping("/member/address/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@Auth Member member, @PathVariable Long id) {
         addressService.deleteAddress(member, id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/products")
 @RestController
 public class ProductController {
 
@@ -24,20 +24,20 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
         ProductResponse response = productService.getProduct(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PatchMapping("/products/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Void> modifyProduct(@PathVariable Long id,
         @RequestBody ModifyProductRequest request) {
         productService.modifyProduct(id, request);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/products/{id}/price")
+    @PatchMapping("/{id}/price")
     public ResponseEntity<Void> modifyProductPriceAndStock(
         @PathVariable Long id,
         @RequestBody ModifyProductPriceAndStockRequest request
@@ -46,7 +46,7 @@ public class ProductController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/products/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

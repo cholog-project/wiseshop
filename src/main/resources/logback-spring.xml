@@ -48,6 +48,7 @@
       <appender-ref ref="INFO"/>
       <appender-ref ref="WARN"/>
       <appender-ref ref="ERROR"/>
+      <appender-ref ref="PROD_CONSOLE" />
     </root>
   </springProfile>
 

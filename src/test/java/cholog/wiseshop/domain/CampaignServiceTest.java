@@ -183,7 +183,7 @@ public class CampaignServiceTest extends BaseTest {
         }
 
         @Test
-        void 캠페인_전체조회_시_진행중_캠페인들만_조회() {
+        void 캠페인_전체조회_성공적으로_조회() {
             // given
             Member member = memberRepository.save(MemberFixture.최준호());
             LocalDateTime now = LocalDateTime.now();
@@ -231,7 +231,7 @@ public class CampaignServiceTest extends BaseTest {
             List<ReadCampaignResponse> response = campaignService.readAllCampaign();
 
             // then
-            assertThat(response).hasSize(2);
+            assertThat(response).hasSize(3);
         }
 
         @Test

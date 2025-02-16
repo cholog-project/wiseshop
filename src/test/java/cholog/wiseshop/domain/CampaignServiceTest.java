@@ -228,7 +228,7 @@ public class CampaignServiceTest extends BaseTest {
             productRepository.saveAll(List.of(productA, productB, productC));
 
             // when
-            List<ReadCampaignResponse> response = campaignService.readInProgressCampaign();
+            List<ReadCampaignResponse> response = campaignService.readAllCampaign();
 
             // then
             assertThat(response).hasSize(2);

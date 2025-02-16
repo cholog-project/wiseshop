@@ -48,7 +48,7 @@ public class AddressService {
     public void updateAddress(Member member, Long addressId) {
         Address targetAddress = addressRepository.findById(addressId)
             .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));
-        if (targetAddress.isOwner(member)) {
+        if (!targetAddress.isOwner(member)) {
             throw new WiseShopException(WiseShopErrorCode.NOT_OWNER);
         }
         Address currentDefaultAddress = addressRepository.findAllByMemberId(member.getId())

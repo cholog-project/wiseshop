@@ -83,7 +83,7 @@ class AddressServiceTest extends BaseTest {
             addressRepository.saveAll(List.of(home, company));
 
             // when
-            List<AddressResponse> response = addressService.getAll(member);
+            List<AddressResponse> response = addressService.getMemberAddresses(member);
 
             // then
             assertThat(response).hasSize(2);
@@ -94,18 +94,33 @@ class AddressServiceTest extends BaseTest {
     class 사용자가_배송지를_삭제한다 {
 
         @Test
-        void 사용자가_배송지를_정상적으로_삭제한다() {
+        void 사용자가_기본_배송지가_아닌_다른_배송지를_정상적으로_삭제한다() {
+            // given
+            Member member = MemberFixture.최준호();
+            memberRepository.save(member);
+            Address home = AddressFixture.집주소(member);
+            Address company = AddressFixture.회사주소(member);
+            addressRepository.saveAll(List.of(home, company));
+
+            // when
+            addressService.deleteAddress(member, company.getId());
+
+            // then
+            assertThat(addressRepository.findById(company.getId())).isEmpty();
+        }
+
+        @Test
+        void 기본_배송지를_삭제하면_예외() {
             // given
             Member member = MemberFixture.최준호();
             memberRepository.save(member);
             Address address = AddressFixture.집주소(member);
             addressRepository.save(address);
 
-            // when
-            addressService.deleteAddress(member, address.getId());
-
-            // then
-            assertThat(addressRepository.findById(address.getId())).isEmpty();
+            // when & then
+            assertThatThrownBy(() -> addressService.deleteAddress(member, address.getId()))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.DEFAULT_ADDRESS_NOT_DELETE.getMessage());
         }
     }
 }

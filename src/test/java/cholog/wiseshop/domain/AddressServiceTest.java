@@ -110,6 +110,21 @@ class AddressServiceTest extends BaseTest {
         }
 
         @Test
+        void 자신의_배송지가_아닌_다른_배송지를_삭제하면_예외() {
+            // given
+            Member junho = MemberFixture.최준호();
+            Member june = MemberFixture.김준수();
+            memberRepository.saveAll(List.of(june, junho));
+            Address address = AddressFixture.집주소(junho);
+            addressRepository.save(address);
+
+            // when & then
+            assertThatThrownBy(() -> addressService.deleteAddress(june, address.getId()))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.NOT_OWNER.getMessage());
+        }
+
+        @Test
         void 기본_배송지를_삭제하면_예외() {
             // given
             Member member = MemberFixture.최준호();

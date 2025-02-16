@@ -22,21 +22,18 @@ public class AddressService {
     }
 
     public Long createAddress(Member member, CreateAddressRequest request) {
+        boolean existsDefaultAddress = addressRepository.findAllByMemberId(member.getId())
+            .stream()
+            .anyMatch(Address::isDefault);
+
         Address address = Address.from(member, request);
+        address.setDefault(!existsDefaultAddress); // 첫 번째 주소만 기본 주소로 설정
+
         return addressRepository.save(address).getId();
     }
 
-    public void deleteAddress(Member member, Long addressId) {
-        Address address = addressRepository.findById(addressId)
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));
-        if (!address.isOwner(member)) {
-            throw new WiseShopException(WiseShopErrorCode.NOT_OWNER);
-        }
-        addressRepository.deleteById(addressId);
-    }
-
     @Transactional(readOnly = true)
-    public List<AddressResponse> getAll(Member member) {
+    public List<AddressResponse> getMemberAddresses(Member member) {
         List<Address> addresses = addressRepository.findAllByMemberId(member.getId());
         return addresses.stream().map(it -> new AddressResponse(
             it.getId(),
@@ -46,5 +43,34 @@ public class AddressService {
             it.isDefault(),
             member.getId()
         )).toList();
+    }
+
+    public void updateAddress(Member member, Long addressId) {
+        Address targetAddress = addressRepository.findById(addressId)
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));
+        if (targetAddress.isOwner(member)) {
+            throw new WiseShopException(WiseShopErrorCode.NOT_OWNER);
+        }
+        Address currentDefaultAddress = addressRepository.findAllByMemberId(member.getId())
+            .stream()
+            .filter(Address::isDefault)
+            .findFirst()
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));
+        currentDefaultAddress.setDefault(false);
+        addressRepository.save(currentDefaultAddress);
+        targetAddress.setDefault(true);
+        addressRepository.save(targetAddress);
+    }
+
+    public void deleteAddress(Member member, Long addressId) {
+        Address address = addressRepository.findById(addressId)
+            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));
+        if (!address.isOwner(member)) {
+            throw new WiseShopException(WiseShopErrorCode.NOT_OWNER);
+        }
+        if (address.isDefault()) {
+            throw new WiseShopException(WiseShopErrorCode.DEFAULT_ADDRESS_NOT_DELETE);
+        }
+        addressRepository.deleteById(addressId);
     }
 }

@@ -9,6 +9,7 @@ public enum WiseShopErrorCode {
     MEMBER_INPROGRESS_CAMPAIGN_EXIST("회원의 진행 중인 캠페인이 존재합니다."),
     ADDRESS_NOT_FOUND("회원의 배송지 정보가 존재하지 않습니다."),
     ADDRESS_EXIST_INTO_ORDER("주문 중인 상품에 등록된 배송 정보가 존재합니다."),
+    DEFAULT_ADDRESS_NOT_DELETE("기본 설정된 배송 정보는 삭제가 불가능합니다."),
     PRODUCT_NOT_FOUND("상품이 존재하지 않습니다."),
     MODIFY_NAME_DESCRIPTION_PRODUCT_NOT_FOUND("이름 및 설명글 수정할 상품이 존재하지 않습니다."),
     MODIFY_PRICE_PRODUCT_NOT_FOUND("가격 수정할 상품이 존재하지 않습니다."),

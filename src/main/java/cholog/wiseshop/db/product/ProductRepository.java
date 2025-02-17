@@ -12,4 +12,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findProductsByCampaignId(@Param("campaignId") Long campaignId);
 
     List<Product> findAllByCampaign(Campaign campaign);
+
+    List<Product> findByOwnerId(Long memberId);
 }

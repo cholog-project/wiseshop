@@ -3,6 +3,7 @@ package cholog.wiseshop.api.campaign.service;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
 import cholog.wiseshop.api.campaign.dto.response.CreateCampaignResponse;
+import cholog.wiseshop.api.campaign.dto.response.MemberCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.common.ThreadTaskScheduler;
@@ -110,6 +111,15 @@ public class CampaignService {
                     new ProductResponse(product),
                     campaign.getMember().getId()
                 );
+            }).toList();
+    }
+
+    public List<MemberCampaignResponse> readMemberCampaign(Member member) {
+        List<Campaign> campaigns = campaignRepository.findCampaignByMemberId(member.getId());
+        return campaigns.stream()
+            .map(campaign -> {
+                List<Product> products = productRepository.findAllByCampaign(campaign);
+                return MemberCampaignResponse.of(campaign, products.getFirst());
             }).toList();
     }
 }

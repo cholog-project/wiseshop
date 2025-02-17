@@ -1,10 +1,8 @@
 package cholog.wiseshop.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
+import cholog.wiseshop.api.campaign.dto.response.MemberCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.common.BaseTest;
@@ -25,6 +23,8 @@ import cholog.wiseshop.fixture.ProductFixture;
 import cholog.wiseshop.fixture.ProductFixture.Request;
 import java.time.LocalDateTime;
 import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +114,34 @@ public class CampaignServiceTest extends BaseTest {
         }
 
         @Test
+        void 재고수량이_1개_미만이면_예외() {
+            // given
+            LocalDateTime now = LocalDateTime.now();
+            Member member = memberRepository.save(MemberFixture.최준호());
+            CreateCampaignRequest request = new CreateCampaignRequest(
+                now.plusDays(2),
+                now.plusDays(2).plusHours(10),
+                1000,
+                new CreateProductRequest(
+                    "보약",
+                    "먹으면 기분이 좋아져요.",
+                    10000,
+                    0
+                )
+            );
+
+            // when & then
+            assertThatThrownBy(
+                () -> campaignService.createCampaign(request, member, now))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.INVALID_GOAL_QUANTITY.getMessage());
+        }
+    }
+
+    @Nested
+    class 캠페인의_상태를_설정한다 {
+
+        @Test
         void 현재_시간이_시작시간_이후_종료시간_이전일_때_상태변경() {
             // given
             LocalDateTime now = LocalDateTime.now();
@@ -181,6 +209,10 @@ public class CampaignServiceTest extends BaseTest {
             // then
             assertThat(campaign.getState()).isEqualTo(CampaignState.SUCCESS);
         }
+    }
+
+    @Nested
+    class 캠페인을_조회한다 {
 
         @Test
         void 캠페인_전체조회_성공적으로_조회() {
@@ -253,27 +285,30 @@ public class CampaignServiceTest extends BaseTest {
         }
 
         @Test
-        void 재고수량이_1개_미만이면_예외() {
+        void 캠페인_멤버_조회() {
             // given
-            LocalDateTime now = LocalDateTime.now();
-            Member member = memberRepository.save(MemberFixture.최준호());
-            CreateCampaignRequest request = new CreateCampaignRequest(
-                now.plusDays(2),
-                now.plusDays(2).plusHours(10),
-                1000,
-                new CreateProductRequest(
-                    "보약",
-                    "먹으면 기분이 좋아져요.",
-                    10000,
-                    0
-                )
-            );
+            Member junHo = memberRepository.save(MemberFixture.최준호());
+            Member junSoo = memberRepository.save(MemberFixture.김준수());
+            Campaign inProgressCampaign = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(junHo));
+            Campaign waitingCampaign = campaignRepository.save(CampaignFixture.대기중인_보약_캠페인(junHo));
+            Campaign waitingCampaignFromJunSoo = campaignRepository.save(CampaignFixture.대기중인_보약_캠페인(junSoo));
 
-            // when & then
-            assertThatThrownBy(
-                () -> campaignService.createCampaign(request, member, now))
-                .isInstanceOf(WiseShopException.class)
-                .hasMessage(WiseShopErrorCode.INVALID_GOAL_QUANTITY.getMessage());
+            Stock stockA = new Stock(20);
+            stockRepository.save(stockA);
+            Stock stockB = new Stock(20);
+            stockRepository.save(stockB);
+            Stock stockC = new Stock(20);
+            stockRepository.save(stockC);
+
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(inProgressCampaign, stockA, junHo));
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(waitingCampaign, stockB, junHo));
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(waitingCampaignFromJunSoo, stockC, junSoo));
+
+            // when
+            List<MemberCampaignResponse> response = campaignService.readMemberCampaign(junHo);
+
+            //then
+            assertThat(response).hasSize(2);
         }
     }
 }

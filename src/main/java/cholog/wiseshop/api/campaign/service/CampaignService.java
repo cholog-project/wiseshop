@@ -8,7 +8,6 @@ import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.common.ThreadTaskScheduler;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
-import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -92,7 +91,7 @@ public class CampaignService {
             findProduct.getStock().getTotalQuantity(),
             findCampaign.getState(),
             new ProductResponse(findProduct),
-            findCampaign.getMember().getId()
+            findCampaign.getMember().orElse(Member.createEmpty()).getId()
         );
     }
 
@@ -110,7 +109,7 @@ public class CampaignService {
                     product.getStock().getTotalQuantity(),
                     campaign.getState(),
                     new ProductResponse(product),
-                    campaign.getMember().getId()
+                    campaign.getMember().orElse(Member.createEmpty()).getId()
                 );
             }).toList();
     }

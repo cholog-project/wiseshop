@@ -45,7 +45,7 @@ public class OrderService {
         validateCampaignStateInProgress(campaign);
         Stock stock = product.getStock();
         validateQuantity(campaign, stock, request.orderQuantity());
-        Member campaignOwner = campaign.getMember();
+        Member campaignOwner = campaign.getMember().orElse(Member.createEmpty());
         validateOrderOwner(campaignOwner, member);
         Order order = orderRepository.save(request.from(product, member, address));
         campaign.increaseSoldQuantity(request.orderQuantity());

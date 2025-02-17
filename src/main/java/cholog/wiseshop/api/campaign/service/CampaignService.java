@@ -116,7 +116,7 @@ public class CampaignService {
     }
 
     public List<MemberCampaignResponse> readMemberCampaign(Member member) {
-        List<Campaign> campaigns = campaignRepository.findAllByMember(member);
+        List<Campaign> campaigns = campaignRepository.findCampaignByMemberId(member.getId());
         return campaigns.stream()
             .map(campaign -> {
                 List<Product> products = productRepository.findAllByCampaign(campaign);

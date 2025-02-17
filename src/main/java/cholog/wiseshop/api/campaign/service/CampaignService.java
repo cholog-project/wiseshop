@@ -117,9 +117,6 @@ public class CampaignService {
 
     public MemberCampaignResponse readMemberCampaign(Member member) {
         List<Campaign> campaigns = campaignRepository.findAllByMember(member);
-        List<Long> campaignIds = campaigns.stream().
-            map(Campaign::getId)
-            .toList();
-        return MemberCampaignResponse.from(campaignIds);
+        return MemberCampaignResponse.from(campaigns);
     }
 }

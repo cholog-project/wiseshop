@@ -28,6 +28,10 @@ public class Member {
     @Column(name = "password", nullable = false)
     private String password;
 
+    public static Member createEmpty() {
+        return new Member();
+    }
+
     public Member(
         String email,
         String name,

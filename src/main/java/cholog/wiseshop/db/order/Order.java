@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Objects;
+import java.util.Optional;
 
 @Table(name = "`order`")
 @Entity
@@ -53,7 +54,11 @@ public class Order extends BaseTimeEntity {
     }
 
     public boolean isOwner(Member member) {
-        return Objects.equals(getMember().getId(), member.getId());
+        return Objects.equals(getMember().orElse(Member.createEmpty()), member.getId());
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
     }
 
     public static final class OrderBuilder {
@@ -108,8 +113,8 @@ public class Order extends BaseTimeEntity {
         return count;
     }
 
-    public Member getMember() {
-        return member;
+    public Optional<Member> getMember() {
+        return Optional.ofNullable(member);
     }
 
     public String getAddress() {

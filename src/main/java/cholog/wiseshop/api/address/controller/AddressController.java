@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,13 +27,6 @@ public class AddressController {
         this.addressService = addressService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<AddressResponse>> createAddress(
-        @Auth Member member
-    ) {
-        return ResponseEntity.ok().body(addressService.getAll(member));
-    }
-
     @PostMapping
     public ResponseEntity<Long> createAddress(
         @Auth Member member,
@@ -40,6 +34,22 @@ public class AddressController {
     ) {
         Long response = addressService.createAddress(member, request);
         return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AddressResponse>> readMemberAddresses(
+        @Auth Member member
+    ) {
+        return ResponseEntity.ok().body(addressService.getMemberAddresses(member));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateAddressDefault(
+        @Auth Member member,
+        Long id
+    ) {
+        addressService.updateAddress(member, id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")

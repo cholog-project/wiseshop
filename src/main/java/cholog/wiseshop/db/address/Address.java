@@ -2,6 +2,8 @@ package cholog.wiseshop.db.address;
 
 import cholog.wiseshop.api.address.dto.request.CreateAddressRequest;
 import cholog.wiseshop.db.member.Member;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -89,5 +91,9 @@ public class Address {
             request.isDefault(),
             member
         );
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 }

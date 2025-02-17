@@ -77,7 +77,7 @@ public class ProductService {
         Campaign campaign = product.getCampaign();
         productRepository.deleteById(id);
         if (productRepository.findAllByCampaign(campaign).isEmpty()) {
-            scheduledTaskStorage.deleteAll(campaign);
+            scheduledTaskStorage.deleteStartTask(campaign);
             campaignRepository.delete(campaign);
         }
     }

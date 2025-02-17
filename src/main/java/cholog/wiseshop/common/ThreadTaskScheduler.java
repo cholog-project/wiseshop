@@ -31,6 +31,7 @@ public class ThreadTaskScheduler {
         Runnable startCampaign = () -> transactionTemplate.execute(status -> {
             campaign.setState(campaign.getStartDate(), campaign.getEndDate());
             campaignRepository.save(campaign);
+            scheduleCampaignToFinish(campaign);
             return null;
         });
         ScheduledFuture<?> scheduledTask = scheduler.schedule(
@@ -45,9 +46,6 @@ public class ThreadTaskScheduler {
             campaignRepository.save(campaign);
             return null;
         });
-        ScheduledFuture<?> scheduledTask = scheduler.schedule(
-            endCampaign, campaign.getEndDate().atZone(ZoneId.systemDefault()).toInstant()
-        );
-        taskStorage.saveToEnd(scheduledTask, campaign);
+        scheduler.schedule(endCampaign, campaign.getEndDate().atZone(ZoneId.systemDefault()).toInstant());
     }
 }

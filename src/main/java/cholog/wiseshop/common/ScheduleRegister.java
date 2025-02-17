@@ -26,8 +26,9 @@ public class ScheduleRegister {
         for (Campaign campaign : campaigns) {
             if (campaign.getState().equals(CampaignState.WAITING)) {
                 scheduler.scheduleCampaignToStart(campaign);
+            } else {
+                scheduler.scheduleCampaignToFinish(campaign);
             }
-            scheduler.scheduleCampaignToFinish(campaign);
         }
     }
 }

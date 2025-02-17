@@ -8,7 +8,6 @@ import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.common.ThreadTaskScheduler;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
-import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -67,7 +66,6 @@ public class CampaignService {
             member
         ));
         scheduler.scheduleCampaignToStart(campaign);
-        scheduler.scheduleCampaignToFinish(campaign);
         return CreateCampaignResponse.from(campaign.getId());
     }
 

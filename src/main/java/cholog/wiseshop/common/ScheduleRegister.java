@@ -21,7 +21,8 @@ public class ScheduleRegister {
     @PostConstruct
     private void postConstructCampaigns() {
         List<Campaign> campaigns = campaignRepository.findAllByStates(
-            List.of(CampaignState.WAITING, CampaignState.IN_PROGRESS));
+            List.of(CampaignState.WAITING, CampaignState.IN_PROGRESS)
+        );
         for (Campaign campaign : campaigns) {
             if (campaign.getState().equals(CampaignState.WAITING)) {
                 scheduler.scheduleCampaignToStart(campaign);

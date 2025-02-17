@@ -90,13 +90,14 @@ public class CampaignService {
             findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
             findCampaign.getSoldQuantity(),
             findProduct.getStock().getTotalQuantity(),
+            findCampaign.getState(),
             new ProductResponse(findProduct),
             findCampaign.getMember().getId()
         );
     }
 
-    public List<ReadCampaignResponse> readInProgressCampaign() {
-        List<Campaign> campaigns = campaignRepository.findAllByState(CampaignState.IN_PROGRESS);
+    public List<ReadCampaignResponse> readAllCampaign() {
+        List<Campaign> campaigns = campaignRepository.findAll();
         return campaigns.stream()
             .map(campaign -> {
                 Product product = productRepository.findAllByCampaign(campaign).getFirst();
@@ -107,6 +108,7 @@ public class CampaignService {
                     campaign.getGoalQuantity(),
                     campaign.getSoldQuantity(),
                     product.getStock().getTotalQuantity(),
+                    campaign.getState(),
                     new ProductResponse(product),
                     campaign.getMember().getId()
                 );

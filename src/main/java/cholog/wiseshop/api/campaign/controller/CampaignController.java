@@ -42,7 +42,7 @@ public class CampaignController {
 
     @GetMapping
     public ResponseEntity<List<ReadCampaignResponse>> readAllCampaign() {
-        var response = campaignService.readInProgressCampaign();
+        var response = campaignService.readAllCampaign();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

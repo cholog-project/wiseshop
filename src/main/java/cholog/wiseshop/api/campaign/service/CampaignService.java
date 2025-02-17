@@ -115,8 +115,12 @@ public class CampaignService {
             }).toList();
     }
 
-    public MemberCampaignResponse readMemberCampaign(Member member) {
+    public List<MemberCampaignResponse> readMemberCampaign(Member member) {
         List<Campaign> campaigns = campaignRepository.findAllByMember(member);
-        return MemberCampaignResponse.from(campaigns);
+        return campaigns.stream()
+            .map(campaign -> {
+                List<Product> products = productRepository.findAllByCampaign(campaign);
+                return MemberCampaignResponse.of(campaign, products.getFirst());
+            }).toList();
     }
 }

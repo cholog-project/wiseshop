@@ -300,18 +300,15 @@ public class CampaignServiceTest extends BaseTest {
             Stock stockC = new Stock(20);
             stockRepository.save(stockC);
 
-            Product inProgressProduct = productRepository.save(
-                ProductFixture.재고가_설정된_캠페인의_보약(inProgressCampaign, stockA, junHo));
-            Product waitingProduct = productRepository.save(
-                ProductFixture.재고가_설정된_캠페인의_보약(waitingCampaign, stockB, junHo));
-            Product waitingProductFromJunSoo = productRepository.save(
-                ProductFixture.재고가_설정된_캠페인의_보약(waitingCampaignFromJunSoo, stockC, junSoo));
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(inProgressCampaign, stockA, junHo));
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(waitingCampaign, stockB, junHo));
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(waitingCampaignFromJunSoo, stockC, junSoo));
 
             // when
-            MemberCampaignResponse response = campaignService.readMemberCampaign(junHo);
+            List<MemberCampaignResponse> response = campaignService.readMemberCampaign(junHo);
 
             //then
-            assertThat(response.campaignId()).hasSize(2);
+            assertThat(response).hasSize(2);
         }
     }
 }

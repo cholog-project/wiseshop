@@ -47,9 +47,9 @@ public class CampaignController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/member")
-    public ResponseEntity<MemberCampaignResponse> readMemberCampaign(@Auth Member member) {
-        MemberCampaignResponse response = campaignService.readMemberCampaign(member);
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberCampaignResponse>> readMemberCampaign(@Auth Member member) {
+        List<MemberCampaignResponse> response = campaignService.readMemberCampaign(member);
         return ResponseEntity.ok(response);
     }
 }

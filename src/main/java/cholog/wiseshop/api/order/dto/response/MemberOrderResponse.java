@@ -1,5 +1,6 @@
 package cholog.wiseshop.api.order.dto.response;
 
+import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.order.Order;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public record MemberOrderResponse(
     public MemberOrderResponse(Order order) {
         this(
             order.getId(),
-            order.getMember().getId(),
+            order.getMember().orElse(Member.createEmpty()).getId(),
             order.getProduct().getId(),
             order.getProduct().getName(),
             order.getAddress(),

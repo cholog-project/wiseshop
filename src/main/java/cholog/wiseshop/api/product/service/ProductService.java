@@ -3,6 +3,7 @@ package cholog.wiseshop.api.product.service;
 import cholog.wiseshop.api.product.dto.request.ModifyProductPriceAndStockRequest;
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
+import cholog.wiseshop.common.ScheduledTaskStorage;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.member.Member;
@@ -19,11 +20,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CampaignRepository campaignRepository;
+    private final ScheduledTaskStorage scheduledTaskStorage;
 
     public ProductService(ProductRepository productRepository,
-        CampaignRepository campaignRepository) {
+        CampaignRepository campaignRepository, ScheduledTaskStorage scheduledTaskStorage) {
         this.productRepository = productRepository;
         this.campaignRepository = campaignRepository;
+        this.scheduledTaskStorage = scheduledTaskStorage;
     }
 
     @Transactional(readOnly = true)
@@ -74,6 +77,7 @@ public class ProductService {
         Campaign campaign = product.getCampaign();
         productRepository.deleteById(id);
         if (productRepository.findAllByCampaign(campaign).isEmpty()) {
+            scheduledTaskStorage.deleteAll(campaign);
             campaignRepository.delete(campaign);
         }
     }

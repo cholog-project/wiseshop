@@ -1,5 +1,6 @@
 package cholog.wiseshop.db.campaign;
 
+import cholog.wiseshop.db.member.Member;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     List<Campaign> findAllByStates(List<CampaignState> states);
 
     List<Campaign> findAllByState(CampaignState campaignState);
+
+    List<Campaign> findAllByMember(Member member);
 }

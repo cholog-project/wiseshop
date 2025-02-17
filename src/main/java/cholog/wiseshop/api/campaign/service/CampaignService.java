@@ -3,12 +3,12 @@ package cholog.wiseshop.api.campaign.service;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
 import cholog.wiseshop.api.campaign.dto.response.CreateCampaignResponse;
+import cholog.wiseshop.api.campaign.dto.response.MemberCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.common.ThreadTaskScheduler;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
-import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -113,5 +113,13 @@ public class CampaignService {
                     campaign.getMember().getId()
                 );
             }).toList();
+    }
+
+    public MemberCampaignResponse readMemberCampaign(Member member) {
+        List<Campaign> campaigns = campaignRepository.findAllByMember(member);
+        List<Long> campaignIds = campaigns.stream().
+            map(Campaign::getId)
+            .toList();
+        return MemberCampaignResponse.from(campaignIds);
     }
 }

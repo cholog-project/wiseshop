@@ -6,10 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
-    List<Campaign> findCampaignByMemberId(Long memberId);
+    List<Campaign> findAllByMemberId(Long memberId);
 
     @Query("SELECT c FROM Campaign c WHERE c.state IN :states")
     List<Campaign> findAllByStates(List<CampaignState> states);
-
-    List<Campaign> findAllByState(CampaignState campaignState);
 }

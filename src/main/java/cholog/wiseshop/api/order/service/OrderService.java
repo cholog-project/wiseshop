@@ -61,7 +61,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<MemberOrderResponse> readMemberOrders(Member member) {
-        return orderRepository.findByMemberId(member.getId()).stream()
+        return orderRepository.findAllByMemberId(member.getId()).stream()
             .map(MemberOrderResponse::new)
             .toList();
     }

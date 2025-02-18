@@ -41,7 +41,7 @@ public class MemberService {
 
     public void deleteMember(Member member) {
         Long memberId = member.getId();
-        List<Campaign> campaigns = campaignRepository.findCampaignByMemberId(memberId);
+        List<Campaign> campaigns = campaignRepository.findAllByMemberId(memberId);
         if (campaigns.stream().anyMatch(it -> it.getState().equals(CampaignState.IN_PROGRESS))) {
             throw new WiseShopException(WiseShopErrorCode.MEMBER_INPROGRESS_CAMPAIGN_EXIST);
         }
@@ -51,7 +51,7 @@ public class MemberService {
 
     private void setEmptyParent(Long memberId, List<Campaign> campaigns) {
         List<Product> products = productRepository.findByOwnerId(memberId);
-        List<Order> orders = orderRepository.findByMemberId(memberId);
+        List<Order> orders = orderRepository.findAllByMemberId(memberId);
         List<Address> addresses = addressRepository.findAllByMemberId(memberId);
 
         campaigns.forEach(c -> c.setMember(null));

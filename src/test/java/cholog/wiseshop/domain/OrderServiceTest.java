@@ -85,7 +85,7 @@ class OrderServiceTest extends BaseTest {
             orderService.createOrder(request, junesoo);
 
             // then
-            assertThat(orderRepository.findByMemberId(junesoo.getId())).isNotEmpty();
+            assertThat(orderRepository.findAllByMemberId(junesoo.getId())).isNotEmpty();
         }
 
         @Test

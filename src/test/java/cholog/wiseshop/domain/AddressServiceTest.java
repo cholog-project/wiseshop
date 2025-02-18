@@ -136,6 +136,8 @@ class AddressServiceTest extends BaseTest {
             List<Address> addresses = addressRepository.saveAll(List.of(home, company));
 
             // when
+            System.out.println(member.getName());
+            System.out.println(addresses.getLast().getMember().get().getName());
             addressService.updateAddress(member, addresses.getLast().getId());
             Address address = addressRepository.findById(addresses.getLast().getId())
                 .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.ADDRESS_NOT_FOUND));

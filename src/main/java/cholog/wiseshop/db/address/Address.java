@@ -2,8 +2,6 @@ package cholog.wiseshop.db.address;
 
 import cholog.wiseshop.api.address.dto.request.CreateAddressRequest;
 import cholog.wiseshop.db.member.Member;
-import cholog.wiseshop.exception.WiseShopErrorCode;
-import cholog.wiseshop.exception.WiseShopException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Objects;
+import java.util.Optional;
 
 @Table(name = "ADDRESS")
 @Entity
@@ -56,7 +55,7 @@ public class Address {
     }
 
     public boolean isOwner(Member member) {
-        return Objects.equals(getMember().getId(), member.getId());
+        return Objects.equals(getMember().orElse(Member.createEmpty()).getId(), member.getId());
     }
 
     public Long getId() {
@@ -79,8 +78,8 @@ public class Address {
         return isDefault;
     }
 
-    public Member getMember() {
-        return member;
+    public Optional<Member> getMember() {
+        return Optional.ofNullable(member);
     }
 
     public static Address from(Member member, CreateAddressRequest request) {
@@ -95,5 +94,9 @@ public class Address {
 
     public void setDefault(boolean isDefault) {
         this.isDefault = isDefault;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
     }
 }

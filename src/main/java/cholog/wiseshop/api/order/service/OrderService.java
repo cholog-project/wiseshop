@@ -45,7 +45,7 @@ public class OrderService {
         validateCampaignStateInProgress(campaign);
         Stock stock = product.getStock();
         validateQuantity(campaign, stock, request.orderQuantity());
-        Member campaignOwner = campaign.getMember();
+        Member campaignOwner = campaign.getMember().orElse(Member.createEmpty());
         validateOrderOwner(campaignOwner, member);
         Order order = orderRepository.save(request.from(product, member, address));
         campaign.increaseSoldQuantity(request.orderQuantity());
@@ -61,7 +61,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<MemberOrderResponse> readMemberOrders(Member member) {
-        return orderRepository.findByMemberId(member.getId()).stream()
+        return orderRepository.findAllByMemberId(member.getId()).stream()
             .map(MemberOrderResponse::new)
             .toList();
     }

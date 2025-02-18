@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Objects;
+import java.util.Optional;
 
 @Table(name = "product")
 @Entity
@@ -63,6 +64,10 @@ public class Product {
 
     public static ProductBuilder builder() {
         return new ProductBuilder();
+    }
+
+    public void setOwner(Member owner) {
+        this.owner = owner;
     }
 
     public static final class ProductBuilder {
@@ -160,7 +165,7 @@ public class Product {
         return stock;
     }
 
-    public Member getOwner() {
-        return owner;
+    public Optional<Member> getOwner() {
+        return Optional.ofNullable(owner);
     }
 }

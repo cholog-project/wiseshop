@@ -77,7 +77,7 @@ public class CampaignService {
     }
 
     public ReadCampaignResponse readCampaign(Long campaignId) {
-        List<Product> findProducts = productRepository.findProductsByCampaignId(campaignId);
+        List<Product> findProducts = productRepository.findAllByCampaignId(campaignId);
         if (findProducts.isEmpty()) {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_FOUND);
         }
@@ -91,7 +91,7 @@ public class CampaignService {
             findProduct.getStock().getTotalQuantity(),
             findCampaign.getState(),
             new ProductResponse(findProduct),
-            findCampaign.getMember().getId()
+            findCampaign.getMember().orElse(Member.createEmpty()).getId()
         );
     }
 
@@ -109,7 +109,7 @@ public class CampaignService {
                     product.getStock().getTotalQuantity(),
                     campaign.getState(),
                     new ProductResponse(product),
-                    campaign.getMember().getId()
+                    campaign.getMember().orElse(Member.createEmpty()).getId()
                 );
             }).toList();
     }

@@ -46,4 +46,17 @@ public class CampaignFixture {
             .now(now)
             .build();
     }
+
+    public static Campaign 종료된_보약_캠페인(Member member, CampaignState state) {
+        LocalDateTime now = LocalDateTime.now();
+        return Campaign.builder()
+            .startDate(now.plusDays(1))
+            .endDate(now.plusDays(2))
+            .goalQuantity(100)
+            .soldQuantity(0)
+            .state(state)
+            .member(member)
+            .now(now)
+            .build();
+    }
 }

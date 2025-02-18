@@ -77,7 +77,7 @@ public class CampaignService {
     }
 
     public ReadCampaignResponse readCampaign(Long campaignId) {
-        List<Product> findProducts = productRepository.findProductsByCampaignId(campaignId);
+        List<Product> findProducts = productRepository.findAllByCampaignId(campaignId);
         if (findProducts.isEmpty()) {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_FOUND);
         }

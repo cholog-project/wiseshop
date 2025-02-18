@@ -50,7 +50,7 @@ public class MemberService {
     }
 
     private void setEmptyParent(Long memberId, List<Campaign> campaigns) {
-        List<Product> products = productRepository.findByOwnerId(memberId);
+        List<Product> products = productRepository.findByMemberId(memberId);
         List<Order> orders = orderRepository.findAllByMemberId(memberId);
         List<Address> addresses = addressRepository.findAllByMemberId(memberId);
 

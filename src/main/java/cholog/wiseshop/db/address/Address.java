@@ -55,7 +55,7 @@ public class Address {
     }
 
     public boolean isOwner(Member member) {
-        return Objects.equals(getMember().orElse(Member.createEmpty()), member.getId());
+        return Objects.equals(getMember().orElse(Member.createEmpty()).getId(), member.getId());
     }
 
     public Long getId() {

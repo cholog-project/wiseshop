@@ -54,9 +54,9 @@ public class MemberService {
         List<Order> orders = orderRepository.findAllByMemberId(memberId);
         List<Address> addresses = addressRepository.findAllByMemberId(memberId);
 
-        campaigns.forEach(c -> c.setMember(null));
-        products.forEach(p -> p.setOwner(null));
-        orders.forEach(o -> o.setMember(null));
-        addresses.forEach(a -> a.setMember(null));
+        campaigns.forEach(campaign -> campaign.setMember(null));
+        products.forEach(product -> product.setOwner(null));
+        orders.forEach(order -> order.setMember(null));
+        addresses.forEach(address -> address.setMember(null));
     }
 }

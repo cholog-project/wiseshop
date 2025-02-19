@@ -99,7 +99,7 @@ class AddressServiceTest extends BaseTest {
                 .filter(Address::isDefault)
                 .toList();
 
-            assertThat(addresses.size()).isEqualTo(1);
+            assertThat(addresses).hasSize(1);
         }
     }
 

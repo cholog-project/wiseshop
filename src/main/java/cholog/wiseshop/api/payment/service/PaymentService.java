@@ -53,9 +53,12 @@ public class PaymentService {
                 ));
 
             return payment.getId();
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.warn(e.getMessage());
-            throw new WiseShopException(WiseShopErrorCode.PAYMENT_NOT_MATCHED);
+            throw new WiseShopException(WiseShopErrorCode.PAYMENT_FAILED);
         }
     }
 

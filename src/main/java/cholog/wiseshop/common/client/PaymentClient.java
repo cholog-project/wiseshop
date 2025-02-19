@@ -35,11 +35,15 @@ public class PaymentClient {
             .getBytes(StandardCharsets.UTF_8));
         String authorizations = "Basic " + new String(encodedBytes);
 
-        return restClient.post()
-            .uri(TOSS_PAYMENTS_API_URL + "/confirm")
-            .header(HttpHeaders.AUTHORIZATION, authorizations)
-            .body(request)
-            .retrieve()
-            .body(PaymentResponse.class);
+        try {
+            return restClient.post()
+                .uri(TOSS_PAYMENTS_API_URL + "/confirm")
+                .header(HttpHeaders.AUTHORIZATION, authorizations)
+                .body(request)
+                .retrieve()
+                .body(PaymentResponse.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 }

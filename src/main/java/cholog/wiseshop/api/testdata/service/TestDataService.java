@@ -34,7 +34,6 @@ public class TestDataService {
 
     public void generateTestMember() {
         cleanAllData();
-        generateTestMemberData(1);
         generateTestMemberData(TEST_MEMBER_SIZE);
     }
 

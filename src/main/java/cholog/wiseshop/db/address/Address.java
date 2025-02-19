@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 import java.util.Objects;
 import java.util.Optional;
 
-@Table(name = "ADDRESS")
+@Table(name = "address")
 @Entity
 public class Address {
 

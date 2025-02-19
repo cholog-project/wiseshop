@@ -1,7 +1,6 @@
 package cholog.wiseshop.db.payment;
 
 import cholog.wiseshop.db.order.Order;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,13 +22,10 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonProperty("paymentKey")
     private String paymentKey;
 
-    @JsonProperty("orderId")
     private String paymentOrderId;
 
-    @JsonProperty("totalAmount")
     private Long totalAmount;
 
     @Enumerated(EnumType.STRING)
@@ -40,13 +36,64 @@ public class Payment {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "Asia/Seoul")
     private LocalDateTime requestedAt;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "Asia/Seoul")
     private LocalDateTime approvedAt;
+
+    public Payment(
+        String paymentKey,
+        String paymentOrderId,
+        Long totalAmount,
+        PaymentState state,
+        Order order,
+        LocalDateTime requestedAt,
+        LocalDateTime approvedAt
+    ) {
+        this.paymentKey = paymentKey;
+        this.paymentOrderId = paymentOrderId;
+        this.totalAmount = totalAmount;
+        this.state = state;
+        this.order = order;
+        this.requestedAt = requestedAt;
+        this.approvedAt = approvedAt;
+    }
+
+    protected Payment() {
+    }
 
     public void addOrder(Order order) {
         this.order = order;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getPaymentKey() {
+        return paymentKey;
+    }
+
+    public String getPaymentOrderId() {
+        return paymentOrderId;
+    }
+
+    public Long getTotalAmount() {
+        return totalAmount;
+    }
+
+    public PaymentState getState() {
+        return state;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public LocalDateTime getRequestedAt() {
+        return requestedAt;
+    }
+
+    public LocalDateTime getApprovedAt() {
+        return approvedAt;
     }
 }

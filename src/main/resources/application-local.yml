@@ -36,6 +36,7 @@ spring:
 #        show_sql: true
 #        format_sql: true
 
+# 테스트 키 https://docs.tosspayments.com/guides/v2/payment-widget/integration
 toss:
   payments:
-    secret-key: TOSS_SECRET_KEY
+    secret-key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6

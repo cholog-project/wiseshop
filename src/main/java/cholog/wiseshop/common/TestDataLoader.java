@@ -1,6 +1,8 @@
 
  package cholog.wiseshop.common;
 
+import cholog.wiseshop.db.address.Address;
+import cholog.wiseshop.db.address.AddressRepository;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
@@ -35,6 +37,8 @@ public class TestDataLoader implements CommandLineRunner {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -43,10 +47,17 @@ public class TestDataLoader implements CommandLineRunner {
             "판매자",
             passwordEncoder.encode("12341234")
         ));
-        memberRepository.save(new Member(
+        Member customer = memberRepository.save(new Member(
             "customer@test.com",
             "구매자",
             passwordEncoder.encode("12341234")
+        ));
+        addressRepository.save(new Address(
+            06160,
+            "서울특별시 강남구 삼성동 142-35",
+            "13층",
+            true,
+            customer
         ));
         LocalDateTime now = LocalDateTime.now();
         Campaign campaign = campaignRepository.save(Campaign.builder()

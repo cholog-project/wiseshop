@@ -1,12 +1,10 @@
 package cholog.wiseshop.api.order.controller;
 
 import cholog.wiseshop.api.order.dto.request.CreateOrderRequest;
-import cholog.wiseshop.api.order.dto.request.CreateOrderSessionRequest;
-import cholog.wiseshop.api.order.dto.response.OrderResponse;
+import cholog.wiseshop.api.order.dto.response.MemberOrderResponse;
 import cholog.wiseshop.api.order.service.OrderService;
 import cholog.wiseshop.common.auth.Auth;
 import cholog.wiseshop.db.member.Member;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/orders")
 @RestController
 public class OrderController {
 
@@ -28,36 +26,36 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/orders/session")
-    public ResponseEntity<Void> createOrderSession(HttpSession session,
-                                                   @RequestBody CreateOrderSessionRequest request) {
-        session.setAttribute(request.paymentOrderId(),request.amount());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PostMapping("/orders")
-    public ResponseEntity<Long> createOrder(@Auth Member member,
-                                            @RequestBody CreateOrderRequest request,
-                                            HttpSession session) {
-        Long orderId = orderService.createOrder(request, member, session);
+    @PostMapping
+    public ResponseEntity<Long> createOrder(
+        @Auth Member member,
+        @RequestBody CreateOrderRequest request
+    ) {
+        Long orderId = orderService.createOrder(request, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
     }
 
-    @GetMapping("/orders/{id}")
-    public ResponseEntity<OrderResponse> readOrder(@PathVariable Long id) {
-        OrderResponse response = orderService.readOrder(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberOrderResponse> readOrder(
+        @Auth Member member,
+        @PathVariable Long id
+    ) {
+        MemberOrderResponse response = orderService.readOrder(member, id);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/orders")
-    public ResponseEntity<List<OrderResponse>> readMemberOrders(@Auth Member member) {
-        List<OrderResponse> response = orderService.readMemberOrders(member);
+    @GetMapping
+    public ResponseEntity<List<MemberOrderResponse>> readMemberOrders(@Auth Member member) {
+        var response = orderService.readMemberOrders(member);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        orderService.deleteOrder(id);
+    public ResponseEntity<Void> deleteOrder(
+        @Auth Member member,
+        @PathVariable Long id
+    ) {
+        orderService.deleteOrder(member, id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

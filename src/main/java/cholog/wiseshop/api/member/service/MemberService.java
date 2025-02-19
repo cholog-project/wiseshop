@@ -1,19 +1,19 @@
 package cholog.wiseshop.api.member.service;
 
-import cholog.wiseshop.api.member.dto.request.SignInRequest;
-import cholog.wiseshop.api.member.dto.request.SignUpRequest;
-import cholog.wiseshop.api.member.dto.response.SignInResponse;
+import cholog.wiseshop.db.address.Address;
+import cholog.wiseshop.db.address.AddressRepository;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.member.MemberRepository;
+import cholog.wiseshop.db.order.Order;
+import cholog.wiseshop.db.order.OrderRepository;
+import cholog.wiseshop.db.product.Product;
+import cholog.wiseshop.db.product.ProductRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import java.util.UUID;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,46 +21,42 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MemberService {
 
-    private static final String SESSION_KEY = "member";
     private final MemberRepository memberRepository;
     private final CampaignRepository campaignRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final AddressRepository addressRepository;
 
     public MemberService(
         MemberRepository memberRepository,
         CampaignRepository campaignRepository,
-        PasswordEncoder passwordEncoder
-    ) {
+        ProductRepository productRepository, OrderRepository orderRepository,
+        AddressRepository addressRepository) {
         this.memberRepository = memberRepository;
         this.campaignRepository = campaignRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    public void signUpMember(SignUpRequest signUpRequest) {
-        if (memberRepository.findByEmail(signUpRequest.email()).isPresent()) {
-            throw new WiseShopException(WiseShopErrorCode.ALREADY_EXIST_MEMBER);
-        }
-        String encodePassword = passwordEncoder.encode(signUpRequest.password());
-        Member member = new Member(signUpRequest.email(), signUpRequest.name(), encodePassword);
-        memberRepository.save(member);
-    }
-
-    public SignInResponse signInMember(SignInRequest signInRequest, HttpSession session) {
-        Member member = memberRepository.findByEmail(signInRequest.email())
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.MEMBER_ID_NOT_FOUND));
-        boolean matches = passwordEncoder.matches(signInRequest.password(), member.getPassword());
-        if (!matches) {
-            throw new WiseShopException(WiseShopErrorCode.MEMBER_ID_NOT_FOUND);
-        }
-        session.setAttribute(SESSION_KEY, member);
-        return new SignInResponse(UUID.randomUUID().toString());
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
+        this.addressRepository = addressRepository;
     }
 
     public void deleteMember(Member member) {
-        List<Campaign> campaigns = campaignRepository.findCampaignByMemberId(member.getId());
+        Long memberId = member.getId();
+        List<Campaign> campaigns = campaignRepository.findAllByMemberId(memberId);
         if (campaigns.stream().anyMatch(it -> it.getState().equals(CampaignState.IN_PROGRESS))) {
             throw new WiseShopException(WiseShopErrorCode.MEMBER_INPROGRESS_CAMPAIGN_EXIST);
         }
-        memberRepository.deleteById(member.getId());
+        setEmptyParent(memberId, campaigns);
+        memberRepository.deleteById(memberId);
+    }
+
+    private void setEmptyParent(Long memberId, List<Campaign> campaigns) {
+        List<Product> products = productRepository.findAllByOwnerId(memberId);
+        List<Order> orders = orderRepository.findAllByMemberId(memberId);
+        List<Address> addresses = addressRepository.findAllByMemberId(memberId);
+
+        campaigns.forEach(campaign -> campaign.setMember(null));
+        products.forEach(product -> product.setOwner(null));
+        orders.forEach(order -> order.setMember(null));
+        addresses.forEach(address -> address.setMember(null));
     }
 }

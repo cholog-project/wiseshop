@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
-@Table(name = "MEMBER")
+@Table(name = "member")
 @Entity
 public class Member {
 
@@ -27,6 +27,10 @@ public class Member {
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
+
+    public static Member createEmpty() {
+        return new Member();
+    }
 
     public Member(
         String email,

@@ -3,12 +3,12 @@ package cholog.wiseshop.api.campaign.service;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
 import cholog.wiseshop.api.campaign.dto.response.CreateCampaignResponse;
+import cholog.wiseshop.api.campaign.dto.response.MemberCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.common.ThreadTaskScheduler;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
-import cholog.wiseshop.db.campaign.CampaignState;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
@@ -30,9 +30,12 @@ public class CampaignService {
     private final StockRepository stockRepository;
     private final ThreadTaskScheduler scheduler;
 
-    public CampaignService(CampaignRepository campaignRepository,
+    public CampaignService(
+        CampaignRepository campaignRepository,
         ProductRepository productRepository,
-        StockRepository stockRepository, ThreadTaskScheduler scheduler) {
+        StockRepository stockRepository,
+        ThreadTaskScheduler scheduler
+    ) {
         this.campaignRepository = campaignRepository;
         this.productRepository = productRepository;
         this.stockRepository = stockRepository;
@@ -60,10 +63,10 @@ public class CampaignService {
             productAtCampaignRequest.description(),
             productAtCampaignRequest.price(),
             campaign,
-            stock
+            stock,
+            member
         ));
         scheduler.scheduleCampaignToStart(campaign);
-        scheduler.scheduleCampaignToFinish(campaign);
         return CreateCampaignResponse.from(campaign.getId());
     }
 
@@ -74,7 +77,7 @@ public class CampaignService {
     }
 
     public ReadCampaignResponse readCampaign(Long campaignId) {
-        List<Product> findProducts = productRepository.findProductsByCampaignId(campaignId);
+        List<Product> findProducts = productRepository.findAllByCampaignId(campaignId);
         if (findProducts.isEmpty()) {
             throw new WiseShopException(WiseShopErrorCode.CAMPAIGN_NOT_FOUND);
         }
@@ -84,16 +87,39 @@ public class CampaignService {
             campaignId,
             findCampaign.getStartDate().toString(),
             findCampaign.getEndDate().toString(), findCampaign.getGoalQuantity(),
-            new ProductResponse(findProduct)
+            findCampaign.getSoldQuantity(),
+            findProduct.getStock().getTotalQuantity(),
+            findCampaign.getState(),
+            new ProductResponse(findProduct),
+            findCampaign.getMember().orElse(Member.createEmpty()).getId()
         );
     }
 
-    public List<ReadCampaignResponse> readInProgressCampaign() {
-        List<Campaign> campaigns = campaignRepository.findAllByState(CampaignState.IN_PROGRESS);
+    public List<ReadCampaignResponse> readAllCampaign() {
+        List<Campaign> campaigns = campaignRepository.findAll();
         return campaigns.stream()
             .map(campaign -> {
                 Product product = productRepository.findAllByCampaign(campaign).getFirst();
-                return ReadCampaignResponse.of(product, campaign);
+                return new ReadCampaignResponse(
+                    campaign.getId(),
+                    campaign.getStartDate().toString(),
+                    campaign.getEndDate().toString(),
+                    campaign.getGoalQuantity(),
+                    campaign.getSoldQuantity(),
+                    product.getStock().getTotalQuantity(),
+                    campaign.getState(),
+                    new ProductResponse(product),
+                    campaign.getMember().orElse(Member.createEmpty()).getId()
+                );
+            }).toList();
+    }
+
+    public List<MemberCampaignResponse> readMemberCampaign(Member member) {
+        List<Campaign> campaigns = campaignRepository.findAllByMemberId(member.getId());
+        return campaigns.stream()
+            .map(campaign -> {
+                List<Product> products = productRepository.findAllByCampaign(campaign);
+                return MemberCampaignResponse.of(campaign, products.getFirst());
             }).toList();
     }
 }

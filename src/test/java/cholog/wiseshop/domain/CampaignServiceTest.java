@@ -1,10 +1,8 @@
 package cholog.wiseshop.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest;
 import cholog.wiseshop.api.campaign.dto.request.CreateCampaignRequest.CreateProductRequest;
+import cholog.wiseshop.api.campaign.dto.response.MemberCampaignResponse;
 import cholog.wiseshop.api.campaign.dto.response.ReadCampaignResponse;
 import cholog.wiseshop.api.campaign.service.CampaignService;
 import cholog.wiseshop.common.BaseTest;
@@ -19,10 +17,14 @@ import cholog.wiseshop.db.stock.Stock;
 import cholog.wiseshop.db.stock.StockRepository;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
+import cholog.wiseshop.fixture.CampaignFixture;
 import cholog.wiseshop.fixture.MemberFixture;
+import cholog.wiseshop.fixture.ProductFixture;
 import cholog.wiseshop.fixture.ProductFixture.Request;
 import java.time.LocalDateTime;
 import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +114,34 @@ public class CampaignServiceTest extends BaseTest {
         }
 
         @Test
+        void 재고수량이_1개_미만이면_예외() {
+            // given
+            LocalDateTime now = LocalDateTime.now();
+            Member member = memberRepository.save(MemberFixture.최준호());
+            CreateCampaignRequest request = new CreateCampaignRequest(
+                now.plusDays(2),
+                now.plusDays(2).plusHours(10),
+                1000,
+                new CreateProductRequest(
+                    "보약",
+                    "먹으면 기분이 좋아져요.",
+                    10000,
+                    0
+                )
+            );
+
+            // when & then
+            assertThatThrownBy(
+                () -> campaignService.createCampaign(request, member, now))
+                .isInstanceOf(WiseShopException.class)
+                .hasMessage(WiseShopErrorCode.INVALID_GOAL_QUANTITY.getMessage());
+        }
+    }
+
+    @Nested
+    class 캠페인의_상태를_설정한다 {
+
+        @Test
         void 현재_시간이_시작시간_이후_종료시간_이전일_때_상태변경() {
             // given
             LocalDateTime now = LocalDateTime.now();
@@ -179,10 +209,15 @@ public class CampaignServiceTest extends BaseTest {
             // then
             assertThat(campaign.getState()).isEqualTo(CampaignState.SUCCESS);
         }
+    }
+
+    @Nested
+    class 캠페인을_조회한다 {
 
         @Test
-        void 캠페인_전체조회_시_진행중_캠페인들만_조회() {
+        void 캠페인_전체조회_성공적으로_조회() {
             // given
+            Member member = memberRepository.save(MemberFixture.최준호());
             LocalDateTime now = LocalDateTime.now();
             Stock stockA = new Stock(10);
             Stock stockB = new Stock(10);
@@ -194,8 +229,9 @@ public class CampaignServiceTest extends BaseTest {
                 .goalQuantity(5)
                 .state(CampaignState.WAITING)
                 .now(now)
+                .member(member)
                 .build();
-            Product productA = new Product("product", "zzang", 2000, campaignA, stockA);
+            Product productA = new Product("product", "zzang", 2000, campaignA, stockA, member);
 
             Campaign campaignB = Campaign.builder()
                 .startDate(now.plusHours(1))
@@ -203,8 +239,9 @@ public class CampaignServiceTest extends BaseTest {
                 .goalQuantity(5)
                 .state(CampaignState.WAITING)
                 .now(now)
+                .member(member)
                 .build();
-            Product productB = new Product("product", "zzang", 2000, campaignB, stockB);
+            Product productB = new Product("product", "zzang", 2000, campaignB, stockB, member);
 
             Campaign waitingCampaign = Campaign.builder()
                 .startDate(now.plusHours(1))
@@ -212,8 +249,10 @@ public class CampaignServiceTest extends BaseTest {
                 .goalQuantity(5)
                 .state(CampaignState.WAITING)
                 .now(now)
+                .member(member)
                 .build();
-            Product productC = new Product("product", "zzang", 2000, waitingCampaign, stockC);
+            Product productC = new Product("product", "zzang", 2000, waitingCampaign, stockC,
+                member);
 
             campaignA.setState(now.minusHours(1), now.plusHours(2));
             campaignB.setState(now.minusHours(1), now.plusHours(2));
@@ -221,73 +260,55 @@ public class CampaignServiceTest extends BaseTest {
             productRepository.saveAll(List.of(productA, productB, productC));
 
             // when
-            List<ReadCampaignResponse> response = campaignService.readInProgressCampaign();
+            List<ReadCampaignResponse> response = campaignService.readAllCampaign();
 
             // then
-            assertThat(response).hasSize(2);
+            assertThat(response).hasSize(3);
         }
 
         @Test
         void 캠페인_단건_조회() {
             // given
-            LocalDateTime now = LocalDateTime.now();
-            Stock stockA = new Stock(10);
-            Stock stockB = new Stock(10);
-            stockRepository.saveAll(List.of(stockA, stockB));
-
-            Campaign campaignA = Campaign.builder()
-                .startDate(now.plusHours(1))
-                .endDate(now.plusHours(2))
-                .goalQuantity(5)
-                .state(CampaignState.WAITING)
-                .now(now)
-                .build();
-            Product productA = new Product("productA", "zzang", 2000, campaignA, stockA);
-
-            Campaign campaignB = Campaign.builder()
-                .startDate(now.minusHours(2))
-                .endDate(now.plusHours(3))
-                .goalQuantity(6)
-                .state(CampaignState.IN_PROGRESS)
-                .now(now)
-                .build();
-            Product productB = new Product("productB", "zzang", 2000, campaignB, stockB);
-
-            campaignRepository.saveAll(List.of(campaignA, campaignB));
-            productRepository.saveAll(List.of(productA, productB));
+            Member member = memberRepository.save(MemberFixture.최준호());
+            Campaign campaign = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
+            Stock stock = new Stock(20);
+            stockRepository.save(stock);
+            Product product = productRepository.save(
+                ProductFixture.재고가_설정된_캠페인의_보약(campaign, stock, member));
 
             // when
-            ReadCampaignResponse response = campaignService.readCampaign(campaignA.getId());
+            ReadCampaignResponse response = campaignService.readCampaign(campaign.getId());
 
             // then
-            assertThat(response.product().id()).isEqualTo(productA.getId());
-            assertThat(response.startDate()).isEqualTo(now.plusHours(1).toString());
-            assertThat(response.endDate()).isEqualTo(now.plusHours(2).toString());
-            assertThat(response.goalQuantity()).isEqualTo(5);
+            assertThat(response.campaignId()).isEqualTo(campaign.getId());
+            assertThat(response.product().id()).isEqualTo(product.getId());
         }
 
         @Test
-        void 재고수량이_1개_미만이면_예외() {
+        void 캠페인_멤버_조회() {
             // given
-            LocalDateTime now = LocalDateTime.now();
-            Member member = memberRepository.save(MemberFixture.최준호());
-            CreateCampaignRequest request = new CreateCampaignRequest(
-                now.plusDays(2),
-                now.plusDays(2).plusHours(10),
-                1000,
-                new CreateProductRequest(
-                    "보약",
-                    "먹으면 기분이 좋아져요.",
-                    10000,
-                    0
-                )
-            );
+            Member junHo = memberRepository.save(MemberFixture.최준호());
+            Member junSoo = memberRepository.save(MemberFixture.김준수());
+            Campaign inProgressCampaign = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(junHo));
+            Campaign waitingCampaign = campaignRepository.save(CampaignFixture.대기중인_보약_캠페인(junHo));
+            Campaign waitingCampaignFromJunSoo = campaignRepository.save(CampaignFixture.대기중인_보약_캠페인(junSoo));
 
-            // when & then
-            assertThatThrownBy(
-                () -> campaignService.createCampaign(request, member, now))
-                .isInstanceOf(WiseShopException.class)
-                .hasMessage(WiseShopErrorCode.INVALID_GOAL_QUANTITY.getMessage());
+            Stock stockA = new Stock(20);
+            stockRepository.save(stockA);
+            Stock stockB = new Stock(20);
+            stockRepository.save(stockB);
+            Stock stockC = new Stock(20);
+            stockRepository.save(stockC);
+
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(inProgressCampaign, stockA, junHo));
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(waitingCampaign, stockB, junHo));
+            productRepository.save(ProductFixture.재고가_설정된_캠페인의_보약(waitingCampaignFromJunSoo, stockC, junSoo));
+
+            // when
+            List<MemberCampaignResponse> response = campaignService.readMemberCampaign(junHo);
+
+            //then
+            assertThat(response).hasSize(2);
         }
     }
 }

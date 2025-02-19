@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Table(name = "campaign")
 @Entity
@@ -92,6 +93,10 @@ public class Campaign {
         }
     }
 
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
     public static CampaignBuilder builder() {
         return new CampaignBuilder();
     }
@@ -156,6 +161,10 @@ public class Campaign {
         this.state = state;
     }
 
+    public void cancelSoldQuantity(int cancelQuantity) {
+        this.soldQuantity -= cancelQuantity;
+    }
+
     public void increaseSoldQuantity(int orderQuantity) {
         soldQuantity += orderQuantity;
         if (goalQuantity - soldQuantity == 0) {
@@ -187,8 +196,8 @@ public class Campaign {
         return state;
     }
 
-    public Member getMember() {
-        return member;
+    public Optional<Member> getMember() {
+        return Optional.ofNullable(member);
     }
 
     public boolean isInProgress() {

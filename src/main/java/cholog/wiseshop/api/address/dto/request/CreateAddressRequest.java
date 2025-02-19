@@ -1,4 +1,4 @@
-package cholog.wiseshop.api.address.dto;
+package cholog.wiseshop.api.address.dto.request;
 
 public record CreateAddressRequest(
     int postalCode,

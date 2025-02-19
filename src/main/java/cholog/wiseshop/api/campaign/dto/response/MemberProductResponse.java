@@ -1,21 +1,18 @@
-package cholog.wiseshop.api.product.dto.response;
+package cholog.wiseshop.api.campaign.dto.response;
 
-import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 
-public record ProductResponse(
+public record MemberProductResponse(
     Long id,
-    Long ownerId,
     String name,
     String description,
     Integer price,
     Integer totalQuantity
 ) {
 
-    public ProductResponse(Product product) {
-        this(
+    public static MemberProductResponse from(Product product) {
+        return new MemberProductResponse(
             product.getId(),
-            product.getOwner().orElse(Member.createEmpty()).getId(),
             product.getName(),
             product.getDescription(),
             product.getPrice(),

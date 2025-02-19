@@ -1,4 +1,5 @@
-package cholog.wiseshop.common;
+
+ package cholog.wiseshop.common;
 
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
@@ -49,7 +50,7 @@ public class TestDataLoader implements CommandLineRunner {
         ));
         LocalDateTime now = LocalDateTime.now();
         Campaign campaign = campaignRepository.save(Campaign.builder()
-            .startDate(now.minusDays(1))
+            .startDate(now.plusDays(1))
             .endDate(now.plusDays(2))
             .goalQuantity(100)
             .soldQuantity(0)
@@ -65,6 +66,7 @@ public class TestDataLoader implements CommandLineRunner {
             .price(5000)
             .stock(stock)
             .campaign(campaign)
+            .owner(supplier)
             .build()
         );
     }

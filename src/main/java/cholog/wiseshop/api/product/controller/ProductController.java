@@ -4,6 +4,8 @@ import cholog.wiseshop.api.product.dto.request.ModifyProductPriceAndStockRequest
 import cholog.wiseshop.api.product.dto.request.ModifyProductRequest;
 import cholog.wiseshop.api.product.dto.response.ProductResponse;
 import cholog.wiseshop.api.product.service.ProductService;
+import cholog.wiseshop.common.auth.Auth;
+import cholog.wiseshop.db.member.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/products")
 @RestController
 public class ProductController {
 
@@ -24,31 +26,38 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
         ProductResponse response = productService.getProduct(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PatchMapping("/products/{id}")
-    public ResponseEntity<Void> modifyProduct(@PathVariable Long id,
-        @RequestBody ModifyProductRequest request) {
-        productService.modifyProduct(id, request);
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> modifyProduct(
+        @Auth Member member,
+        @PathVariable Long id,
+        @RequestBody ModifyProductRequest request
+    ) {
+        productService.modifyProduct(member, id, request);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/products/{id}/price")
+    @PatchMapping("/{id}/price")
     public ResponseEntity<Void> modifyProductPriceAndStock(
+        @Auth Member member,
         @PathVariable Long id,
         @RequestBody ModifyProductPriceAndStockRequest request
     ) {
-        productService.modifyProductPriceAndStock(id, request);
+        productService.modifyProductPriceAndStock(member, id, request);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/products/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(
+        @Auth Member member,
+        @PathVariable Long id
+    ) {
+        productService.deleteProduct(member, id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -14,11 +14,7 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class TestDataService {
 
-    private static final int TEST_MEMBER_SIZE = 1_000_000;
-    private static final int TEST_CAMPAIGN_SIZE = 1_000_000;
-    private static final int TEST_PRODUCT_SIZE = 1_000_000;
-    private static final int TEST_STOCK_SIZE = 1_000_000;
-    private static final int TEST_ORDER_SIZE = 1_000_000;
+    private static final int ONE_HUNDRED_SIZE = 1_000_000;
     private static final int BATCH_SIZE = 10_000;
 
     private final DatabaseCleaner databaseCleaner;
@@ -34,16 +30,24 @@ public class TestDataService {
 
     public void generateTestMember() {
         cleanAllData();
-        generateTestMemberData(TEST_MEMBER_SIZE);
+        generateTestMemberData(ONE_HUNDRED_SIZE);
     }
 
-    public void generateTestData() {
+    public void generateTestCampaign() {
         cleanAllData();
         generateTestMemberData(2);
-        generateTestCampaignData(TEST_CAMPAIGN_SIZE);
-        generateTestStockData(TEST_STOCK_SIZE);
-        generateTestProductData(TEST_PRODUCT_SIZE);
-        generateTestOrderData(TEST_ORDER_SIZE);
+        generateTestCampaignData(ONE_HUNDRED_SIZE);
+        generateTestStockData(ONE_HUNDRED_SIZE);
+        generateTestProductData(ONE_HUNDRED_SIZE);
+    }
+
+    public void generateTestOrder() {
+        cleanAllData();
+        generateTestMemberData(ONE_HUNDRED_SIZE + 1);
+        generateTestCampaignData(1);
+        generateTestStockData(ONE_HUNDRED_SIZE);
+        generateTestProductData(ONE_HUNDRED_SIZE);
+        generateTestOrderData(ONE_HUNDRED_SIZE);
     }
 
     public void generateTestMemberData(int size) {
@@ -51,8 +55,8 @@ public class TestDataService {
         List<Object[]> memberBatch = new ArrayList<>();
 
         for (int i = 1; i <= size; i++) {
-            String email = "test" + i + "@test.com";
-            String name = "test-" + UUID.randomUUID().toString().substring(0, 10);
+            String email = "user" + i + "@test.com";
+            String name = "user-" + UUID.randomUUID().toString().substring(0, 10);
             String password = "$2a$10$C5.NxKqjo2FC72RjSWJj1uNtCbia5ClEY5KhMtO7jEUN6N5s3.ZVu";
 
             memberBatch.add(new Object[]{email, name, password});
@@ -64,25 +68,6 @@ public class TestDataService {
 
         if (!memberBatch.isEmpty()) {
             batchTestMember(sql, memberBatch);
-        }
-    }
-
-    public void generateTestStockData(int size) {
-        String sql = "INSERT INTO stock (total_quantity) VALUES (?)";
-        List<Object[]> stockBatch = new ArrayList<>();
-
-        for (int i = 1; i <= size; i++) {
-            int totalQuantity = 100;
-
-            stockBatch.add(new Object[]{totalQuantity});
-
-            if (stockBatch.size() % BATCH_SIZE == 0) {
-                batchTestMember(sql, stockBatch);
-            }
-        }
-
-        if (!stockBatch.isEmpty()) {
-            batchTestMember(sql, stockBatch);
         }
     }
 
@@ -121,12 +106,31 @@ public class TestDataService {
         }
     }
 
+    public void generateTestStockData(int size) {
+        String sql = "INSERT INTO stock (total_quantity) VALUES (?)";
+        List<Object[]> stockBatch = new ArrayList<>();
+
+        for (int i = 1; i <= size; i++) {
+            int totalQuantity = 100;
+
+            stockBatch.add(new Object[]{totalQuantity});
+
+            if (stockBatch.size() % BATCH_SIZE == 0) {
+                batchTestMember(sql, stockBatch);
+            }
+        }
+
+        if (!stockBatch.isEmpty()) {
+            batchTestMember(sql, stockBatch);
+        }
+    }
+
     public void generateTestProductData(int size) {
         String sql = "INSERT INTO "
             + "product (name, description, price, campaign_id, stock_id, member_id) "
             + "VALUES (?, ?, ?, ?, ?, ?)";
         List<Object[]> productBatch = new ArrayList<>();
-        List<Long> campaignIds = getTestDataIds("campaign", size);
+        Long campaignId = getTestDataIds("campaign", 1).getFirst();
         List<Long> stockIds = getTestDataIds("stock", size);
         Long memberId = getTestDataIds("member", 1).getFirst();
 
@@ -134,7 +138,6 @@ public class TestDataService {
             String name = "Test Product-" + UUID.randomUUID().toString().substring(0, 5);
             String description = "Test Description" + UUID.randomUUID().toString().substring(0, 10);
             int price = (int) (Math.random() * 100) + 10000;
-            Long campaignId = campaignIds.get(i - 1);
             Long stockId = stockIds.get(i - 1);
 
             productBatch.add(new Object[]{
@@ -162,11 +165,12 @@ public class TestDataService {
             + "VALUES (?, ?, ?, ?, ?, ?)";
         List<Object[]> orderBatch = new ArrayList<>();
         List<Long> productIds = getTestDataIds("product", size);
-        Long memberId = getTestDataIds("member", size).getLast();
+        List<Long> memberIds = getTestDataIds("member", size + 1);
 
         for (int i = 1; i <= size; i++) {
             int count = 1;
             Long productId = productIds.get(i - 1);
+            Long memberId = memberIds.get(i);
             LocalDateTime createdDate = LocalDateTime.now();
             LocalDateTime modifiedDate = LocalDateTime.now();
             String address = "테스트 집-" + UUID.randomUUID().toString().substring(0, 10);

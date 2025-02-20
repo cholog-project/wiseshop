@@ -24,7 +24,13 @@ public class TestDataController {
 
     @PostMapping("/test/generate/test-campaign")
     public ResponseEntity<Void> generateCampaign() {
-        testDataService.generateTestData();
+        testDataService.generateTestCampaign();
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/test/generate/test-order")
+    public ResponseEntity<Void> generateOrder() {
+        testDataService.generateTestOrder();
         return ResponseEntity.ok().build();
     }
 }

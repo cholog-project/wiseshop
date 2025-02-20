@@ -66,7 +66,12 @@ public class CampaignService {
             stock,
             member
         ));
-        scheduler.scheduleCampaignToStart(campaign);
+        if (campaign.isWaiting()) {
+            scheduler.scheduleCampaignToStart(campaign);
+        }
+        else {
+            scheduler.scheduleCampaignToFinish(campaign);
+        }
         return CreateCampaignResponse.from(campaign.getId());
     }
 

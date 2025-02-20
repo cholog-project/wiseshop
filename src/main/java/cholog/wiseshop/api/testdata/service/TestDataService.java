@@ -55,7 +55,7 @@ public class TestDataService {
         List<Object[]> memberBatch = new ArrayList<>();
 
         for (int i = 1; i <= size; i++) {
-            String email = "user" + i + "@test.com";
+            String email = "user" + i + "@example.com";
             String name = "user-" + UUID.randomUUID().toString().substring(0, 10);
             String password = "$2a$10$C5.NxKqjo2FC72RjSWJj1uNtCbia5ClEY5KhMtO7jEUN6N5s3.ZVu";
 

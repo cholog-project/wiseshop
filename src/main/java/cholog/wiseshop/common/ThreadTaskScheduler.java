@@ -20,7 +20,8 @@ public class ThreadTaskScheduler {
     public ThreadTaskScheduler(
         ThreadPoolTaskScheduler scheduler,
         PlatformTransactionManager transactionManager,
-        CampaignRepository campaignRepository, ScheduledTaskStorage taskStorage) {
+        CampaignRepository campaignRepository, ScheduledTaskStorage taskStorage
+    ) {
         this.scheduler = scheduler;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         this.campaignRepository = campaignRepository;
@@ -46,6 +47,9 @@ public class ThreadTaskScheduler {
             campaignRepository.save(campaign);
             return null;
         });
-        scheduler.schedule(endCampaign, campaign.getEndDate().atZone(ZoneId.systemDefault()).toInstant());
+        ScheduledFuture<?> scheduledTask = scheduler.schedule(
+            endCampaign, campaign.getEndDate().atZone(ZoneId.systemDefault()).toInstant()
+        );
+        taskStorage.saveToStart(scheduledTask, campaign);
     }
 }

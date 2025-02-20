@@ -311,4 +311,31 @@ public class CampaignServiceTest extends BaseTest {
             assertThat(response).hasSize(2);
         }
     }
+
+    @Nested
+    class 캠페인을_상품이름으로_검색한다 {
+
+        @Test
+        void 캠페인_상품이름으로_검색() {
+            // given
+            Member member = memberRepository.save(MemberFixture.최준호());
+            Campaign campaign = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
+            Stock stock = new Stock(20);
+            stockRepository.save(stock);
+            productRepository.save(
+                ProductFixture.재고가_설정된_이름있는_캠페인의_보약(campaign, stock, member, "아주 좋은 보약"));
+
+            Campaign campaign2 = campaignRepository.save(CampaignFixture.진행중인_보약_캠페인(member));
+            Stock stock2 = new Stock(30);
+            stockRepository.save(stock2);
+            productRepository.save(
+                ProductFixture.재고가_설정된_이름있는_캠페인의_보약(campaign2, stock2, member, "아주 나쁜 보약"));
+
+            // when
+            List<ReadCampaignResponse> response = campaignService.searchByProductName("좋은", 0, 10);
+
+            // then
+            assertThat(response).hasSize(1);
+        }
+    }
 }

@@ -18,6 +18,10 @@ import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -125,6 +129,27 @@ public class CampaignService {
             .map(campaign -> {
                 List<Product> products = productRepository.findAllByCampaign(campaign);
                 return MemberCampaignResponse.of(campaign, products.getFirst());
+            }).toList();
+    }
+
+    public List<ReadCampaignResponse> searchByProductName(String keyword, int page, int size) {
+        keyword = keyword.trim();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        Page<Product> pages = productRepository.findByNameContaining(keyword, pageable);
+        return pages.getContent().stream()
+            .map(product -> {
+                Campaign campaign = product.getCampaign();
+                return new ReadCampaignResponse(
+                    campaign.getId(),
+                    campaign.getStartDate().toString(),
+                    campaign.getEndDate().toString(),
+                    campaign.getGoalQuantity(),
+                    campaign.getSoldQuantity(),
+                    product.getStock().getTotalQuantity(),
+                    campaign.getState(),
+                    new ProductResponse(product),
+                    campaign.getMember().orElse(Member.createEmpty()).getId()
+                );
             }).toList();
     }
 }

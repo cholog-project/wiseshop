@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1/campaigns")
@@ -30,7 +31,7 @@ public class CampaignController {
 
     @PostMapping
     public ResponseEntity<CreateCampaignResponse> createCampaigns(@Auth Member member,
-        @RequestBody CreateCampaignRequest request) {
+                                                                  @RequestBody CreateCampaignRequest request) {
         var response = campaignService.createCampaign(request, member, LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -50,6 +51,14 @@ public class CampaignController {
     @GetMapping("/members")
     public ResponseEntity<List<MemberCampaignResponse>> readMemberCampaign(@Auth Member member) {
         List<MemberCampaignResponse> response = campaignService.readMemberCampaign(member);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ReadCampaignResponse>> searchCampaigns(@RequestParam String keyword,
+                                                                      @RequestParam int page,
+                                                                      @RequestParam int size) {
+        List<ReadCampaignResponse> response = campaignService.searchByProductName(keyword, page, size);
         return ResponseEntity.ok(response);
     }
 }

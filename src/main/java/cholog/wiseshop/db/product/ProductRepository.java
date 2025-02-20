@@ -2,6 +2,8 @@ package cholog.wiseshop.db.product;
 
 import cholog.wiseshop.db.campaign.Campaign;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +16,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByCampaign(Campaign campaign);
 
     List<Product> findAllByOwnerId(Long memberId);
+
+    Page<Product> findByNameContaining(String keyword, Pageable pageable);
 }

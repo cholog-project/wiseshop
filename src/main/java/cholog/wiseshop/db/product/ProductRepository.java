@@ -17,8 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByOwnerId(Long memberId);
 
-//    Page<Product> findByNameContaining(String keyword, Pageable pageable);
-
     @Query(value = "SELECT p FROM Product p JOIN FETCH p.stock JOIN FETCH p.campaign WHERE p.name LIKE %:keyword%",
         countQuery = "SELECT COUNT(p) FROM Product p WHERE p.name LIKE %:keyword%")
     Page<Product> findByNameContaining(String keyword, Pageable pageable);

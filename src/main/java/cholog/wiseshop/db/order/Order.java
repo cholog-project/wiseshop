@@ -4,6 +4,8 @@ import cholog.wiseshop.db.BaseTimeEntity;
 import cholog.wiseshop.db.member.Member;
 import cholog.wiseshop.db.product.Product;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,6 +26,11 @@ public class Order extends BaseTimeEntity {
 
     private int count;
 
+    private String address;
+
+    @Enumerated(EnumType.STRING)
+    private OrderState state;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", unique = false)
     private Product product;
@@ -32,9 +39,21 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String address;
-
     public Order() {
+    }
+
+    public Order(
+        int count,
+        String address,
+        OrderState state,
+        Product product,
+        Member member
+    ) {
+        this.count = count;
+        this.address = address;
+        this.state = state;
+        this.product = product;
+        this.member = member;
     }
 
     public Order(
@@ -67,6 +86,7 @@ public class Order extends BaseTimeEntity {
         private Product product;
         private Member member;
         private String address;
+        private OrderState state;
 
         private OrderBuilder() {
         }
@@ -88,6 +108,11 @@ public class Order extends BaseTimeEntity {
 
         public OrderBuilder address(String address) {
             this.address = address;
+            return this;
+        }
+
+        public OrderBuilder state(OrderState state) {
+            this.state = state;
             return this;
         }
 

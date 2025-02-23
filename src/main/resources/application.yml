@@ -27,3 +27,13 @@ springdoc:
       enabled: true
   cache:
     disabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    sessions:
+      enabled: true

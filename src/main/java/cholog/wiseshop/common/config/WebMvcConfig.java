@@ -28,6 +28,18 @@ public class WebMvcConfig implements WebMvcConfigurer {
             .allowedOriginPatterns(
                 "http://localhost:3000",
                 "http://localhost:5173",
+                "http://localhost:9000",
+                "http://localhost:12000",
+                "http://localhost:12001",
+                "http://localhost:12002",
+                "http://localhost:12003",
+                "http://localhost:12004",
+                "http://localhost:12005",
+                "http://localhost:12006",
+                "http://localhost:12007",
+                "http://localhost:12008",
+                "http://localhost:12009",
+                "http://localhost:16001",
                 "https://wiseshop.kro.kr"
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")

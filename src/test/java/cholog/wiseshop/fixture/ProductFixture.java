@@ -18,6 +18,20 @@ public class ProductFixture {
             .build();
     }
 
+    public static Product 재고가_설정된_이름있는_캠페인의_보약(
+        Campaign campaign,
+        Stock stock,
+        Member owner,
+        String name) {
+        return Product.builder()
+            .name(name)
+            .campaign(campaign)
+            .price(1000)
+            .stock(stock)
+            .owner(owner)
+            .build();
+    }
+
     public static Product 재고가_설정된_캠페인의_보약(Campaign campaign, Stock stock, Member owner) {
         return Product.builder()
             .campaign(campaign)

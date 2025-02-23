@@ -4,6 +4,8 @@ import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.product.Product;
 import cholog.wiseshop.db.product.ProductRepository;
+import cholog.wiseshop.exception.WiseShopErrorCode;
+import cholog.wiseshop.exception.WiseShopException;
 import java.time.ZoneId;
 import java.util.concurrent.ScheduledFuture;
 import org.springframework.batch.core.Job;
@@ -55,38 +57,36 @@ public class ThreadTaskScheduler {
         ScheduledFuture<?> scheduledTask = scheduler.schedule(
             startCampaign, campaign.getStartDate().atZone(ZoneId.systemDefault()).toInstant()
         );
-        taskStorage.saveToStart(scheduledTask, campaign);
+        taskStorage.saveScheduleTask(scheduledTask, campaign);
     }
 
     public void scheduleCampaignToFinish(Campaign campaign) {
         Runnable endCampaign = () -> {
-            // 1) 트랜잭션으로 캠페인 상태 업데이트
             transactionTemplate.execute(status -> {
                 campaign.setStateWhenFinish();
                 campaignRepository.save(campaign);
-                return null; // 트랜잭션 내부 로직 종료
+                return null;
             });
-            // 2) 캠페인 목표 달성 실패 여부 확인 후, 배치 실행
-            if (campaign.isFailed()) { // 예: 목표수량 미달일 경우
+            if (campaign.isFailed()) {
                 try {
-                    Product product = productRepository.findAllByCampaignId(campaign.getId()).getFirst();
+                    Product product = productRepository.findAllByCampaignId(campaign.getId())
+                        .getFirst();
                     JobParameters jobParameters = new JobParametersBuilder()
                         .addLong("productId", product.getId())
-                        .addLong("time", System.currentTimeMillis()) // 재실행 위해 유니크 파라미터
+                        .addLong("time", System.currentTimeMillis())
                         .toJobParameters();
                     jobLauncher.run(orderCancellationJob, jobParameters);
                 } catch (Exception e) {
-                    // 예외 처리
-                    e.printStackTrace();
+                    throw new WiseShopException(WiseShopErrorCode.FAILED_ORDER_CANCEL,
+                        e.getMessage());
                 }
             }
         };
-        // 스케줄링
         ScheduledFuture<?> scheduledTask = scheduler.schedule(
             endCampaign,
             campaign.getEndDate().atZone(ZoneId.systemDefault()).toInstant()
         );
-        taskStorage.saveToStart(scheduledTask, campaign);
+        taskStorage.saveScheduleTask(scheduledTask, campaign);
 
     }
 }

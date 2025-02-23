@@ -14,7 +14,7 @@ public class ScheduledTaskStorage {
         this.startScheduledTasks = new ConcurrentHashMap<>();
     }
 
-    public void saveToStart(ScheduledFuture<?> task, Campaign campaign) {
+    public void saveScheduleTask(ScheduledFuture<?> task, Campaign campaign) {
         startScheduledTasks.put(campaign.getId(), task);
     }
 

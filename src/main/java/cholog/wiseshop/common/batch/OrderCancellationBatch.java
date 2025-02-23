@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -26,13 +28,14 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-public class OrderCancelationBatch {
+public class OrderCancellationBatch {
 
+    private static final Logger log = LoggerFactory.getLogger(OrderCancellationBatch.class);
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final DataSource dataSource;
 
-    public OrderCancelationBatch(
+    public OrderCancellationBatch(
         JobRepository jobRepository,
         PlatformTransactionManager transactionManager,
         DataSource dataSource
@@ -42,9 +45,6 @@ public class OrderCancelationBatch {
         this.dataSource = dataSource;
     }
 
-    /**
-     * 주문 취소 배치 Job
-     */
     @Bean
     public Job orderCancellationJob() {
         return new JobBuilder("orderCancellationJob", jobRepository)
@@ -53,9 +53,6 @@ public class OrderCancelationBatch {
             .build();
     }
 
-    /**
-     * 주문 취소 Step (읽기 → 처리 → 쓰기)
-     */
     @Bean
     public Step orderCancellationStep() {
         return new StepBuilder("orderCancellationStep", jobRepository)
@@ -66,10 +63,6 @@ public class OrderCancelationBatch {
             .build();
     }
 
-    /**
-     * 주문 조회 Reader (JDBC 페이징)
-     * - ID만 조회하여 성능 최적화
-     */
     @Bean
     @StepScope
     public JdbcPagingItemReader<Order> orderItemReader(
@@ -77,19 +70,19 @@ public class OrderCancelationBatch {
     ) {
         SqlPagingQueryProviderFactoryBean queryProvider = new SqlPagingQueryProviderFactoryBean();
         queryProvider.setDataSource(dataSource);
-        queryProvider.setSelectClause("SELECT id"); // ID만 조회
+        queryProvider.setSelectClause("SELECT id");
         queryProvider.setFromClause("FROM `order`");
         queryProvider.setWhereClause("WHERE product_id = :productId AND state = :state");
-        queryProvider.setSortKey("id"); // 페이징 정렬 기준
+        queryProvider.setSortKey("id");
 
         JdbcPagingItemReader<Order> reader = new JdbcPagingItemReader<>();
         reader.setDataSource(dataSource);
         reader.setPageSize(1000);
-        reader.setRowMapper(new OrderRowMapper()); // ID만 매핑
+        reader.setRowMapper(new OrderRowMapper());
 
         reader.setParameterValues(Map.of(
             "productId", productId,
-            "state", OrderState.SUCCESS.name() // Enum을 String으로 변환
+            "state", OrderState.SUCCESS.toString()
         ));
 
         try {
@@ -101,11 +94,6 @@ public class OrderCancelationBatch {
         return reader;
     }
 
-    /**
-     * 주문 상태 변경 Processor
-     * - 상태를 FAILED로 변경
-     * - 수정 날짜를 현재 시간으로 설정
-     */
     @Bean
     public ItemProcessor<Order, Order> orderItemProcessor() {
         return order -> {
@@ -115,16 +103,13 @@ public class OrderCancelationBatch {
         };
     }
 
-    /**
-     * 주문 상태 업데이트 Writer (JDBC Batch Update)
-     * - ID 기준으로 상태 및 수정 날짜 변경
-     */
     @Bean
     public JdbcBatchItemWriter<Order> orderBatchUpdateItemWriter() {
         JdbcBatchItemWriter<Order> writer = new JdbcBatchItemWriter<>();
         writer.setDataSource(dataSource);
 
-        writer.setSql("UPDATE `order` SET state = :state, modified_date = :modified_date WHERE id = :id");
+        writer.setSql(
+            "UPDATE `order` SET state = :state, modified_date = :modified_date WHERE id = :id");
         writer.setItemSqlParameterSourceProvider(order -> {
             MapSqlParameterSource paramSource = new MapSqlParameterSource();
             paramSource.addValue("id", order.getId());
@@ -133,16 +118,13 @@ public class OrderCancelationBatch {
             return paramSource;
         });
 
-        System.out.println("완료했음 확인바람");
+        OrderCancellationBatch.log.warn("모든 주문 취소를 완료했습니다.");
 
         return writer;
     }
 
-    /**
-     * 주문 데이터 매핑 RowMapper
-     * - ID만 조회하여 매핑
-     */
     static class OrderRowMapper implements RowMapper<Order> {
+
         @Override
         public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
             Order order = new Order();

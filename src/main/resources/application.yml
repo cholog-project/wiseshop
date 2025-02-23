@@ -12,6 +12,7 @@ server:
         http-only: true
         same-site: none
         max-age: 360000000
+      timeout: 360000000
 
 springdoc:
   packages-to-scan: cholog

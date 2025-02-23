@@ -56,7 +56,7 @@ public class OrderCancellationBatch {
     @Bean
     public Step orderCancellationStep() {
         return new StepBuilder("orderCancellationStep", jobRepository)
-            .<Order, Order>chunk(1000, transactionManager)
+            .<Order, Order>chunk(10000, transactionManager)
             .reader(orderItemReader(null))
             .processor(orderItemProcessor())
             .writer(orderBatchUpdateItemWriter())
@@ -77,7 +77,7 @@ public class OrderCancellationBatch {
 
         JdbcPagingItemReader<Order> reader = new JdbcPagingItemReader<>();
         reader.setDataSource(dataSource);
-        reader.setPageSize(1000);
+        reader.setPageSize(10000);
         reader.setRowMapper(new OrderRowMapper());
 
         reader.setParameterValues(Map.of(
@@ -128,7 +128,7 @@ public class OrderCancellationBatch {
         @Override
         public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
             Order order = new Order();
-            order.setId(rs.getLong("id")); // ID만 매핑
+            order.setId(rs.getLong("id"));
             return order;
         }
     }

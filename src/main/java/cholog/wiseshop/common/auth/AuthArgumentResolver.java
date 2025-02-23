@@ -36,6 +36,9 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             throw new WiseShopException(WiseShopErrorCode.MEMBER_SESSION_NOT_EXIST);
         }
         return memberRepository.findById(member.getId())
-            .orElseThrow(() -> new WiseShopException(WiseShopErrorCode.MEMBER_ID_NOT_FOUND));
+            .orElseThrow(() -> new WiseShopException(
+                WiseShopErrorCode.MEMBER_ID_NOT_FOUND,
+                "member:" + member)
+            );
     }
 }

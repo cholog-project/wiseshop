@@ -60,4 +60,14 @@ public class Member {
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+            "id=" + id +
+            ", email='" + email + '\'' +
+            ", name='" + name + '\'' +
+            ", password='" + password + '\'' +
+            '}';
+    }
 }

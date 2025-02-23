@@ -42,43 +42,43 @@ public class TestDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Member supplier = memberRepository.save(new Member(
-            "supplier@test.com",
-            "판매자",
-            passwordEncoder.encode("12341234")
-        ));
-        Member customer = memberRepository.save(new Member(
-            "customer@test.com",
-            "구매자",
-            passwordEncoder.encode("12341234")
-        ));
-        addressRepository.save(new Address(
-            06160,
-            "서울특별시 강남구 삼성동 142-35",
-            "13층",
-            true,
-            customer
-        ));
-        LocalDateTime now = LocalDateTime.now();
-        Campaign campaign = campaignRepository.save(Campaign.builder()
-            .startDate(now.plusDays(1))
-            .endDate(now.plusDays(2))
-            .goalQuantity(100)
-            .soldQuantity(0)
-            .state(CampaignState.IN_PROGRESS)
-            .member(supplier)
-            .now(now)
-            .build()
-        );
-        Stock stock = stockRepository.save(new Stock(500));
-        productRepository.save(Product.builder()
-            .name("에그타르트")
-            .description("에그타르트 맛있어요")
-            .price(5000)
-            .stock(stock)
-            .campaign(campaign)
-            .owner(supplier)
-            .build()
-        );
+//        Member supplier = memberRepository.save(new Member(
+//            "supplier@test.com",
+//            "판매자",
+//            passwordEncoder.encode("12341234")
+//        ));
+//        Member customer = memberRepository.save(new Member(
+//            "customer@test.com",
+//            "구매자",
+//            passwordEncoder.encode("12341234")
+//        ));
+//        addressRepository.save(new Address(
+//            06160,
+//            "서울특별시 강남구 삼성동 142-35",
+//            "13층",
+//            true,
+//            customer
+//        ));
+//        LocalDateTime now = LocalDateTime.now();
+//        Campaign campaign = campaignRepository.save(Campaign.builder()
+//            .startDate(now.plusDays(1))
+//            .endDate(now.plusDays(2))
+//            .goalQuantity(100)
+//            .soldQuantity(0)
+//            .state(CampaignState.IN_PROGRESS)
+//            .member(supplier)
+//            .now(now)
+//            .build()
+//        );
+//        Stock stock = stockRepository.save(new Stock(500));
+//        productRepository.save(Product.builder()
+//            .name("에그타르트")
+//            .description("에그타르트 맛있어요")
+//            .price(5000)
+//            .stock(stock)
+//            .campaign(campaign)
+//            .owner(supplier)
+//            .build()
+//        );
     }
 }

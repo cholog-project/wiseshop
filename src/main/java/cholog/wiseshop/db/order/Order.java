@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -76,8 +77,16 @@ public class Order extends BaseTimeEntity {
         return Objects.equals(getMember().orElse(Member.createEmpty()).getId(), member.getId());
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setMember(Member member) {
         this.member = member;
+    }
+
+    public void setState(OrderState state) {
+        this.state = state;
     }
 
     public static final class OrderBuilder {
@@ -144,5 +153,9 @@ public class Order extends BaseTimeEntity {
 
     public String getAddress() {
         return address;
+    }
+
+    public OrderState getState() {
+        return state;
     }
 }

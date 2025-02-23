@@ -5,6 +5,7 @@ import cholog.wiseshop.common.ThreadTaskScheduler;
 import cholog.wiseshop.db.campaign.Campaign;
 import cholog.wiseshop.db.campaign.CampaignRepository;
 import cholog.wiseshop.db.campaign.CampaignState;
+import cholog.wiseshop.db.order.OrderState;
 import cholog.wiseshop.exception.WiseShopErrorCode;
 import cholog.wiseshop.exception.WiseShopException;
 import jakarta.transaction.Transactional;
@@ -173,8 +174,8 @@ public class TestDataService {
 
     public void generateTestOrderData(int size) {
         String sql = "INSERT INTO "
-            + "`order` (count, product_id, member_id, address, created_date, modified_date) "
-            + "VALUES (?, ?, ?, ?, ?, ?)";
+            + "`order` (count, product_id, member_id, address, created_date, modified_date, state) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         List<Object[]> orderBatch = new ArrayList<>();
         Long productId = getTestDataIds("product", size).getFirst();
@@ -193,7 +194,8 @@ public class TestDataService {
                 memberId,
                 address,
                 createdDate,
-                modifiedDate
+                modifiedDate,
+                OrderState.SUCCESS.toString()
             });
 
             if (orderBatch.size() % BATCH_SIZE == 0) {

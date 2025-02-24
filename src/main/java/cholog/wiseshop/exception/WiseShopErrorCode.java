@@ -27,7 +27,8 @@ public enum WiseShopErrorCode {
     INVALID_CAMPAIGN_DELETE_STATE("판매 대기 중이 아닌 상품은 삭제할 수 없습니다."),
     PAYMENT_NOT_MATCHED("결제 정보가 일치하지 않습니다."),
     INVALID_PAYMENT_ORDER_ID("유효한 결제 주문 아이디가 아닙니다."),
-    PAYMENT_FAILED("결제 응답이 비정상적입니다.");
+    PAYMENT_FAILED("결제 응답이 비정상적입니다."),
+    FAILED_ORDER_CANCEL("주문 일괄취소에 실패했습니다.");
 
     private String message;
 

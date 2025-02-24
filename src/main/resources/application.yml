@@ -14,6 +14,11 @@ server:
         max-age: 360000000
       timeout: 360000000
 
+spring:
+  batch:
+    job:
+      enabled: false
+
 springdoc:
   packages-to-scan: cholog
   default-consumes-media-type: application/json

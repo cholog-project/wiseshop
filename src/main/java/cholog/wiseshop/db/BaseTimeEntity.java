@@ -24,4 +24,8 @@ public abstract class BaseTimeEntity {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
+    public void setModifiedDate(LocalDateTime modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 }

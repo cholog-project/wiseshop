@@ -23,8 +23,10 @@ import org.springframework.batch.item.database.support.SqlPagingQueryProviderFac
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -60,6 +62,7 @@ public class OrderCancellationBatch {
             .reader(orderItemReader(null))
             .processor(orderItemProcessor())
             .writer(orderBatchUpdateItemWriter())
+            .taskExecutor(taskExecutor())
             .build();
     }
 
@@ -121,6 +124,16 @@ public class OrderCancellationBatch {
         OrderCancellationBatch.log.warn("모든 주문 취소를 완료했습니다.");
 
         return writer;
+    }
+
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(100);
+        executor.initialize();
+        return executor;
     }
 
     static class OrderRowMapper implements RowMapper<Order> {

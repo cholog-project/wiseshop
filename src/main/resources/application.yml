@@ -11,8 +11,7 @@ server:
         secure: true
         http-only: true
         same-site: none
-        max-age: 360000000
-      timeout: 360000000
+        max-age: 36000
 
 springdoc:
   packages-to-scan: cholog
